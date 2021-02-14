@@ -42,30 +42,36 @@ class FiraClient:
         decoded_data = Environment().FromString(data)
         
         return decoded_data
-    
-    def sendCommandsPacket(self, lspeed, rspeed):
-        packet = self._fillCommandPacket(lspeed, rspeed)
+
+    # Envia o objetivo de 1 robô como um pacote para o simulador
+    def sendCommandsPacket(self, lspeed, rspeed, robot_id = 0, is_yellow = False):
+        packet = self._fillCommandPacket(lspeed, rspeed, robot_id, is_yellow)
         
         """Sends packet to grSim"""
         data = packet.SerializeToString()
-
         self.commandSocket.sendto(data, self.commandAddress)
 
-    def _fillCommandPacket(self, lspeed, rspeed):
+    # Objetivo de 1 robô
+    def _fillCommandPacket(self, lspeed, rspeed, robot_id = 0, is_yellow = False):
         pkt = Packet()
         d = pkt.cmd.robot_commands
         robot = d.add()
-        robot.id          = 0
-        robot.yellowteam  = False
+        robot.id          = robot_id
+        robot.yellowteam  = is_yellow
         robot.wheel_left  = lspeed
         robot.wheel_right = rspeed
         return pkt
-    
+
+    def send_objectives(self, lspeed, rspeed, is_yellow = False):
+        for i in range(3):
+            self.sendCommandsPacket(lspeed, rspeed, robot_id=i, is_yellow = is_yellow)
+        
+    # === Métodos de posicionamento de um time e da bola === #
     def sendReplacementPacket(self, robotPositions = None, ballPosition = None):
         packet = self._fillReplacementPacket(robotPositions, ballPosition)
+
         """Sends packet to grSim"""
         data = packet.SerializeToString()
-
         self.commandSocket.sendto(data, self.commandAddress)
     
     def _fillReplacementPacket(self, robotPositions = None, ballPosition = None):

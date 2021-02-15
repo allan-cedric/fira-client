@@ -7,209 +7,324 @@
 #include "util/timer.h"
 #include "util/util.h"
 
-
-class Objective{
-    double m_x;
-    double m_y;
-    double m_angle;
-
-public:
-    Objective(double t_x, double t_y, double t_angle): m_x(t_x),m_y(t_y),m_angle(t_angle){};
-
-
-    void setY(double value){
-        m_y = value;
-    }
-
-    void setAngle(double value){
-        m_angle = value;
-    }
-
-    void setX(double value){
-        m_x = value;
-    }
-    double x(){
-        return m_x;
-    }
-    double y(){
-        return m_y;
-    }
-    double angle(){
-        return m_angle;
-    }
+enum
+{
+  APROXIMA = 0,
+  DECIDE_DESVIO,
+  SOBE,
+  DESCE,
+  VOLTA
 };
 
+class Objective
+{
+  double m_x;
+  double m_y;
+  double m_angle;
 
-void printRobotInfo(const fira_message::sim_to_ref::Robot & robot) {
+public:
+  Objective(double t_x, double t_y, double t_angle) : m_x(t_x), m_y(t_y), m_angle(t_angle){};
 
-    printf("ID=%3d \n",robot.robot_id());
+  void setY(double value)
+  {
+    m_y = value;
+  }
 
-    printf(" POS=<%9.2f,%9.2f> \n",robot.x(),robot.y());
-    printf(" VEL=<%9.2f,%9.2f> \n",robot.vx(),robot.vy());
+  void setAngle(double value)
+  {
+    m_angle = value;
+  }
 
-    printf("ANGLE=%6.3f \n",robot.orientation());
-    printf("ANGLE VEL=%6.3f \n",robot.vorientation());
+  void setX(double value)
+  {
+    m_x = value;
+  }
+  double x()
+  {
+    return m_x;
+  }
+  double y()
+  {
+    return m_y;
+  }
+  double angle()
+  {
+    return m_angle;
+  }
+};
+
+void printRobotInfo(const fira_message::sim_to_ref::Robot &robot)
+{
+
+  printf("ID=%3d \n", robot.robot_id());
+
+  printf(" POS=<%9.2f,%9.2f> \n", robot.x(), robot.y());
+  printf(" VEL=<%9.2f,%9.2f> \n", robot.vx(), robot.vy());
+
+  printf("ANGLE=%6.3f \n", robot.orientation());
+  printf("ANGLE VEL=%6.3f \n", robot.vorientation());
 }
 
-double to180range(double angle) {
+double to180range(double angle)
+{
   angle = fmod(angle, 2 * M_PI);
-  if (angle < -M_PI) {
+  if (angle < -M_PI)
+  {
     angle = angle + 2 * M_PI;
-  } else if (angle > M_PI) {
+  }
+  else if (angle > M_PI)
+  {
     angle = angle - 2 * M_PI;
   }
   return angle;
 }
 
-double smallestAngleDiff(double target, double source) {
+double smallestAngleDiff(double target, double source)
+{
   double a;
-  a = fmod(target + 2*M_PI, 2 * M_PI) - fmod(source + 2*M_PI, 2 * M_PI);
+  a = fmod(target + 2 * M_PI, 2 * M_PI) - fmod(source + 2 * M_PI, 2 * M_PI);
 
-  if (a > M_PI) {
+  if (a > M_PI)
+  {
     a = a - 2 * M_PI;
-  } else if (a < -M_PI) {
+  }
+  else if (a < -M_PI)
+  {
     a = a + 2 * M_PI;
   }
   return a;
 }
 
-
-void PID(fira_message::sim_to_ref::Robot robot, Objective objective, int index,GrSim_Client* grSim_client)
+void PID(fira_message::sim_to_ref::Robot robot, Objective objective, int index, bool my_robots_are_yellow, GrSim_Client *grSim_client)
 {
-    double Kp = 20;
-    double Kd = 2.5;
-    static double lastError = 0;
+  double Kp = 20;
+  double Kd = 2.5;
+  static double lastError = 0;
 
-    double rightMotorSpeed;
-    double leftMotorSpeed;
+  double rightMotorSpeed;
+  double leftMotorSpeed;
 
-    bool reversed = false;
+  bool reversed = false;
 
-    double angle_rob = robot.orientation();
+  double angle_rob = robot.orientation();
 
+  double angle_obj = atan2(objective.y() - robot.y(), objective.x() - robot.x());
 
-    double angle_obj = atan2( objective.y() - robot.y(),  objective.x() - robot.x()) ;
+  double error = smallestAngleDiff(angle_rob, angle_obj);
 
+  if (fabs(error) > M_PI / 2.0 + M_PI / 20.0)
+  {
+    reversed = true;
+    angle_rob = to180range(angle_rob + M_PI);
+    // Calculates the error and reverses the front of the robot
+    error = smallestAngleDiff(angle_rob, angle_obj);
+  }
 
-    double error = smallestAngleDiff(angle_rob, angle_obj);
+  double motorSpeed = (Kp * error) + (Kd * (error - lastError)); // + 0.2 * sumErr;
+  lastError = error;
 
-    if(fabs(error) > M_PI/2.0 + M_PI/20.0) {
-          reversed = true;
-          angle_rob = to180range(angle_rob+M_PI);
-          // Calculates the error and reverses the front of the robot
-          error = smallestAngleDiff(angle_rob,angle_obj);
+  double baseSpeed = 30;
+
+  // Normalize
+  motorSpeed = motorSpeed > 30 ? 30 : motorSpeed;
+  motorSpeed = motorSpeed < -30 ? -30 : motorSpeed;
+
+  if (motorSpeed > 0)
+  {
+    leftMotorSpeed = baseSpeed;
+    rightMotorSpeed = baseSpeed - motorSpeed;
+  }
+  else
+  {
+    leftMotorSpeed = baseSpeed + motorSpeed;
+    rightMotorSpeed = baseSpeed;
+  }
+
+  if (reversed)
+  {
+    if (motorSpeed > 0)
+    {
+      leftMotorSpeed = -baseSpeed + motorSpeed;
+      rightMotorSpeed = -baseSpeed;
     }
-
-    double motorSpeed = (Kp*error) + (Kd * (error - lastError));// + 0.2 * sumErr;
-    lastError = error;
-
-
-
-    double baseSpeed = 30;
-
-    // Normalize
-    motorSpeed = motorSpeed > 30 ? 30 : motorSpeed;
-    motorSpeed = motorSpeed < -30 ? -30 : motorSpeed;
-
-    if (motorSpeed > 0) {
-      leftMotorSpeed = baseSpeed ;
-      rightMotorSpeed = baseSpeed - motorSpeed;
-    } else {
-      leftMotorSpeed = baseSpeed + motorSpeed;
-      rightMotorSpeed = baseSpeed;
+    else
+    {
+      leftMotorSpeed = -baseSpeed;
+      rightMotorSpeed = -baseSpeed - motorSpeed;
     }
-
-
-    if (reversed) {
-      if (motorSpeed > 0) {
-        leftMotorSpeed = -baseSpeed + motorSpeed;
-        rightMotorSpeed = -baseSpeed ;
-      } else {
-        leftMotorSpeed = -baseSpeed ;
-        rightMotorSpeed = -baseSpeed - motorSpeed;
-      }
-    }
-    grSim_client->sendCommand(leftMotorSpeed,rightMotorSpeed, false, index);
+  }
+  grSim_client->sendCommand(leftMotorSpeed, rightMotorSpeed, my_robots_are_yellow, index);
+  grSim_client->sendCommand(leftMotorSpeed, rightMotorSpeed, my_robots_are_yellow, index);
 }
 
-
-
-
-double x,y,ang;
-
+int estado = APROXIMA;
+int estadoant;
+double x, y, ang;
+double x_in, y_in;
 
 Objective defineObjective(fira_message::sim_to_ref::Robot robot, fira_message::sim_to_ref::Ball ball)
-{   
-    //Implementar a estratégia aqui
-    //Deve retornar o objetivo do robô
+{
+  double distancia = sqrt(pow(robot.x() - ball.x(), 2) + pow(robot.y() - ball.y(), 2));
+  //calculo da distancia entre o jogador e a bola, por meio do módulo do vetor diferença!
+  if (robot.x() < ball.x())
+  { //se o robô está atrás da bola
+    estado = APROXIMA;
+
+    if ((robot.y() < ball.y() - 5 || robot.y() > ball.y() + 5) && robot.x() >= 22)
+      //alinhando o robô com a bola!
+      return Objective(ball.x() - 10, ball.y(), M_PI / 4.); // x,y,angle
+
+    else if (distancia < 8 && 49 < robot.y() && 83 > robot.y())
+    {
+      //Se o robô 'está' com a bola e está indo em direção ao gol
+      return Objective(ball.x(), ball.y(), M_PI / 4.);
+    }
+    else if (distancia < 8 && (43 > robot.y() || 83 < robot.y()))
+    {
+      //Se o robô 'está' com a bola e NÃO está indo em direção ao gol
+      return Objective(ball.x(), 66, M_PI / 4.);
+    }
+    else
+      return Objective(ball.x(), ball.y(), M_PI / 4.);
+    //no mais, corre atrás da bola...
+  }
+  else
+  {
+    switch (estado)
+    {
+    case APROXIMA:
+      //corre atras da bola ate chegar perto
+      if (distancia < 10)
+        estado = DECIDE_DESVIO;
+      x = ball.x() + 10;
+      y = ball.y();
+      ang = 0; // x,y,angle
+      break;
+
+    case DECIDE_DESVIO:
+      //desvia da bola, para voltar a ficar atrás dela
+      if (robot.y() - 10 > 6)
+        estado = SOBE;
+      else
+        estado = DESCE;
+
+      break;
+
+    case SOBE:
+      estadoant = SOBE;
+      estado = VOLTA;
+      x = ball.x() + 10;
+      y = ball.y() - 8;
+      x_in = robot.x();
+      y_in = robot.y();
+      ang = M_PI / 2.0; // x,y,angle
+
+      break;
+    case DESCE:
+      estadoant = DESCE;
+      estado = VOLTA;
+      x = ball.x() + 10;
+      y = ball.y() + 8;
+      x_in = robot.x();
+      y_in = robot.y();
+      ang = M_PI / 2.0; // x,y,angle
+
+      break;
+    case VOLTA:
+      if (robot.x() <= x_in - 16 || robot.x() <= 12)
+      {
+        //se ele andou 16 ou tá no limite do mapa
+        //fazendo_manobra = 0;
+        estado = APROXIMA;
+      }
+      if (estadoant == DESCE)
+      {
+        x = ball.x() - 16;
+        y = ball.y() + 8;
+        ang = M_PI; // x,y,angle */
+      }
+      else
+      {
+        x = ball.x() - 16;
+        y = ball.y() - 8;
+        ang = M_PI; // x,y,angle */
+      }
+      break;
+    }
+
     return Objective(x, y, ang);
+  }
 }
 
-int main(int argc, char *argv[]){
-    (void)argc;
-    (void)argv;
-    //define your team color here
-    bool my_robots_are_yellow = false;
-    
-    // the ip address need to be in the range 224.0.0.0 through 239.255.255.255
-    RoboCupSSLClient *visionClient = new RoboCupSSLClient("224.5.23.2", 10002);
-    visionClient->open(false);
+int main(int argc, char *argv[])
+{
+  (void)argc;
+  (void)argv;
+  //define your team color here
+  bool my_robots_are_yellow = false;
 
+  // the ip address need to be in the range 224.0.0.0 through 239.255.255.255
+  RoboCupSSLClient *visionClient = new RoboCupSSLClient("224.0.0.1", 10002);
+  visionClient->open(false);
 
-    GrSim_Client *commandClient = new GrSim_Client();
-    
+  GrSim_Client *commandClient = new GrSim_Client();
 
-    fira_message::sim_to_ref::Environment packet;
+  fira_message::sim_to_ref::Environment packet;
 
-    while(true) {
-        if (visionClient->receive(packet)) {
-            printf("-----Received Wrapper Packet---------------------------------------------\n");
-            //see if the packet contains a robot detection frame:
-            if (packet.has_frame()) {
-                fira_message::sim_to_ref::Frame detection = packet.frame();
+  while (true)
+  {
+    if (visionClient->receive(packet))
+    {
+      printf("-----Received Wrapper Packet---------------------------------------------\n");
+      //see if the packet contains a robot detection frame:
+      if (packet.has_frame())
+      {
+        fira_message::sim_to_ref::Frame detection = packet.frame();
 
+        int robots_blue_n = detection.robots_blue_size();
+        int robots_yellow_n = detection.robots_yellow_size();
+        double width, length;
+        width = 1.3 / 2.0;
+        length = 1.7 / 2.0;
 
+        //Ball info:
 
-                int robots_blue_n =  detection.robots_blue_size();
-                int robots_yellow_n =  detection.robots_yellow_size();
-                double width,length;
-                width = 1.3/2.0;
-                length = 1.7/2.0;
+        fira_message::sim_to_ref::Ball ball = detection.ball();
+        ball.set_x((length + ball.x()) * 100);
+        ball.set_y((width + ball.y()) * 100);
+        printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
 
-                //Ball info:
+        //Blue robot info:
+        for (int i = 0; i < robots_blue_n; i++)
+        {
+          fira_message::sim_to_ref::Robot robot_B = detection.robots_blue(i);
+          robot_B.set_x((length + robot_B.x()) * 100); //convertendo para centimetros
+          robot_B.set_y((width + robot_B.y()) * 100);
+          robot_B.set_orientation(to180range(robot_B.orientation()));
+          printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
+          printRobotInfo(robot_B);
 
-                fira_message::sim_to_ref::Ball ball = detection.ball();
-                ball.set_x((length+ball.x())*100);
-                ball.set_y((width+ball.y())*100);
-                printf("-Ball:  POS=<%9.2f,%9.2f> \n",ball.x(),ball.y());
+          Objective o = defineObjective(robot_B, ball);
+          PID(robot_B, o, i, false, commandClient);
+        }
 
+        //Yellow robot info:
+        for (int i = 0; i < robots_yellow_n; i++)
+        {
+          fira_message::sim_to_ref::Robot robot_Y = detection.robots_yellow(i);
+          robot_Y.set_x((length + robot_Y.x()) * 100); //convertendo para centimetros
+          robot_Y.set_y((width + robot_Y.y()) * 100);
+          robot_Y.set_orientation(to180range(robot_Y.orientation()));
+          printf("-Robot(B) (%2d/%2d): ", i + 1, robots_yellow_n);
+          printRobotInfo(robot_Y);
 
+          Objective o = defineObjective(robot_Y, ball);
+          PID(robot_Y, o, i, true, commandClient);
+        }
+      }
 
-                //Blue robot info:
-                for (int i = 0; i < robots_blue_n; i++) {
-                    fira_message::sim_to_ref::Robot robot = detection.robots_blue(i);
-                    robot.set_x((length+robot.x())*100);//convertendo para centimetros
-                    robot.set_y((width+robot.y())*100);
-                    robot.set_orientation(to180range(robot.orientation()));
-                    printf("-Robot(B) (%2d/%2d): ",i+1, robots_blue_n);
-                    printRobotInfo(robot);
-                    if(i==0){
-                        Objective o = defineObjective(robot,ball);
-                        PID(robot,o,i,commandClient);
-                    }
-                }
-
-                //Yellow robot info:
-                /*for (int i = 0; i < robots_yellow_n; i++) {
-                    fira_message::sim_to_ref::Robot robot = detection.robots_yellow(i);
-                    printf("-Robot(Y) (%2d/%2d): ",i+1, robots_yellow_n);
-                    printRobotInfo(robot);
-                }*/
-
-            }
-
-            //see if packet contains geometry data:
-            /*if (packet.has_field()){
+      //see if packet contains geometry data:
+      /*if (packet.has_field()){
                 printf("-[Geometry Data]-------\n");
 
                 const fira_message::sim_to_ref::Field & field = packet.field();
@@ -222,10 +337,8 @@ int main(int argc, char *argv[]){
 
 
             }*/
-        }
     }
+  }
 
-    return 0;
+  return 0;
 }
-
-

@@ -18,14 +18,10 @@ def main():
         # simulator.sendCommandsPacket(10, 10)
 
         # Envia os objetivos do time azul
-        for i in range(30, 10, -1):
-            simulator.send_objectives(i , -i, is_yellow = False)
-            sleep(1)
+        simulator.send_objectives(10 , -10, is_yellow = False)
 
         # Envia os objetivos do time amarelo
-        for i in range(10, 30, 1):
-            simulator.send_objectives(i, -i, is_yellow = True)
-            sleep(1)
+        simulator.send_objectives(10, -10, is_yellow = True)
 
 if __name__ == '__main__':
     main()

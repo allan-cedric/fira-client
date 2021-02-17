@@ -7,51 +7,7 @@
 #include "util/timer.h"
 #include "util/util.h"
 
-enum
-{
-  APROXIMA = 0,
-  DECIDE_DESVIO,
-  SOBE,
-  DESCE,
-  VOLTA
-};
-
-class Objective
-{
-  double m_x;
-  double m_y;
-  double m_angle;
-
-public:
-  Objective(double t_x, double t_y, double t_angle) : m_x(t_x), m_y(t_y), m_angle(t_angle){};
-
-  void setY(double value)
-  {
-    m_y = value;
-  }
-
-  void setAngle(double value)
-  {
-    m_angle = value;
-  }
-
-  void setX(double value)
-  {
-    m_x = value;
-  }
-  double x()
-  {
-    return m_x;
-  }
-  double y()
-  {
-    return m_y;
-  }
-  double angle()
-  {
-    return m_angle;
-  }
-};
+#include "header.h"
 
 void printRobotInfo(const fira_message::sim_to_ref::Robot &robot)
 {

@@ -62,7 +62,7 @@ double vec_distance(float_pair p, float_pair q) {
 
 float_pair vec_normalize(float_pair p) {
     double length = vec_length(p);
-    double d = length?length:1e-6; // avoid divide by 0
+    double d = length?length:1e-6; // avoid divi, P, j, Q) {ide by 0
     
     float_pair normalized;
     normalized.x = p.x / d;
@@ -141,4 +141,13 @@ bool segment_circle_intersection(float_pair A, float_pair B, circle_t C) {
     double d = vec_distance(C.center, E);
 
     return (d < C.radius);
+}
+
+bool line_of_sight(vector<circle_t> circles, int i, float_pair P, int j, float_pair Q) {
+    for (int k = 0; k < circles.size(); k++) {
+        if (k != i && k != j && segment_circle_intersection(P, Q, circles[k])) 
+            return false;
+
+    }
+    return true;
 }

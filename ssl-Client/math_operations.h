@@ -29,6 +29,16 @@ public:
     }
 };
 
+typedef struct{
+    float_pair coord;
+    int circle_index;
+} node_t;
+
+typedef struct {
+    node_t n1, n2;
+} edge_t;
+
+
 // from lib.js:
 
 float_pair vec_polar(double r, double a);
@@ -62,3 +72,5 @@ vector<float_pair> InternalBitangents(circle_t A, circle_t B);
 vector<float_pair> ExternalBitangents(circle_t A, circle_t B);
 
 bool segment_circle_intersection(float_pair A, float_pair B, circle_t C);
+
+bool line_of_sight(vector<circle_t> circles, int i, float_pair P, int j, float_pair Q);

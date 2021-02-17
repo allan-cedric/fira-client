@@ -391,7 +391,7 @@ int main(int argc, char *argv[])
         printRobotInfo(robot_B);
 
         Objective o = defineObjectiveBlue(robot_B, ball);
-        PID(robot_B, o, i, !my_robots_are_yellow, commandClient);
+        PID(robot_B, o, i, my_robots_are_yellow, commandClient);
       }
 
       //Yellow robot info:
@@ -404,7 +404,7 @@ int main(int argc, char *argv[])
         printRobotInfo(robot_Y);
 
         Objective o = defineObjectiveYellow(robot_Y, ball);
-        PID(robot_Y, o, i, my_robots_are_yellow, commandClient);
+        PID(robot_Y, o, i, !my_robots_are_yellow, commandClient);
       }
     } else {
       // pass

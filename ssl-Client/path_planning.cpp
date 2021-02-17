@@ -1,6 +1,4 @@
-#include "math_operations.h"
-#include "net/robocup_ssl_client.h"
-#include "header.h"
+#include "path_planning.h"
 
 // nodes_and_surfing_edges: function() { return generate_nodes_and_surfing_edges(this.circles); },
 // surfing_edges: function() { return this.nodes_and_surfing_edges.edges; },
@@ -12,23 +10,17 @@
 //                                     this.nodes, this.edges); }
 
 // try to add edge from circle i point P to circle j point Q
-void add_edge(vector<edge_t> &surfing_edges, vector<circle_t> circles, vector<node_t> &nodes, int i, float_pair P,
-              int j, float_pair Q)
+void add_edge(vector<edge_t> &surfing_edges, vector<circle_t> circles, vector<node_t> &nodes, int i,
+              float_pair P, int j, float_pair Q)
 {
     if (!line_of_sight(circles, i, P, j, Q))
-    {
         return;
-    }
 
     // (i, P) (j, Q)
-    node_t n1;
-    n1.coord = {.x = P.x, .y = P.y};
-    n1.circle_index = i;
+    node_t n1 = {.coord = {.x = P.x, .y = P.y}, .circle_index = i};
     nodes.push_back(n1); // we need to store them nodes
 
-    node_t n2;
-    n2.coord = {.x = Q.x, .y = Q.y};
-    n2.circle_index = j;
+    node_t n2 = {.coord = {.x = Q.x, .y = Q.y}, .circle_index = j};
     nodes.push_back(n2);
 
     edge_t edge = {.n1 = n1, .n2 = n2};
@@ -38,19 +30,16 @@ void add_edge(vector<edge_t> &surfing_edges, vector<circle_t> circles, vector<no
 
 node_t circle_to_node(int circle_index, vector<node_t> nodes)
 {
-
     vector<node_t> nodes_on_circle;
 
-    for (auto node: nodes){
+    for (auto node : nodes)
+    {
         if (node.circle_index == circle_index)
             nodes_on_circle.push_back(node);
-
     }
 
     if (nodes_on_circle.size() != 1)
-    {
-        printf("start/goal should be on r=0 circle");
-    }
+        printf("start/goal should be on r=0 circle\n");
 
     return nodes_on_circle[0];
 }
@@ -58,27 +47,24 @@ node_t circle_to_node(int circle_index, vector<node_t> nodes)
 bool node_comparison(node_t N, node_t M)
 {
     if (N.circle_index == M.circle_index)
+    {
         if (N.coord.x == M.coord.x && N.coord.y == M.coord.y)
             return true;
+    }
 
     return false;
 }
-
 
 vector<node_t> neighbors(node_t node, vector<edge_t> edges)
 {
     vector<node_t> results;
 
-    for (auto edge: edges)
+    for (auto edge : edges)
     {
-        if (node_comparison(edge.n1,node))
-        {
+        if (node_comparison(edge.n1, node))
             results.push_back(edge.n2);
-        }
         if (node_comparison(edge.n2, node))
-        {
             results.push_back(edge.n1);
-        }
     }
     return results;
 }
@@ -90,7 +76,7 @@ double edge_cost(node_t a, node_t b, vector<circle_t> circles)
     // if these nodes are in the same circle
     {
         // hugging edge
-        
+
         float_pair center = circles[a.circle_index].center;
 
         double a_angle = vec_facing(center, a.coord);
@@ -111,9 +97,7 @@ double heuristic(node_t node)
     //return vec_distance(goal_node, node);
 }
 
-
-Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots,
-               fira_message::sim_to_ref::Robot &my_robot,
+Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots, fira_message::sim_to_ref::Robot &my_robot, 
                double x, double y, double theta)
 {
 
@@ -159,14 +143,13 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots,
     vector<edge_t> surfing_edges;
     vector<node_t> nodes;
 
-    int i;
-    for (i = 0; i < circles.size(); i++)
+    for (int i = 0; i < circles.size(); i++)
         for (int j = 0; j < i; j++)
         {
             auto internal = InternalBitangents(circles[i], circles[j]);
             float_pair C = internal[0];
-            float_pair E = internal[1];
-            float_pair D = internal[2];
+            float_pair D = internal[1];
+            float_pair E = internal[2];
             float_pair F = internal[3];
 
             add_edge(surfing_edges, circles, nodes, i, C, j, F);
@@ -175,8 +158,8 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots,
 
             auto external = ExternalBitangents(circles[i], circles[j]);
             C = external[0];
-            E = external[1];
-            D = external[2];
+            D = external[1];
+            E = external[2];
             F = external[3];
 
             if (circles[i].radius != 0 || circles[j].radius != 0)
@@ -187,15 +170,11 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots,
         }
 
     // generating hugging_edges (circle arcs)
-
     vector<vector<node_t>> nodes_in_each_circle(circles.size());
 
+    // get, for each circle, all the nodes it has
     for (auto node : nodes)
-    {
-        // get, for each circle, all the nodes it has
-
         nodes_in_each_circle[node.circle_index].push_back(node);
-    }
 
     vector<edge_t> hugging_edges;
 
@@ -203,12 +182,10 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots,
     {
         for (int i = 0; i < circle_nodes.size(); i++)
         {
+            // for every circle, make an edge for each pair of nodes it has
             for (int j = 0; j < i; j++)
             {
-                // for every circle, make an edge for each pair of nodes it has
-
                 edge_t edge = {.n1 = circle_nodes[i], .n2 = circle_nodes[j]};
-
                 hugging_edges.push_back(edge);
             }
         }
@@ -217,13 +194,11 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots,
     // now, storing all the edges together:
     surfing_edges.insert(surfing_edges.end(), hugging_edges.begin(), hugging_edges.end());
 
-
     // FINDING THE PATH, FINALLY?
-
     node_t start_node = circle_to_node(circles.size() - 2, nodes);
     node_t goal_node = circle_to_node(circles.size() - 1, nodes);
 
-    let frontier = [[start_node, 0]];
+    /*let frontier = [[start_node, 0]];
     let came_from = new Map([[start_node, null]]);
     let cost_so_far = new Map([[start_node, 0]]);
 
@@ -245,5 +220,5 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots,
                 frontier.push([ next, new_cost + heuristic(next), vec_distance(goal_node, next) ]);
             }
         }
-    }
+    }*/
 }

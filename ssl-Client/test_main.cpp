@@ -357,7 +357,7 @@ int main(int argc, char *argv[])
             }
 
             //Blue robot info:
-            for (int i = 0; i < robots_blue_n; i++)
+           /* for (int i = 0; i < robots_blue_n; i++)
             {
                 fira_message::sim_to_ref::Robot robot_blue = detection.robots_blue(i);
                 robot_B.set_x((length + robot_B.x()) * 100); //convertendo para centimetros
@@ -368,7 +368,7 @@ int main(int argc, char *argv[])
 
                 Objective o = defineObjectiveBlue(robot_B, ball);
                 PID(robot_B, o, i, my_robots_are_yellow, commandClient);
-            }
+            }*/
         }
         else
         {

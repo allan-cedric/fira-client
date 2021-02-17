@@ -8,36 +8,42 @@
 
 // from lib.js:
 
-float_pair vec_polar(double r, double a) {
+float_pair vec_polar(double r, double a)
+{
     float_pair polar;
     polar.x = r * cos(a);
     polar.y = r * sin(a);
     return polar;
 }
 
-float_pair vec_add(float_pair p, float_pair q) {
+float_pair vec_add(float_pair p, float_pair q)
+{
     float_pair sum;
     sum.x = p.x + q.x;
     sum.y = p.y + q.y;
     return sum;
 }
 
-float_pair vec_sub(float_pair p, float_pair q) {
+float_pair vec_sub(float_pair p, float_pair q)
+{
     float_pair diff;
     diff.x = p.x - q.x;
     diff.y = p.y - q.y;
     return diff;
 }
 
-double vec_dot(float_pair p, float_pair q) {
+double vec_dot(float_pair p, float_pair q)
+{
     return (p.x * q.x + p.y * q.y);
 }
 
-double vec_cross(float_pair p, float_pair q) {
+double vec_cross(float_pair p, float_pair q)
+{
     return p.x * q.y - p.y * q.x;
 }
 
-float_pair vec_interpolate(float_pair p, float_pair q, double t) {
+float_pair vec_interpolate(float_pair p, float_pair q, double t)
+{
     float_pair interpolation;
     interpolation.x = p.x + (q.x - p.x) * t;
     interpolation.y = p.y + (q.y - p.y) * t;
@@ -45,25 +51,29 @@ float_pair vec_interpolate(float_pair p, float_pair q, double t) {
     return interpolation;
 }
 
-double vec_facing(float_pair p, float_pair q) {
+double vec_facing(float_pair p, float_pair q)
+{
     double dx = q.x - p.x;
     double dy = q.y - p.y;
 
     return atan2(dy, dx);
 }
 
-double vec_length(float_pair p) {
-    return sqrt(p.x*p.x + p.y*p.y);
+double vec_length(float_pair p)
+{
+    return sqrt(p.x * p.x + p.y * p.y);
 }
 
-double vec_distance(float_pair p, float_pair q) {
+double vec_distance(float_pair p, float_pair q)
+{
     return vec_length(vec_sub(p, q));
 }
 
-float_pair vec_normalize(float_pair p) {
+float_pair vec_normalize(float_pair p)
+{
     double length = vec_length(p);
-    double d = length?length:1e-6; // avoid divi, P, j, Q) {ide by 0
-    
+    double d = length ? length : 1e-6; // avoid divi, P, j, Q) {ide by 0
+
     float_pair normalized;
     normalized.x = p.x / d;
     normalized.y = p.y / d;
@@ -71,13 +81,15 @@ float_pair vec_normalize(float_pair p) {
     return normalized;
 }
 
-double angle_difference(double a, double b) {
+double angle_difference(double a, double b)
+{
     return fmod(fabs(b - a), (2 * M_PI));
 }
 
 // from belt_problem.js:
 
-float_pair direction_step(float_pair start, double distance, double angle) {
+float_pair direction_step(float_pair start, double distance, double angle)
+{
     return vec_add(start, vec_polar(distance, angle));
 }
 
@@ -87,21 +99,21 @@ vector<float_pair> InternalBitangents(circle_t A, circle_t B)
     double cos_angle = (A.radius + B.radius) / P;
     double theta = acos(cos_angle);
 
-    double AB_angle = vec_facing(A.center, B.center); 
-    double BA_angle = vec_facing(B.center, A.center); 
-        
+    double AB_angle = vec_facing(A.center, B.center);
+    double BA_angle = vec_facing(B.center, A.center);
+
     float_pair C = direction_step(A.center, A.radius, AB_angle - theta);
     float_pair D = direction_step(A.center, A.radius, AB_angle + theta);
     float_pair E = direction_step(B.center, B.radius, BA_angle + theta);
     float_pair F = direction_step(B.center, B.radius, BA_angle - theta);
 
-    vector<float_pair> CEDF;
-    CEDF.push_back(C);
-    CEDF.push_back(E);
-    CEDF.push_back(D);
-    CEDF.push_back(F);
+    vector<float_pair> CDEF;
+    CDEF.push_back(C);
+    CDEF.push_back(D);
+    CDEF.push_back(E);
+    CDEF.push_back(F);
 
-    return CEDF;
+    return CDEF;
 }
 
 vector<float_pair> ExternalBitangents(circle_t A, circle_t B)
@@ -110,23 +122,24 @@ vector<float_pair> ExternalBitangents(circle_t A, circle_t B)
     double cos_angle = (A.radius - B.radius) / P;
     double theta = acos(cos_angle);
 
-    double AB_angle = vec_facing(A.center, B.center); 
-        
+    double AB_angle = vec_facing(A.center, B.center);
+
     float_pair C = direction_step(A.center, A.radius, AB_angle - theta);
     float_pair D = direction_step(A.center, A.radius, AB_angle + theta);
     float_pair E = direction_step(B.center, B.radius, AB_angle + theta);
     float_pair F = direction_step(B.center, B.radius, AB_angle - theta);
 
-    vector<float_pair> CEDF;
-    CEDF.push_back(C);
-    CEDF.push_back(E);
-    CEDF.push_back(D);
-    CEDF.push_back(F);
+    vector<float_pair> CDEF;
+    CDEF.push_back(C);
+    CDEF.push_back(D);
+    CDEF.push_back(E);
+    CDEF.push_back(F);
 
-    return CEDF;
+    return CDEF;
 }
 
-bool segment_circle_intersection(float_pair A, float_pair B, circle_t C) {
+bool segment_circle_intersection(float_pair A, float_pair B, circle_t C)
+{
 
     float_pair CA = vec_sub(C.center, A), BA = vec_sub(B, A);
 
@@ -143,11 +156,12 @@ bool segment_circle_intersection(float_pair A, float_pair B, circle_t C) {
     return (d < C.radius);
 }
 
-bool line_of_sight(vector<circle_t> circles, int i, float_pair P, int j, float_pair Q) {
-    for (int k = 0; k < circles.size(); k++) {
-        if (k != i && k != j && segment_circle_intersection(P, Q, circles[k])) 
+bool line_of_sight(vector<circle_t> circles, int i, float_pair P, int j, float_pair Q)
+{
+    for (int k = 0; k < circles.size(); k++)
+    {
+        if (k != i && k != j && segment_circle_intersection(P, Q, circles[k]))
             return false;
-
     }
     return true;
 }

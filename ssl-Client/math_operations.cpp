@@ -4,34 +4,9 @@
 
 // Translated to C++ by Gabriel Hishida for Yapira UFPR
 
-#define _USE_MATH_DEFINES
-#include <cmath>
-#include <vector>
-
-using namespace std;
-
-
-typedef struct {
-    double x,y;
-} float_pair;
-
-#define RADIUS 8.0
-
-class circle_t {
-    public:
-        float_pair center;
-        float radius = 8.0;
-        circle_t(float_pair center);
-};
-
-circle_t::circle_t(float_pair center)
-{
-    this->center = center;
-    this->radius = RADIUS;
-}
+#include "math_operations.h"
 
 // from lib.js:
-
 
 float_pair vec_polar(double r, double a) {
     float_pair polar;
@@ -49,8 +24,8 @@ float_pair vec_add(float_pair p, float_pair q) {
 
 float_pair vec_sub(float_pair p, float_pair q) {
     float_pair diff;
-    diff.x = p.x + q.x;
-    diff.y = p.y + q.y;
+    diff.x = p.x - q.x;
+    diff.y = p.y - q.y;
     return diff;
 }
 
@@ -149,4 +124,21 @@ vector<float_pair> ExternalBitangents(circle_t A, circle_t B)
     CEDF.push_back(F);
 
     return CEDF;
+}
+
+bool segment_circle_intersection(float_pair A, float_pair B, circle_t C) {
+
+    float_pair CA = vec_sub(C.center, A), BA = vec_sub(B, A);
+
+    double u = (CA.x * BA.x + CA.y * BA.y) / (BA.x * BA.x + BA.y * BA.y);
+
+    if (u < 0.0)
+        u = 0.0;
+    else if (u > 1.0)
+        u = 1.0;
+
+    float_pair E = vec_interpolate(A, B, u);
+    double d = vec_distance(C.center, E);
+
+    return (d < C.radius);
 }

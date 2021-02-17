@@ -144,6 +144,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots, fira_mess
     vector<node_t> nodes;
 
     for (int i = 0; i < circles.size(); i++)
+    {
         for (int j = 0; j < i; j++)
         {
             auto internal = InternalBitangents(circles[i], circles[j]);
@@ -168,6 +169,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots, fira_mess
             if (circles[i].radius != 0 && circles[j].radius != 0)
                 add_edge(surfing_edges, circles, nodes, i, D, j, E);
         }
+    }
 
     // generating hugging_edges (circle arcs)
     vector<vector<node_t>> nodes_in_each_circle(circles.size());

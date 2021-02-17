@@ -6,10 +6,31 @@
 
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <vector>
+
+using namespace std;
+
 
 typedef struct {
     double x,y;
 } float_pair;
+
+#define RADIUS 8.0
+
+class circle_t {
+    public:
+        float_pair center;
+        float radius = 8.0;
+        circle_t(float_pair center);
+};
+
+circle_t::circle_t(float_pair center)
+{
+    this->center = center;
+    this->radius = RADIUS;
+}
+
+// from lib.js:
 
 
 float_pair vec_polar(double r, double a) {
@@ -77,4 +98,55 @@ float_pair vec_normalize(float_pair p) {
 
 double angle_difference(double a, double b) {
     return fmod(fabs(b - a), (2 * M_PI));
+}
+
+// from belt_problem.js:
+
+float_pair direction_step(float_pair start, double distance, double angle) {
+    return vec_add(start, vec_polar(distance, angle));
+}
+
+vector<float_pair> InternalBitangents(circle_t A, circle_t B)
+{
+    double P = vec_distance(A.center, B.center);
+    double cos_angle = (A.radius + B.radius) / P;
+    double theta = acos(cos_angle);
+
+    double AB_angle = vec_facing(A.center, B.center); 
+    double BA_angle = vec_facing(B.center, A.center); 
+        
+    float_pair C = direction_step(A.center, A.radius, AB_angle - theta);
+    float_pair D = direction_step(A.center, A.radius, AB_angle + theta);
+    float_pair E = direction_step(B.center, B.radius, BA_angle + theta);
+    float_pair F = direction_step(B.center, B.radius, BA_angle - theta);
+
+    vector<float_pair> CEDF;
+    CEDF.push_back(C);
+    CEDF.push_back(E);
+    CEDF.push_back(D);
+    CEDF.push_back(F);
+
+    return CEDF;
+}
+
+vector<float_pair> ExternalBitangents(circle_t A, circle_t B)
+{
+    double P = vec_distance(A.center, B.center);
+    double cos_angle = (A.radius - B.radius) / P;
+    double theta = acos(cos_angle);
+
+    double AB_angle = vec_facing(A.center, B.center); 
+        
+    float_pair C = direction_step(A.center, A.radius, AB_angle - theta);
+    float_pair D = direction_step(A.center, A.radius, AB_angle + theta);
+    float_pair E = direction_step(B.center, B.radius, AB_angle + theta);
+    float_pair F = direction_step(B.center, B.radius, AB_angle - theta);
+
+    vector<float_pair> CEDF;
+    CEDF.push_back(C);
+    CEDF.push_back(E);
+    CEDF.push_back(D);
+    CEDF.push_back(F);
+
+    return CEDF;
 }

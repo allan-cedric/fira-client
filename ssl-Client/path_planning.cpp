@@ -1,11 +1,5 @@
 #include <math.h>
-
-#define RADIUS 8
-
-typedef struct {
-    double x, y;
-    int radius;
-}  circle_t;
+#include "math_operations.cpp" // include em .cpp KKKKK
 
 typedef struct {
     double x, y;
@@ -24,8 +18,8 @@ int main()
         circle_t circle;
         robot_t robot = robots[i]; // from a list of robots
 
-        circle.x = robot.x;
-        circle.y = robot.y;
+        circle.center.x = robot.x;
+        circle.center.y = robot.y;
         circle.radius = RADIUS;
 
         circles[i] = circle;

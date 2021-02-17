@@ -1,55 +1,45 @@
-#include "net/robocup_ssl_client.h"
-#include <stdio.h>
+#include <math.h>
 
-#define OCCUPIED 'X'
-#define FREE '-'
+#define RADIUS 8
 
-char grid[150][130];
+typedef struct {
+    double x, y;
+    int radius;
+}  circle_t;
 
-void free_grid(char grid[][130])
+typedef struct {
+    double x, y;
+}  robot_t;
+
+
+int main()
 {
-    int i,j;
-    for (i = 0; i <= 149; i++)
-        for(j = 0; j <= 129; j++)
-        {
-            grid[i][j] = FREE;
-        }
-}
+    int robots_n = 5; // all robots - 1
 
+    circle_t circles[robots_n];
+    robot_t robots[robots_n]; 
 
-void map_robot(char grid[][130], const fira_message::sim_to_ref::Robot &robot)
-{
-    float raw_x = robot.x();
-    float raw_y = robot.y();
+    // Generating array of circles
+    for(int i = 0; i < robots_n; i++) {
+        circle_t circle;
+        robot_t robot = robots[i]; // from a list of robots
 
-    // printf("%f, %f\n", raw_x, raw_y);
+        circle.x = robot.x;
+        circle.y = robot.y;
+        circle.radius = RADIUS;
 
-    int grid_x = int(raw_x);
-    int grid_y = int(raw_y);
+        circles[i] = circle;
+    }    
 
-    // printf("%d, %d\n", grid_x, grid_y);
+    int circles_n = robots_n;
 
-
-    int i,j;
-    for(i = grid_x -5; i <= grid_x + 5; i++)
-        for(j = grid_y -5; j <= grid_y + 5; j++)
-        {
-            if ((0 <= i && i <= 149) && (0 <= j && j <= 129))
-                grid[i][j] = OCCUPIED;
-        }
-
-}
-
-void print_grid(char grid[][130])
-{
-    int i,j;
-    for (i = 0; i <= 149; i++)
-    {
-        for(j = 0; j <= 129; j++)
-        {
-            printf("%c ", grid[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
+    // Getting bitangents
+    for (int i = 0; i < circles_n; i++) 
+        for (int j = 0; j < i; j++) {
+            var internal = new InternalBitangents(circles[i], circles[j]);
+            add_edge(i, internal.C, j, internal.F);
+            if (circles[i].r != 0 && circles[j].r != 0) { add_edge(i, internal.D, j, internal.E); }
+            var external = new ExternalBitangents(circles[i], circles[j]);
+            if (circles[i].r != 0 || circles[j].r != 0) { add_edge(i, external.C, j, external.F); }
+            if (circles[i].r != 0 && circles[j].r != 0) { add_edge(i, external.D, j, external.E); }
 }

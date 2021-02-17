@@ -19,7 +19,7 @@ void GrSim_Client::sendCommand(double leftWheelVel, double rightWheelVel, bool m
     
     
     fira_message::sim_to_ref::Packet packet;
-    char Sentence [1000];
+    // char Sentence [1000];
 
     fira_message::sim_to_ref::Command* command = packet.mutable_cmd()->add_robot_commands();
     command->set_id(id);

@@ -364,72 +364,54 @@ int main(int argc, char *argv[])
 
   fira_message::sim_to_ref::Environment packet;
 
-  while (true)
-  {
-    if (visionClient->receive(packet))
-    {
-      printf("-----Received Wrapper Packet---------------------------------------------\n");
-      //see if the packet contains a robot detection frame:
-      if (packet.has_frame())
-      {
-        fira_message::sim_to_ref::Frame detection = packet.frame();
+  while (true){
+    if (visionClient->receive(packet) && packet.has_frame()){
+      fira_message::sim_to_ref::Frame detection = packet.frame();
 
-        int robots_blue_n = detection.robots_blue_size();
-        int robots_yellow_n = detection.robots_yellow_size();
-        double width, length;
-        width = 1.3 / 2.0;
-        length = 1.7 / 2.0;
+      int robots_blue_n = detection.robots_blue_size();
+      int robots_yellow_n = detection.robots_yellow_size();
+      double width, length;
+      width = 1.3 / 2.0;
+      length = 1.7 / 2.0;
 
-        //Ball info:
+      //Ball info:
 
-        fira_message::sim_to_ref::Ball ball = detection.ball();
-        ball.set_x((length + ball.x()) * 100);
-        ball.set_y((width + ball.y()) * 100);
-        printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
+      fira_message::sim_to_ref::Ball ball = detection.ball();
+      ball.set_x((length + ball.x()) * 100);
+      ball.set_y((width + ball.y()) * 100);
+      printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
 
-        //Blue robot info:
-        for (int i = 0; i < robots_blue_n; i++)
-        {
-          fira_message::sim_to_ref::Robot robot_B = detection.robots_blue(i);
-          robot_B.set_x((length + robot_B.x()) * 100); //convertendo para centimetros
-          robot_B.set_y((width + robot_B.y()) * 100);
-          robot_B.set_orientation(to180range(robot_B.orientation()));
-          printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
-          printRobotInfo(robot_B);
+      //Blue robot info:
+      for (int i = 0; i < robots_blue_n; i++){
+        fira_message::sim_to_ref::Robot robot_B = detection.robots_blue(i);
+        robot_B.set_x((length + robot_B.x()) * 100); //convertendo para centimetros
+        robot_B.set_y((width + robot_B.y()) * 100);
+        robot_B.set_orientation(to180range(robot_B.orientation()));
+        printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
+        printRobotInfo(robot_B);
 
-          Objective o = defineObjectiveBlue(robot_B, ball);
-          PID(robot_B, o, i, false, commandClient);
-        }
-
-        //Yellow robot info:
-        for (int i = 0; i < robots_yellow_n; i++)
-        {
-          fira_message::sim_to_ref::Robot robot_Y = detection.robots_yellow(i);
-          robot_Y.set_x((length + robot_Y.x()) * 100); //convertendo para centimetros
-          robot_Y.set_y((width + robot_Y.y()) * 100);
-          robot_Y.set_orientation(to180range(robot_Y.orientation()));
-          printf("-Robot(Y) (%2d/%2d): ", i + 1, robots_yellow_n);
-          printRobotInfo(robot_Y);
-
-          Objective o = defineObjectiveYellow(robot_Y, ball);
-          PID(robot_Y, o, i, true, commandClient);
-        }
+        Objective o = defineObjectiveBlue(robot_B, ball);
+        PID(robot_B, o, i, false, commandClient);
       }
 
-      //see if packet contains geometry data:
-      /*if (packet.has_field()){
-                printf("-[Geometry Data]-------\n");
+      //Yellow robot info:
+      for (int i = 0; i < robots_yellow_n; i++){
+        fira_message::sim_to_ref::Robot robot_Y = detection.robots_yellow(i);
+        robot_Y.set_x((length + robot_Y.x()) * 100); //convertendo para centimetros
+        robot_Y.set_y((width + robot_Y.y()) * 100);
+        robot_Y.set_orientation(to180range(robot_Y.orientation()));
+        printf("-Robot(Y) (%2d/%2d): ", i + 1, robots_yellow_n);
+        printRobotInfo(robot_Y);
 
-                const fira_message::sim_to_ref::Field & field = packet.field();
-                printf("Field Dimensions:\n");
-                printf("  -field_length=%f (mm)\n",field.length());
-                printf("  -field_width=%f (mm)\n",field.width());
-                printf("  -goal_width=%f (mm)\n",field.goal_width());
-                printf("  -goal_depth=%f (mm)\n",field.goal_depth());
-
-
-
-            }*/
+        Objective o = defineObjectiveYellow(robot_Y, ball);
+        PID(robot_Y, o, i, true, commandClient);
+      }
+    } else {
+      if (visionClient->receive(packet)){
+        printf("Packet received!\nERROR: Missing frame\n");
+      } else {
+        printf("ERROR: Missing client packet!\n");
+      }
     }
   }
 

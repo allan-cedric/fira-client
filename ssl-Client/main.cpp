@@ -407,11 +407,7 @@ int main(int argc, char *argv[])
         PID(robot_Y, o, i, true, commandClient);
       }
     } else {
-      if (visionClient->receive(packet)){
-        printf("Packet received!\nERROR: Missing frame\n");
-      } else {
-        printf("ERROR: Missing client packet!\n");
-      }
+      // pass
     }
   }
 

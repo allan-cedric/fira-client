@@ -193,44 +193,43 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     // FINDING THE PATH, FINALLY?
     node_t start_node = circle_to_node((int)circles.size() - 2, nodes);
     node_t goal_node = circle_to_node((int)circles.size() - 1, nodes);
-    
-    // Foda (C++)
-    /*map<node_t, double> frontier, cost_so_far;
 
-    map<node_t, node_t> came_from;
-    
-    frontier[start_node] = 0;
-    came_from[start_node] = start_node;
-    cost_so_far[start_node] = 0;
-
+    // Tive que invocar o Bjarne (C++)
+    vector<pair<node_t, double>> frontier = {{start_node, 0}};
+    vector<pair<node_t, double>> cost_so_far = {{start_node, 0}};
+    vector<pair<node_t, node_t>> came_from = {{start_node, start_node}};
 
     while ((int)frontier.size() > 0)
     {
         // Sort
-        vector<pair<node_t, double>> sorted_map;
-        copy(frontier.begin(), frontier.end(), back_inserter(sorted_map));
-        sort(sorted_map.begin(), sorted_map.end(), [](pair<node_t, double> &a, pair<node_t, double> &b) {
+        sort(frontier.begin(), frontier.end(), [](pair<node_t, double> &a, pair<node_t, double> &b) {
             return a.second < b.second;
         });
-        node_t current = sorted_map[0].first;
-        sorted_map.erase(sorted_map.begin());
-        frontier.erase(current);
+        node_t current = frontier[0].first;
+        frontier.erase(frontier.begin());
 
-        if(node_comparison(current, goal_node))
+        if (node_comparison(current, goal_node))
             break;
 
-        for(auto next : neighbors(current, surfing_edges))
+        for (auto next : neighbors(current, surfing_edges))
         {
-            double new_cost = cost_so_far[current] + edge_cost(current, next, circles);
-            map<node_t, double>::iterator it = cost_so_far.find(next);
-            if(it == cost_so_far.end() || new_cost < (*it).second)
+            auto it = find_if(cost_so_far.begin(), cost_so_far.end(), [&current](pair<node_t, double> &p) {
+                return node_comparison(current, p.first);
+            });
+            double new_cost = (*it).second + edge_cost(current, next, circles);
+
+            it = find_if(cost_so_far.begin(), cost_so_far.end(), [&next](pair<node_t, double> &p) {
+                return node_comparison(next, p.first);
+            });
+            
+            if (it == cost_so_far.end() || new_cost < (*it).second)
             {
-                cost_so_far[next] = new_cost;
-                came_from[next] = current;
+                cost_so_far.push_back({next, new_cost});
+                came_from.push_back({next, current});
                 // missing frontier
-            } 
+            }
         }
-    }*/
+    }
 
     // JS
     /*let frontier = [[start_node, 0]];

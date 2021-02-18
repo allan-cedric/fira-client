@@ -4,7 +4,6 @@
 #include "math_operations.h"
 #include "net/robocup_ssl_client.h"
 #include "header.h"
-#include <map>
 
 void add_edge(vector<edge_t> &surfing_edges, vector<circle_t> circles, vector<node_t> &nodes, int i,
               float_pair P, int j, float_pair Q);

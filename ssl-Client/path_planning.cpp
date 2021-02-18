@@ -97,7 +97,7 @@ double heuristic(node_t node)
     //return vec_distance(goal_node, node);
 }
 
-Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots, fira_message::sim_to_ref::Robot &my_robot, 
+Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots, fira_message::sim_to_ref::Robot &my_robot,
                double x, double y, double theta)
 {
 
@@ -199,6 +199,42 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots, fira_mess
     // FINDING THE PATH, FINALLY?
     node_t start_node = circle_to_node(circles.size() - 2, nodes);
     node_t goal_node = circle_to_node(circles.size() - 1, nodes);
+    
+    map<node_t, double> frontier, cost_so_far;
+
+    map<node_t, node_t> came_from;
+    
+    frontier[start_node] = 0;
+    came_from[start_node] = start_node;
+    cost_so_far[start_node] = 0;
+
+    while (frontier.size() > 0)
+    {
+        // Sort
+        vector<pair<node_t, double>> sorted_map;
+        copy(frontier.begin(), frontier.end(), back_inserter(sorted_map));
+        sort(sorted_map.begin(), sorted_map.end(), [](pair<node_t, double> &a, pair<node_t, double> &b) {
+            return a.second < b.second;
+        });
+        node_t current = sorted_map[0].first;
+        sorted_map.erase(sorted_map.begin());
+        frontier.erase(current);
+
+        if(node_comparison(current, goal_node))
+            break;
+
+        for(auto next : neighbors(current, surfing_edges))
+        {
+            double new_cost = cost_so_far[current] + edge_cost(current, next, circles);
+            map<node_t, double>::iterator it = cost_so_far.find(next);
+            if(it == cost_so_far.end() || new_cost < (*it).second)
+            {
+                cost_so_far[next] = new_cost;
+                came_from[next] = current;
+                // missing frontier
+            } 
+        }
+    }
 
     /*let frontier = [[start_node, 0]];
     let came_from = new Map([[start_node, null]]);

@@ -17,27 +17,22 @@ typedef struct
 
 #define RADIUS 8.0
 
-class circle_t
+typedef struct
 {
-public:
     float_pair center;
-    float radius = 8.0;
-    circle_t(float_pair center)
-    {
-        this->center = center;
-        this->radius = RADIUS;
-    }
-};
+    float radius;
+} circle_t;
 
-typedef struct{
+typedef struct
+{
     float_pair coord;
     int circle_index;
 } node_t;
 
-typedef struct {
+typedef struct
+{
     node_t n1, n2;
 } edge_t;
-
 
 // from lib.js:
 

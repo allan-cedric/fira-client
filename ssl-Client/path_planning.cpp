@@ -38,7 +38,7 @@ node_t circle_to_node(int circle_index, vector<node_t> nodes)
             nodes_on_circle.push_back(node);
     }
 
-    if (nodes_on_circle.size() != 1)
+    if ((int)nodes_on_circle.size() != 1)
         printf("start/goal should be on r=0 circle\n");
 
     return nodes_on_circle[0];
@@ -97,19 +97,17 @@ double heuristic(node_t node)
     //return vec_distance(goal_node, node);
 }
 
-Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots, fira_message::sim_to_ref::Robot &my_robot,
+Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_message::sim_to_ref::Robot &my_robot,
                double x, double y, double theta)
 {
 
     // transforming robots into circles
     vector<circle_t> circles(5);
 
-    for (int i = 0; i < other_robots.size(); i++)
+    for (int i = 0; i < (int)other_robots.size(); i++)
     {
-        float_pair center;
-        center.x = other_robots[i].x();
-        center.y = other_robots[i].y();
-        circle_t circle(center);
+        float_pair center = {.x = other_robots[i].x(), .y = other_robots[i].y()};
+        circle_t circle = {.center = center, .radius = RADIUS};
         circles.push_back(circle);
     }
 
@@ -119,19 +117,15 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots, fira_mess
     // these circles are special, though: their radius is equal to 0.
 
     // start circle
-    float_pair center;
-    center.x = my_robot.x();
-    center.y = my_robot.y();
+    float_pair center = {.x = my_robot.x(), .y = my_robot.y()};
 
-    circle_t start_circle(center);
-    start_circle.radius = 0;
+    circle_t start_circle = {.center = center, .radius = 0};
 
     // goal circle
     center.x = x;
     center.y = y;
 
-    circle_t goal_circle(center);
-    goal_circle.radius = 0;
+    circle_t goal_circle = {.center = center, .radius = 0};
 
     circles.push_back(start_circle);
     circles.push_back(goal_circle);
@@ -143,7 +137,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots, fira_mess
     vector<edge_t> surfing_edges;
     vector<node_t> nodes;
 
-    for (int i = 0; i < circles.size(); i++)
+    for (int i = 0; i < (int)circles.size(); i++)
     {
         for (int j = 0; j < i; j++)
         {
@@ -172,7 +166,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots, fira_mess
     }
 
     // generating hugging_edges (circle arcs)
-    vector<vector<node_t>> nodes_in_each_circle(circles.size());
+    vector<vector<node_t>> nodes_in_each_circle((int)circles.size());
 
     // get, for each circle, all the nodes it has
     for (auto node : nodes)
@@ -182,7 +176,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots, fira_mess
 
     for (auto circle_nodes : nodes_in_each_circle)
     {
-        for (int i = 0; i < circle_nodes.size(); i++)
+        for (int i = 0; i < (int)circle_nodes.size(); i++)
         {
             // for every circle, make an edge for each pair of nodes it has
             for (int j = 0; j < i; j++)
@@ -197,10 +191,11 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots, fira_mess
     surfing_edges.insert(surfing_edges.end(), hugging_edges.begin(), hugging_edges.end());
 
     // FINDING THE PATH, FINALLY?
-    node_t start_node = circle_to_node(circles.size() - 2, nodes);
-    node_t goal_node = circle_to_node(circles.size() - 1, nodes);
+    node_t start_node = circle_to_node((int)circles.size() - 2, nodes);
+    node_t goal_node = circle_to_node((int)circles.size() - 1, nodes);
     
-    map<node_t, double> frontier, cost_so_far;
+    // Foda (C++)
+    /*map<node_t, double> frontier, cost_so_far;
 
     map<node_t, node_t> came_from;
     
@@ -208,7 +203,8 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots, fira_mess
     came_from[start_node] = start_node;
     cost_so_far[start_node] = 0;
 
-    while (frontier.size() > 0)
+
+    while ((int)frontier.size() > 0)
     {
         // Sort
         vector<pair<node_t, double>> sorted_map;
@@ -234,8 +230,9 @@ Objective path(vector<fira_message::sim_to_ref::Robot &> other_robots, fira_mess
                 // missing frontier
             } 
         }
-    }
+    }*/
 
+    // JS
     /*let frontier = [[start_node, 0]];
     let came_from = new Map([[start_node, null]]);
     let cost_so_far = new Map([[start_node, 0]]);

@@ -194,15 +194,15 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     node_t start_node = circle_to_node((int)circles.size() - 2, nodes);
     node_t goal_node = circle_to_node((int)circles.size() - 1, nodes);
 
-    // Tive que invocar o Bjarne (C++)
+    // Tive que invocar o Bjarne, não me pergunte - Allan Cedric (C++)
     vector<pair<node_t, double>> frontier = {{start_node, 0}};
-    vector<pair<node_t, double>> cost_so_far = {{start_node, 0}};
     vector<pair<node_t, node_t>> came_from = {{start_node, start_node}};
+    vector<pair<node_t, double>> cost_so_far = {{start_node, 0}};
 
     while ((int)frontier.size() > 0)
     {
         // Sort
-        sort(frontier.begin(), frontier.end(), [](pair<node_t, double> &a, pair<node_t, double> &b) {
+        sort(frontier.begin(), frontier.end(), [](const pair<node_t, double> &a, const pair<node_t, double> &b) {
             return a.second < b.second;
         });
         node_t current = frontier[0].first;
@@ -213,7 +213,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
 
         for (auto next : neighbors(current, surfing_edges))
         {
-            auto it = find_if(cost_so_far.begin(), cost_so_far.end(), [&current](pair<node_t, double> &p) {
+            auto it = find_if(cost_so_far.begin(), cost_so_far.end(), [&current](const pair<node_t, double> &p) {
                 return node_comparison(current, p.first);
             });
             double new_cost = (*it).second + edge_cost(current, next, circles);
@@ -221,7 +221,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
             it = find_if(cost_so_far.begin(), cost_so_far.end(), [&next](pair<node_t, double> &p) {
                 return node_comparison(next, p.first);
             });
-            
+
             if (it == cost_so_far.end() || new_cost < (*it).second)
             {
                 cost_so_far.push_back({next, new_cost});

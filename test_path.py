@@ -4,8 +4,9 @@ import numpy as np
 
 negated = True
 
-w = 300
-h = 300
+w = 1000
+h = 1000
+magnitude = 5
 
 image = np.zeros((w, h, 3), dtype=np.uint8)
 image.fill(255 * negated)
@@ -24,8 +25,8 @@ while True:
             radius = int(float(radius))
             if radius == 0:
                 radius = 1
-            cv.circle(image, (x, h - y), radius, (0, 0, 255), 3)
-            cv.putText(image, index, (x, h - y), cv.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255))
+            cv.circle(image, (magnitude * x,  (h - magnitude *y)), radius * magnitude, (0, 0, 255), 2)
+            cv.putText(image, index, (magnitude *x, (h - magnitude *y)), cv.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255))
 
         elif command[0] == "l":
             _, p1x, p1y, p2x, p2y = command.split()
@@ -33,7 +34,6 @@ while True:
             p1y = int(float(p1y))
             p2x = int(float(p2x))
             p2y = int(float(p2y))
-            cv.line(image, (p1x, h - p1y), (p2x, h - p2y), (255, 0, 0), 3)
-    
+            cv.line(image, (magnitude *p1x, (h - magnitude *p1y)), (magnitude *p2x,(h - magnitude *p2y)), (255, 0, 0), 3)
     cv.imshow("output", image)
     cv.waitKey(0)

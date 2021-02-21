@@ -21,7 +21,7 @@ while True:
             x = int(float(x))
             y = int(float(y))
             radius = int(float(radius))
-            cv.circle(image, (x, h - y), radius, (0, 0, 255), 3)
+            cv.circle(image, (w + x, h - y), radius, (0, 0, 255), 3)
 
         elif command[0] == "l":
             _, p1x, p1y, p2x, p2y = command.split()
@@ -29,7 +29,7 @@ while True:
             p1y = int(float(p1y))
             p2x = int(float(p2x))
             p2y = int(float(p2y))
-            cv.line(image, (p1x, h - p1y), (p2x, h - p2y), (255, 0, 0), 3)
+            cv.line(image, (w + p1x, h - p1y), (w + p2x, h - p2y), (255, 0, 0), 3)
     
     cv.imshow("output", image)
     cv.waitKey(0)

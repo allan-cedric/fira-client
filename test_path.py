@@ -17,17 +17,17 @@ while True:
 
         if command[0] == "c":
             _, x, y, radius = command.split()
-            x = int(x)
-            y = int(y)
+            x = int(float(x))
+            y = int(float(y))
             radius = int(radius)
             cv.circle(image, (x, h - y), radius, (0, 0, 255), 3)
 
         elif command[0] == "l":
             _, p1x, p1y, p2x, p2y = command.split()
-            p1x = int(p1x)
-            p1y = int(p1y)
-            p2x = int(p2x)
-            p2y = int(p2y)
+            p1x = int(float(p1x))
+            p1y = int(float(p1y))
+            p2x = int(float(p2x))
+            p2y = int(float(p2y))
             cv.line(image, (p1x, h - p1y), (p2x, h - p2y), (255, 0, 0), 3)
     
     cv.imshow("output", image)

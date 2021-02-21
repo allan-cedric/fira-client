@@ -20,6 +20,8 @@ while True:
             x = int(float(x))
             y = int(float(y))
             radius = int(float(radius))
+            if radius == 0:
+                radius = 1
             cv.circle(image, (w + x, h - y), radius, (0, 0, 255), 3)
 
         elif command[0] == "l":

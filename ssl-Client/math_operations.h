@@ -2,7 +2,10 @@
 // Copyright 2017 Red Blob Games <redblobgames@gmail.com>
 // License: Apache v2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>
 
-// Translated to C++ by Gabriel Hishida for Yapira UFPR
+// Translated to C++ by Gabriel Hishida and Allan Cedric for Yapira UFPR
+
+#ifndef MATH_OPERATIONS
+#define MATH_OPERATIONS
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -85,4 +88,6 @@ vector<float_pair> ExternalBitangents(circle_t A, circle_t B);
 
 bool segment_circle_intersection(float_pair A, float_pair B, circle_t C);
 
-bool line_of_sight(vector<circle_t> circles, int i, float_pair P, int j, float_pair Q);
+bool line_of_sight(vector<circle_t> &circles, int i, float_pair P, int j, float_pair Q);
+
+#endif

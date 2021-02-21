@@ -156,7 +156,7 @@ bool segment_circle_intersection(float_pair A, float_pair B, circle_t C)
     return (d < C.radius);
 }
 
-bool line_of_sight(vector<circle_t> circles, int i, float_pair P, int j, float_pair Q)
+bool line_of_sight(vector<circle_t> &circles, int i, float_pair P, int j, float_pair Q)
 {
     for (int k = 0; k < (int)circles.size(); k++)
     {

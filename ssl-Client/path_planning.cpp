@@ -1,34 +1,36 @@
+// From: 
+// https://redblobgames.github.io/circular-obstacle-pathfinding/
+// https://www.redblobgames.com/pathfinding/a-star/introduction.html
+// https://www.redblobgames.com/pathfinding/a-star/implementation.html
+// Copyright 2017 Red Blob Games <redblobgames@gmail.com>
+// License: Apache v2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>
+
+// Translated to C++ by Gabriel Hishida and Allan Cedric for Yapira UFPR
+
 #include "path_planning.h"
 
-// nodes_and_surfing_edges: function() { return generate_nodes_and_surfing_edges(this.circles); },
-// surfing_edges: function() { return this.nodes_and_surfing_edges.edges; },
-// nodes: function() { return this.nodes_and_surfing_edges.nodes; },
-// hugging_edges: function() { return generate_hugging_edges(this.nodes); },
-// edges: function() { return this.surfing_edges.concat(this.hugging_edges); },
-// path: function() { return find_path(this.circles[this.circles.length-2],
-//                                     this.circles[this.circles.length-1],
-//                                     this.nodes, this.edges); }
-
-// try to add edge from circle i point P to circle j point Q
-void add_edge(vector<edge_t> &surfing_edges, vector<circle_t> circles, vector<node_t> &nodes, int i,
+// Try to add edge from circle i point P to circle j point Q
+void add_edge(vector<edge_t> &surfing_edges, vector<circle_t> &circles, vector<node_t> &nodes, int i,
               float_pair P, int j, float_pair Q)
 {
     if (!line_of_sight(circles, i, P, j, Q))
         return;
 
-    // (i, P) (j, Q)
+    // n1 = (i, P)
     node_t n1 = {.coord = {.x = P.x, .y = P.y}, .circle_index = i};
     nodes.push_back(n1); // we need to store them nodes
 
+    // n2 = (j, Q)
     node_t n2 = {.coord = {.x = Q.x, .y = Q.y}, .circle_index = j};
     nodes.push_back(n2);
 
+    // n1 ----- n2
     edge_t edge = {.n1 = n1, .n2 = n2};
 
-    surfing_edges.push_back(edge); // and we need to store how 2 nodes connect with each other
+    surfing_edges.push_back(edge); // We need to store the new edge
 }
 
-node_t circle_to_node(int circle_index, vector<node_t> nodes)
+node_t circle_to_node(int circle_index, vector<node_t> &nodes)
 {
     vector<node_t> nodes_on_circle;
 
@@ -39,12 +41,12 @@ node_t circle_to_node(int circle_index, vector<node_t> nodes)
     }
 
     if ((int)nodes_on_circle.size() != 1)
-        printf("start/goal should be on r=0 circle\n");
+        cout << "start/goal should be on r=0 circle" << endl;
 
     return nodes_on_circle[0];
 }
 
-vector<node_t> neighbors(node_t node, vector<edge_t> edges)
+vector<node_t> neighbors(node_t node, vector<edge_t> &edges)
 {
     vector<node_t> results;
 
@@ -58,13 +60,13 @@ vector<node_t> neighbors(node_t node, vector<edge_t> edges)
     return results;
 }
 
-double edge_cost(node_t a, node_t b, vector<circle_t> circles)
+double edge_cost(node_t a, node_t b, vector<circle_t> &circles)
 {
-    // adding 1 to each edge cost to favor fewer nodes in the path
+    // Adding 1 to each edge cost to favor fewer nodes in the path
     if (a.circle_index == b.circle_index)
-    // if these nodes are in the same circle
+    // If these nodes are in the same circle
     {
-        // hugging edge
+        // Hugging edge
 
         float_pair center = circles[a.circle_index].center;
 
@@ -80,8 +82,11 @@ double edge_cost(node_t a, node_t b, vector<circle_t> circles)
     }
 }
 
-double heuristic(node_t node)
+double heuristic(node_t next, node_t goal)
 {
+    // We are not using yet
+    (void) next;
+    (void) goal;
     return 0; // TODO: not working yet
     //return vec_distance(goal_node, node);
 }
@@ -89,9 +94,11 @@ double heuristic(node_t node)
 Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_message::sim_to_ref::Robot &my_robot,
                double x, double y, double theta)
 {
+    // We are not using yet
+    (void)theta;
 
     // transforming robots into circles
-    vector<circle_t> circles(5);
+    vector<circle_t> circles(other_robots.size());
 
     for (int i = 0; i < (int)other_robots.size(); i++)
     {
@@ -100,26 +107,23 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
         circles.push_back(circle);
     }
 
-    // implementation details:
-    // for special reasons we are not going to tell you,
+    // Implementation details:
+    // For special reasons we are not going to tell you,
     // we need the goal and the current position to be circles as well.
     // these circles are special, though: their radius is equal to 0.
 
     // start circle
     float_pair center = {.x = my_robot.x(), .y = my_robot.y()};
-
     circle_t start_circle = {.center = center, .radius = 0};
 
     // goal circle
-    center.x = x;
-    center.y = y;
-
+    center = {.x = x, .y = y};
     circle_t goal_circle = {.center = center, .radius = 0};
 
     circles.push_back(start_circle);
     circles.push_back(goal_circle);
 
-    // getting the bitangents for each pair of circles
+    // Getting the bitangents for each pair of circles
     // we are also adding every "surfing edge" (straight lines) between two nodes
     // to the vector of edges, and storing the nodes in the vector of nodes.
 
@@ -154,10 +158,10 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
         }
     }
 
-    // generating hugging_edges (circle arcs)
+    // Generating hugging_edges (circle arcs)
     vector<vector<node_t>> nodes_in_each_circle((int)circles.size());
 
-    // get, for each circle, all the nodes it has
+    // Get, for each circle, all the nodes it has
     for (auto node : nodes)
         nodes_in_each_circle[node.circle_index].push_back(node);
 
@@ -167,7 +171,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     {
         for (int i = 0; i < (int)circle_nodes.size(); i++)
         {
-            // for every circle, make an edge for each pair of nodes it has
+            // For every circle, make an edge for each pair of nodes it has
             for (int j = 0; j < i; j++)
             {
                 edge_t edge = {.n1 = circle_nodes[i], .n2 = circle_nodes[j]};
@@ -176,7 +180,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
         }
     }
 
-    // now, storing all the edges together:
+    // Now, storing all the edges together:
     surfing_edges.insert(surfing_edges.end(), hugging_edges.begin(), hugging_edges.end());
 
     // A* Star
@@ -206,18 +210,22 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
             {
                 cost_so_far[next] = new_cost;
                 came_from[next] = current;
-                frontier.put(next, new_cost);
+                frontier.put(next, new_cost + heuristic(next, goal_node));
             }
         }
     }
 
+    // Generating all path
     node_t current = goal_node;
     vector<node_t> path;
-    while (!node_comparison(current, start_node))
+    while (!(current == start_node))
     {
         path.push_back(current);
         current = came_from[current];
     }
     path.push_back(start_node); // optional
     reverse(path.begin(), path.end());
+
+    // We need to define an appropriate angle, but return value is kinda like this
+    return Objective(path[1].coord.x, path[1].coord.y, M_PI/4.);
 }

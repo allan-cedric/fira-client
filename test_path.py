@@ -20,7 +20,7 @@ while True:
             _, x, y, radius = command.split()
             x = int(float(x))
             y = int(float(y))
-            radius = int(radius)
+            radius = int(float(radius))
             cv.circle(image, (x, h - y), radius, (0, 0, 255), 3)
 
         elif command[0] == "l":

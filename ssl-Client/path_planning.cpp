@@ -1,4 +1,4 @@
-// From: 
+// From:
 // https://redblobgames.github.io/circular-obstacle-pathfinding/
 // https://www.redblobgames.com/pathfinding/a-star/introduction.html
 // https://www.redblobgames.com/pathfinding/a-star/implementation.html
@@ -85,8 +85,8 @@ double edge_cost(node_t a, node_t b, vector<circle_t> &circles)
 double heuristic(node_t next, node_t goal)
 {
     // We are not using yet
-    (void) next;
-    (void) goal;
+    (void)next;
+    (void)goal;
     return 0; // TODO: not working yet
     //return vec_distance(goal_node, node);
 }
@@ -138,7 +138,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
 
             auto internal = InternalBitangents(circles[i], circles[j]);
 
-            if(!internal.empty()) // there are internal bitangents, circles don't overlap
+            if (!internal.empty()) // there are internal bitangents, circles don't overlap
             {
                 C = internal[0];
                 D = internal[1];
@@ -172,6 +172,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
         nodes_in_each_circle[node.circle_index].push_back(node);
 
     vector<edge_t> hugging_edges;
+    bool blocking_edge;
 
     for (auto circle_nodes : nodes_in_each_circle)
     {
@@ -181,7 +182,21 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
             for (int j = 0; j < i; j++)
             {
                 edge_t edge = {.n1 = circle_nodes[i], .n2 = circle_nodes[j]};
-                hugging_edges.push_back(edge);
+                for (int k = 0; k < (int)circles.size(); k++)
+                {
+                    // For each circle check whether it's block the hugging edges
+                    if (circle_nodes[i].circle_index != k) // Not the same circle
+                    {
+                        // If the circles are overlap
+                        if (vec_distance(circles[k].center, circles[circle_nodes[i].circle_index].center) 
+                           <= circles[k].radius + circles[circle_nodes[i].circle_index].radius)
+                        {
+                           //Math 
+                        } 
+                    }
+                    if(!blocking_edge)
+                        hugging_edges.push_back(edge);
+                }
             }
         }
     }
@@ -233,5 +248,5 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     reverse(path.begin(), path.end());
 
     // We need to define an appropriate angle, but return value is kinda like this
-    return Objective(path[1].coord.x, path[1].coord.y, M_PI/4.);
+    return Objective(path[1].coord.x, path[1].coord.y, M_PI / 4.);
 }

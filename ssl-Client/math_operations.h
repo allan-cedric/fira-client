@@ -28,6 +28,7 @@ struct node_t
     float_pair coord;
     int circle_index;
 
+    // We use this data type to be a key in a map. So, we have to overwrite.
     bool operator<(const node_t& t) const
     {
         return (this->coord.x < t.coord.x || 

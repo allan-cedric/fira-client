@@ -231,5 +231,4 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     }
     path.push_back(start_node); // optional
     reverse(path.begin(), path.end());
-
 }

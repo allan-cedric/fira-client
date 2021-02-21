@@ -239,15 +239,23 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
 
     // Generating all path
     node_t current = goal_node;
+    float_pair ant = current.coord;
     vector<node_t> path;
     while (!(current == start_node))
     {
+        printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
         path.push_back(current);
         current = came_from[current];
+        ant.x = current.coord.x;
+        ant.y = current.coord.y;
     }
     path.push_back(start_node); // optional
     reverse(path.begin(), path.end());
 
     // We need to define an appropriate angle, but return value is kinda like this
+    for(auto circle : circles)
+    {
+        printf("c %f %f %f\n", circle.center.x, circle.center.y, circle.radius);
+    }
     return Objective(path[1].coord.x, path[1].coord.y, M_PI / 4.);
 }

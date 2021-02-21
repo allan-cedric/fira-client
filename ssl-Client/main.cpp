@@ -334,7 +334,7 @@ int main(int argc, char *argv[])
       fira_message::sim_to_ref::Ball ball = detection.ball();
       ball.set_x((length + ball.x()) * 100);
       ball.set_y((width + ball.y()) * 100);
-      printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
+      //printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
       
       // Path planning test
       //Blue robot info:
@@ -358,7 +358,7 @@ int main(int argc, char *argv[])
             other_robots.push_back(detection.robots_yellow(j));
 
         Objective o = path(other_robots, robot_B, ball.x(), ball.y(), 0);
-        PID(robot_B, o, i, my_robots_are_yellow, commandClient);
+        //PID(robot_B, o, i, my_robots_are_yellow, commandClient);
       //}
 
       //Yellow robot info:
@@ -373,7 +373,7 @@ int main(int argc, char *argv[])
         Objective o = defineObjectiveYellow(robot_Y, ball);
         PID(robot_Y, o, i, !my_robots_are_yellow, commandClient);
       }*/
-      field_analyzer(detection);
+      //field_analyzer(detection);
     } else {
       // pass
     }

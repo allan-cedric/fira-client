@@ -44,26 +44,15 @@ node_t circle_to_node(int circle_index, vector<node_t> nodes)
     return nodes_on_circle[0];
 }
 
-bool node_comparison(node_t N, node_t M)
-{
-    if (N.circle_index == M.circle_index)
-    {
-        if (N.coord.x == M.coord.x && N.coord.y == M.coord.y)
-            return true;
-    }
-
-    return false;
-}
-
 vector<node_t> neighbors(node_t node, vector<edge_t> edges)
 {
     vector<node_t> results;
 
     for (auto edge : edges)
     {
-        if (node_comparison(edge.n1, node))
+        if (edge.n1 == node)
             results.push_back(edge.n2);
-        if (node_comparison(edge.n2, node))
+        if (edge.n2 == node)
             results.push_back(edge.n1);
     }
     return results;
@@ -207,7 +196,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     {
         node_t current = frontier.get();
 
-        if (node_comparison(current, goal_node))
+        if (current == goal_node)
             break;
 
         for (auto next : neighbors(current, surfing_edges))

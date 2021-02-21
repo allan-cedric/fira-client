@@ -358,6 +358,7 @@ int main(int argc, char *argv[])
             other_robots.push_back(detection.robots_yellow(j));
 
         Objective o = path(other_robots, robot_B, ball.x(), ball.y(), 0);
+        other_robots.clear();
         //PID(robot_B, o, i, my_robots_are_yellow, commandClient);
       //}
 

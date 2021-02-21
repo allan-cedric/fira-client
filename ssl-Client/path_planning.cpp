@@ -97,11 +97,17 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     // We are not using yet
     (void)theta;
 
+    double width, length;
+    width = 1.3 / 2.0;
+    length = 1.7 / 2.0;
+
     // transforming robots into circles
-    vector<circle_t> circles(other_robots.size());
+    vector<circle_t> circles;
 
     for (int i = 0; i < (int)other_robots.size(); i++)
     {
+        other_robots[i].set_x((length + other_robots[i].x()) * 100); //convertendo para centimetros
+        other_robots[i].set_y((width + other_robots[i].y()) * 100);
         float_pair center = {.x = other_robots[i].x(), .y = other_robots[i].y()};
         circle_t circle = {.center = center, .radius = RADIUS};
         circles.push_back(circle);
@@ -189,13 +195,12 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
                     if (circle_nodes[i].circle_index != k) // Not the same circle
                     {
                         // If the circles are overlap
-                        if (vec_distance(circles[k].center, circles[circle_nodes[i].circle_index].center) 
-                           <= circles[k].radius + circles[circle_nodes[i].circle_index].radius)
+                        if (vec_distance(circles[k].center, circles[circle_nodes[i].circle_index].center) <= circles[k].radius + circles[circle_nodes[i].circle_index].radius)
                         {
-                           blocking_edge = is_blocking_js(circles[k], circles[circle_nodes[i].circle_index]);
+                            blocking_edge = is_blocking_js(circles[k], circles[circle_nodes[i].circle_index]);
                         }
                     }
-                    if(!blocking_edge)
+                    if (!blocking_edge)
                         hugging_edges.push_back(edge);
                 }
             }
@@ -253,9 +258,11 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     reverse(path.begin(), path.end());
 
     // We need to define an appropriate angle, but return value is kinda like this
-    for(auto circle : circles)
+    int i = 0;
+    for (auto circle : circles)
     {
-        printf("c %f %f %f\n", circle.center.x, circle.center.y, circle.radius);
+        printf("c %f %f %f %i\n", circle.center.x, circle.center.y, circle.radius, i);
+        i++;
     }
     return Objective(path[1].coord.x, path[1].coord.y, M_PI / 4.);
 }

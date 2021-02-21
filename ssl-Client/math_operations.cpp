@@ -98,7 +98,7 @@ vector<float_pair> InternalBitangents(circle_t A, circle_t B)
     double P = vec_distance(A.center, B.center);
     double cos_angle = (A.radius + B.radius) / P;
 
-    if(cos_angle > 1) // circles overlap, there are no internal bitangents
+    if (cos_angle > 1) // circles overlap, there are no internal bitangents
         return vector<float_pair>();
 
     double theta = acos(cos_angle);
@@ -168,4 +168,81 @@ bool line_of_sight(vector<circle_t> &circles, int i, float_pair P, int j, float_
             return false;
     }
     return true;
+}
+
+// I know it's not efficient, but it may not be matter.
+bool is_blocking(float_pair D, float_pair E, float_pair I, float_pair J, float_pair A)
+{
+    A = {.x = 0, .y = 0};
+    D = {.x = 1, .y = 1};
+    E = {.x = 1, .y = -1};
+
+    I = {.x = 1, .y = 1.5};
+    J = {.x = 1, .y = -1.5};
+
+    double theta_D = atan2(D.y - A.y, D.x - A.x);
+
+    if (theta_D < 0)
+        theta_D += 2 * M_PI;
+
+    double theta_E = atan2(E.y - A.y, E.x - A.x);
+
+    if (theta_E < 0)
+        theta_E += 2 * M_PI;
+
+    double theta_I = atan2(I.y - A.y, I.x - A.x);
+
+    if (theta_I < 0)
+        theta_I += 2 * M_PI;
+
+    double theta_J = atan2(J.y - A.y, J.x - A.x);
+
+    if (theta_J < 0)
+        theta_J += 2 * M_PI;
+
+    bool discard = false;
+
+    double gamma_1 = max(theta_J, theta_I) - min(theta_J, theta_I);
+    double gamma_2 = min(theta_J, theta_I) + 2 * M_PI - max(theta_J, theta_I);
+
+    // A entrada ou a saída em intervalo proibido
+    /*if (((theta_I > min(theta_E, theta_D) && theta_I < max(theta_E, theta_D) && (theta_J > max(theta_E, theta_D) || theta_J < min(theta_E, theta_D))))
+     || ((theta_J > min(theta_E, theta_D) && theta_J < max(theta_E, theta_D) && (theta_I > max(theta_E, theta_D) || theta_I < min(theta_E, theta_D)))))*/
+    if ((inrange(min(theta_E, theta_D), max(theta_E, theta_D), theta_I) && !inrange(min(theta_E, theta_D), max(theta_E, theta_D), theta_J)) || (inrange(min(theta_E, theta_D), max(theta_E, theta_D), theta_J) && !inrange(min(theta_E, theta_D), max(theta_E, theta_D), theta_I)))
+        discard = true;
+    else if (gamma_1 > gamma_2)
+    {
+        // Nem a saída e nem a entrada em intervalo proibido, mas na passagem de um pro outro atravessa o intervalo proibido.
+        // (Anti-horário)
+        if (inrange(min(theta_I, theta_J), min(theta_I, theta_J) + gamma_1, theta_D))
+            discard = true;
+    }
+    // Nem a saída e nem a entrada em intervalo proibido, mas na passagem de um pro outro atravessa o intervalo proibido.
+    // (Horário)
+    else if (!inrange(min(theta_I, theta_J), min(theta_I, theta_J) + gamma_1, theta_D))
+        discard = true;
+
+    return discard;
+}
+
+bool inrange(double a, double b, double to_test)
+{
+    return (to_test > a && to_test < b);
+}
+
+bool is_blocking_js(circle_t A, circle_t B)
+{
+    double AB_distance = vec_distance(A.center, B.center);
+    double AB_angle = vec_facing(A.center, B.center);
+
+    double a = AB_distance / 2;
+    double theta = acos(a / A.radius);
+    
+    float_pair D = direction_step(A.center, A.radius, AB_angle + theta);
+    float_pair E = direction_step(A.center, A.radius, AB_angle - theta);
+
+    double AD_angle = vec_facing(A.center, D);
+    double AE_angle = vec_facing(A.center, E);
+
+    return (AD_angle < 0 || AE_angle < 0);
 }

@@ -18,7 +18,7 @@ struct float_pair
     double x, y;
 };
 
-#define RADIUS 8.0
+#define RADIUS 13.0
 
 struct circle_t
 {
@@ -89,5 +89,11 @@ vector<float_pair> ExternalBitangents(circle_t A, circle_t B);
 bool segment_circle_intersection(float_pair A, float_pair B, circle_t C);
 
 bool line_of_sight(vector<circle_t> &circles, int i, float_pair P, int j, float_pair Q);
+
+bool is_blocking(float_pair D, float_pair E, float_pair I, float_pair J, float_pair A);
+
+bool inrange(double a, double b, double to_test);
+
+bool is_blocking_js(circle_t A, circle_t B);
 
 #endif

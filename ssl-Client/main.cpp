@@ -338,7 +338,8 @@ int main(int argc, char *argv[])
       
       // Path planning test
       //Blue robot info:
-      for (int i = 0; i < robots_blue_n; i++){
+      //for (int i = 0; i < robots_blue_n; i++){
+        int i = 0;
         fira_message::sim_to_ref::Robot robot_B = detection.robots_blue(i);
         robot_B.set_x((length + robot_B.x()) * 100); //convertendo para centimetros
         robot_B.set_y((width + robot_B.y()) * 100);
@@ -354,11 +355,11 @@ int main(int argc, char *argv[])
             other_robots.push_back(detection.robots_blue(j));
         }
         for(int j = 0; j < robots_yellow_n; j++)
-            other_robots.push_back(detection.robots_blue(j));
+            other_robots.push_back(detection.robots_yellow(j));
 
         Objective o = path(other_robots, robot_B, ball.x(), ball.y(), 0);
         PID(robot_B, o, i, my_robots_are_yellow, commandClient);
-      }
+      //}
 
       //Yellow robot info:
       /*for (int i = 0; i < robots_yellow_n; i++){

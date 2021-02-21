@@ -184,6 +184,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
                 edge_t edge = {.n1 = circle_nodes[i], .n2 = circle_nodes[j]};
                 for (int k = 0; k < (int)circles.size(); k++)
                 {
+                    blocking_edge = false;
                     // For each circle check whether it's block the hugging edges
                     if (circle_nodes[i].circle_index != k) // Not the same circle
                     {
@@ -191,8 +192,8 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
                         if (vec_distance(circles[k].center, circles[circle_nodes[i].circle_index].center) 
                            <= circles[k].radius + circles[circle_nodes[i].circle_index].radius)
                         {
-                           //Math 
-                        } 
+                           blocking_edge = is_blocking_js(circles[k], circles[circle_nodes[i].circle_index]);
+                        }
                     }
                     if(!blocking_edge)
                         hugging_edges.push_back(edge);

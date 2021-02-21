@@ -134,15 +134,21 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     {
         for (int j = 0; j < i; j++)
         {
-            auto internal = InternalBitangents(circles[i], circles[j]);
-            float_pair C = internal[0];
-            float_pair D = internal[1];
-            float_pair E = internal[2];
-            float_pair F = internal[3];
+            float_pair C, D, E, F;
 
-            add_edge(surfing_edges, circles, nodes, i, C, j, F);
-            if (circles[i].radius != 0 && circles[j].radius != 0)
-                add_edge(surfing_edges, circles, nodes, i, D, j, E);
+            auto internal = InternalBitangents(circles[i], circles[j]);
+
+            if(!internal.empty()) // there are internal bitangents, circles don't overlap
+            {
+                C = internal[0];
+                D = internal[1];
+                E = internal[2];
+                F = internal[3];
+
+                add_edge(surfing_edges, circles, nodes, i, C, j, F);
+                if (circles[i].radius != 0 && circles[j].radius != 0)
+                    add_edge(surfing_edges, circles, nodes, i, D, j, E);
+            }
 
             auto external = ExternalBitangents(circles[i], circles[j]);
             C = external[0];

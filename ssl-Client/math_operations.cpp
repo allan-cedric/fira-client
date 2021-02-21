@@ -97,6 +97,10 @@ vector<float_pair> InternalBitangents(circle_t A, circle_t B)
 {
     double P = vec_distance(A.center, B.center);
     double cos_angle = (A.radius + B.radius) / P;
+
+    if(cos_angle > 1) // circles overlap, there are no internal bitangents
+        return vector<float_pair>();
+
     double theta = acos(cos_angle);
 
     double AB_angle = vec_facing(A.center, B.center);
@@ -119,7 +123,7 @@ vector<float_pair> InternalBitangents(circle_t A, circle_t B)
 vector<float_pair> ExternalBitangents(circle_t A, circle_t B)
 {
     double P = vec_distance(A.center, B.center);
-    double cos_angle = (A.radius - B.radius) / P;
+    double cos_angle = fabs(A.radius - B.radius) / P;
     double theta = acos(cos_angle);
 
     double AB_angle = vec_facing(A.center, B.center);

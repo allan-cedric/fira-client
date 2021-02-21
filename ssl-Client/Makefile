@@ -5,8 +5,8 @@ CFLAGS = -Wall -Wextra
 GLOBAL_LINKS = -L/usr/local/lib/ -lpthread -lprotobuf -lz
 
 # local source files and objects
-SOURCES = net/robocup_ssl_client.cpp net/netraw.cpp net/grSim_client.cpp net/pb/common.pb.cc header.cpp
-OBJECTS = robocup_ssl_client.o netraw.o grSim_client.o common.pb.o header.o
+SOURCES = net/robocup_ssl_client.cpp net/netraw.cpp net/grSim_client.cpp net/pb/common.pb.cc header.cpp analyzer.cpp
+OBJECTS = robocup_ssl_client.o netraw.o grSim_client.o common.pb.o header.o analyzer.o
 
 # compile all
 all: main

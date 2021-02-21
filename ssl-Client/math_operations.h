@@ -2,7 +2,10 @@
 // Copyright 2017 Red Blob Games <redblobgames@gmail.com>
 // License: Apache v2.0 <http://www.apache.org/licenses/LICENSE-2.0.html>
 
-// Translated to C++ by Gabriel Hishida for Yapira UFPR
+// Translated to C++ by Gabriel Hishida and Allan Cedric for Yapira UFPR
+
+#ifndef MATH_OPERATIONS
+#define MATH_OPERATIONS
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -10,23 +13,45 @@
 
 using namespace std;
 
-typedef struct
+struct float_pair
 {
     double x, y;
-} float_pair;
+};
 
 #define RADIUS 8.0
 
-class circle_t
+struct circle_t
 {
-public:
     float_pair center;
-    float radius = 8.0;
-    circle_t(float_pair center)
+    float radius;
+};
+
+struct node_t
+{
+    float_pair coord;
+    int circle_index;
+
+    bool operator<(const node_t &t) const
     {
-        this->center = center;
-        this->radius = RADIUS;
+        return (this->coord.x < t.coord.x ||
+                (this->coord.x == t.coord.x && this->coord.y < t.coord.y));
     }
+
+    bool operator==(const node_t &t) const
+    {
+        if (this->circle_index == t.circle_index)
+        {
+            if (this->coord.x == t.coord.x && this->coord.y == t.coord.y)
+                return true;
+        }
+
+        return false;
+    }
+};
+
+struct edge_t
+{
+    node_t n1, n2;
 };
 
 // from lib.js:
@@ -62,3 +87,7 @@ vector<float_pair> InternalBitangents(circle_t A, circle_t B);
 vector<float_pair> ExternalBitangents(circle_t A, circle_t B);
 
 bool segment_circle_intersection(float_pair A, float_pair B, circle_t C);
+
+bool line_of_sight(vector<circle_t> &circles, int i, float_pair P, int j, float_pair Q);
+
+#endif

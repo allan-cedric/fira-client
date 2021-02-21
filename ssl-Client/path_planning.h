@@ -4,6 +4,7 @@
 #include "math_operations.h"
 #include "net/robocup_ssl_client.h"
 #include "header.h"
+#include <queue>
 #include <map>
 
 template<typename T, typename priority_t>

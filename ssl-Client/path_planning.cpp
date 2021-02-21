@@ -232,28 +232,4 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     path.push_back(start_node); // optional
     reverse(path.begin(), path.end());
 
-    // JS
-    /*let frontier = [[start_node, 0]];
-    let came_from = new Map([[start_node, null]]);
-    let cost_so_far = new Map([[start_node, 0]]);
-
-    while (frontier.length > 0)
-    {
-        frontier.sort((a, b) = > a[1] - b[1]);
-        let current = frontier.shift()[0];
-        if (current == = goal_node)
-        {
-            break;
-        }
-        for (let next of neighbors(current))
-        {
-            let new_cost = cost_so_far.get(current) + edge_cost(current, next);
-            if (!cost_so_far.has(next) || new_cost < cost_so_far.get(next))
-            {
-                cost_so_far.set(next, new_cost);
-                came_from.set(next, current);
-                frontier.push([ next, new_cost + heuristic(next), vec_distance(goal_node, next) ]);
-            }
-        }
-    }*/
 }

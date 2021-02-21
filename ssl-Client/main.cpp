@@ -6,12 +6,11 @@
 #include "net/grSim_client.h"
 #include "util/timer.h"
 #include "util/util.h"
-
 #include "header.h"
+#include "path_planning.h"
 
 void printRobotInfo(const fira_message::sim_to_ref::Robot &robot)
 {
-
   printf("ID=%3d \n", robot.robot_id());
 
   printf(" POS=<%9.2f,%9.2f> \n", robot.x(), robot.y());
@@ -336,7 +335,8 @@ int main(int argc, char *argv[])
       ball.set_x((length + ball.x()) * 100);
       ball.set_y((width + ball.y()) * 100);
       printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
-
+      
+      // Path planning test
       //Blue robot info:
       for (int i = 0; i < robots_blue_n; i++){
         fira_message::sim_to_ref::Robot robot_B = detection.robots_blue(i);
@@ -346,12 +346,22 @@ int main(int argc, char *argv[])
         printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
         printRobotInfo(robot_B);
 
-        Objective o = defineObjectiveBlue(robot_B, ball);
+        //Objective o = defineObjectiveBlue(robot_B, ball);
+        vector<fira_message::sim_to_ref::Robot> other_robots;
+        for(int j = 0; j < robots_blue_n; j++)
+        {
+          if(i != j)
+            other_robots.push_back(detection.robots_blue(j));
+        }
+        for(int j = 0; j < robots_yellow_n; j++)
+            other_robots.push_back(detection.robots_blue(j));
+
+        Objective o = path(other_robots, robot_B, ball.x(), ball.y(), 0);
         PID(robot_B, o, i, my_robots_are_yellow, commandClient);
       }
 
       //Yellow robot info:
-      for (int i = 0; i < robots_yellow_n; i++){
+      /*for (int i = 0; i < robots_yellow_n; i++){
         fira_message::sim_to_ref::Robot robot_Y = detection.robots_yellow(i);
         robot_Y.set_x((length + robot_Y.x()) * 100); //convertendo para centimetros
         robot_Y.set_y((width + robot_Y.y()) * 100);
@@ -361,7 +371,7 @@ int main(int argc, char *argv[])
 
         Objective o = defineObjectiveYellow(robot_Y, ball);
         PID(robot_Y, o, i, !my_robots_are_yellow, commandClient);
-      }
+      }*/
     } else {
       // pass
     }

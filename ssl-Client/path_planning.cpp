@@ -40,8 +40,8 @@ node_t circle_to_node(int circle_index, vector<node_t> &nodes)
             nodes_on_circle.push_back(node);
     }
 
-    if ((int)nodes_on_circle.size() != 1)
-        cout << "start/goal should be on r=0 circle" << endl;
+    /*if ((int)nodes_on_circle.size() != 1)
+        cout << "start/goal should be on r=0 circle" << endl;*/
 
     return nodes_on_circle[0];
 }

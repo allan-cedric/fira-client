@@ -6,7 +6,9 @@
 #include "net/grSim_client.h"
 #include "util/timer.h"
 #include "util/util.h"
+
 #include "header.h"
+#include "analyzer.h"
 #include "path_planning.h"
 
 void printRobotInfo(const fira_message::sim_to_ref::Robot &robot)
@@ -23,12 +25,10 @@ void printRobotInfo(const fira_message::sim_to_ref::Robot &robot)
 double to180range(double angle)
 {
   angle = fmod(angle, 2 * M_PI);
-  if (angle < -M_PI)
-  {
+  if (angle < -M_PI) {
     angle = angle + 2 * M_PI;
   }
-  else if (angle > M_PI)
-  {
+  else if (angle > M_PI) {
     angle = angle - 2 * M_PI;
   }
   return angle;
@@ -344,8 +344,8 @@ int main(int argc, char *argv[])
         robot_B.set_x((length + robot_B.x()) * 100); //convertendo para centimetros
         robot_B.set_y((width + robot_B.y()) * 100);
         robot_B.set_orientation(to180range(robot_B.orientation()));
-        printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
-        printRobotInfo(robot_B);
+        // printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
+        // printRobotInfo(robot_B);
 
         //Objective o = defineObjectiveBlue(robot_B, ball);
         vector<fira_message::sim_to_ref::Robot> other_robots;
@@ -367,12 +367,13 @@ int main(int argc, char *argv[])
         robot_Y.set_x((length + robot_Y.x()) * 100); //convertendo para centimetros
         robot_Y.set_y((width + robot_Y.y()) * 100);
         robot_Y.set_orientation(to180range(robot_Y.orientation()));
-        printf("-Robot(Y) (%2d/%2d): ", i + 1, robots_yellow_n);
-        printRobotInfo(robot_Y);
+        // printf("-Robot(Y) (%2d/%2d): ", i + 1, robots_yellow_n);
+        // printRobotInfo(robot_Y);
 
         Objective o = defineObjectiveYellow(robot_Y, ball);
         PID(robot_Y, o, i, !my_robots_are_yellow, commandClient);
       }*/
+      field_analyzer(detection);
     } else {
       // pass
     }

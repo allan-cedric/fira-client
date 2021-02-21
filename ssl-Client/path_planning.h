@@ -7,21 +7,26 @@
 #include <queue>
 #include <map>
 
-template<typename T, typename priority_t>
-struct PriorityQueue {
+template <typename T, typename priority_t>
+struct PriorityQueue
+{
   typedef std::pair<priority_t, T> PQElement;
   std::priority_queue<PQElement, std::vector<PQElement>,
-                 std::greater<PQElement>> elements;
+                      std::greater<PQElement>>
+      elements;
 
-  inline bool empty() const {
-     return elements.empty();
+  inline bool empty() const
+  {
+    return elements.empty();
   }
 
-  inline void put(T item, priority_t priority) {
+  inline void put(T item, priority_t priority)
+  {
     elements.emplace(priority, item);
   }
 
-  T get() {
+  T get()
+  {
     T best_item = elements.top().second;
     elements.pop();
     return best_item;
@@ -41,7 +46,7 @@ double edge_cost(node_t a, node_t b, vector<circle_t> circles);
 
 double heuristic(node_t node);
 
-Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_message::sim_to_ref::Robot &my_robot, 
+Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_message::sim_to_ref::Robot &my_robot,
                double x, double y, double theta);
 
 #endif

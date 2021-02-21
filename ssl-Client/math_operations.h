@@ -10,29 +10,35 @@
 
 using namespace std;
 
-typedef struct
+struct float_pair
 {
     double x, y;
-} float_pair;
+};
 
 #define RADIUS 8.0
 
-typedef struct
+struct circle_t
 {
     float_pair center;
     float radius;
-} circle_t;
+};
 
-typedef struct
+struct node_t
 {
     float_pair coord;
     int circle_index;
-} node_t;
 
-typedef struct
+    bool operator<(const node_t& t) const
+    {
+        return (this->coord.x < t.coord.x || 
+        (this->coord.x == t.coord.x && this->coord.y < t.coord.y));
+    }
+};
+
+struct edge_t
 {
     node_t n1, n2;
-} edge_t;
+};
 
 // from lib.js:
 

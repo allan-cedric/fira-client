@@ -151,13 +151,13 @@ bool segment_circle_intersection(float_pair A, float_pair B, circle_t C)
 
     if (u < 0.0)
         u = 0.0;
-    else if (u > 1.0)
+    if (u > 1.0)
         u = 1.0;
 
     float_pair E = vec_interpolate(A, B, u);
     double d = vec_distance(C.center, E);
 
-    return (d < C.radius);
+    return (d <= C.radius);
 }
 
 bool line_of_sight(vector<circle_t> &circles, int i, float_pair P, int j, float_pair Q)

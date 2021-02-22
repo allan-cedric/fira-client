@@ -50,4 +50,4 @@ while True:
 
     
     cv.imshow("output", image)
-    cv.waitKey(0)
+    cv.waitKey(5)

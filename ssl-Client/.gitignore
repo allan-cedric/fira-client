@@ -1,4 +1,5 @@
 main
+test_main
 teste
 *.o
 .vscode/

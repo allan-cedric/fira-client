@@ -1,5 +1,5 @@
-// Made by Artur Coelho for Yapira UFPR on Feb 2021 
-// for the FIRASim simulator competition 
+// Made by Artur Coelho for Yapira UFPR on Feb 2021
+// for the FIRASim simulator competition
 // on the virtual IRONCUP 2021
 
 #include <stdio.h>
@@ -8,12 +8,14 @@
 #include "net/robocup_ssl_client.h"
 
 #include "header.h"
+#include "analyzer.h"
 #include "math_operations.h"
 
 // print a bot array info
 void print_bot_info(fira_message::sim_to_ref::Robot bots[NUM_BOTS])
 {
-    for (int i = 0; i < NUM_BOTS; i++){
+    for (int i = 0; i < NUM_BOTS; i++)
+    {
         printf("x: %f y: %f a: %f \n", bots[i].x(), bots[i].y(), bots[i].orientation());
         printf("vx: %f vy: %f va: %f \n", bots[i].vx(), bots[i].vy(), bots[i].vorientation());
     }
@@ -60,20 +62,22 @@ bool we_are_closer(field_t *f)
 {
     double our_distances[NUM_BOTS];
     double their_distances[NUM_BOTS];
-    float_pair ball_p = {.x = f->ball.x(), .y = f->ball.y() };
+    float_pair ball_p = {.x = f->ball.x(), .y = f->ball.y()};
 
-    for (int i = 0; i < NUM_BOTS; i++) {
-        float_pair bot_p = {.x = f->our_bots[i].x(), .y = f->our_bots[i].y() };
+    for (int i = 0; i < NUM_BOTS; i++)
+    {
+        float_pair bot_p = {.x = f->our_bots[i].x(), .y = f->our_bots[i].y()};
         our_distances[i] = vec_distance(bot_p, ball_p);
     }
 
-    for (int i = 0; i < NUM_BOTS; i++) {
-        float_pair bot_p = {.x = f->their_bots[i].x(), .y = f->their_bots[i].y() };
+    for (int i = 0; i < NUM_BOTS; i++)
+    {
+        float_pair bot_p = {.x = f->their_bots[i].x(), .y = f->their_bots[i].y()};
         their_distances[i] = vec_distance(bot_p, ball_p);
     }
 
     return our_distances[min_dist_index(our_distances)] < their_distances[min_dist_index(their_distances)];
-}   
+}
 
 // true if the ball and and offender are on your field simoutaniously
 // false otherwise
@@ -103,12 +107,13 @@ bool we_are_atacking(field_t *f)
 
 // main exported function of lib
 // returns the field status based on field info
-int field_analyzer(field_t *f )
+int field_analyzer(field_t *f)
 {
     bool wrc = we_are_closer(f);
     bool tra = they_are_atacking(f);
     bool wra = we_are_atacking(f);
 
+#ifdef ALL_META_INFO_ROBOTS
     printf("========================================\n");
     printf("%s\n", f->my_robots_are_yellow ? "YELLOW" : "BLUE");
     printf("%s\n\n", wra ? "WRA" : (tra ? "TRA" : (wrc ? "WRC" : "TRC")));
@@ -117,11 +122,13 @@ int field_analyzer(field_t *f )
     print_bot_info(f->our_bots);
     printf("THEIR BOTS:\n");
     print_bot_info(f->their_bots);
+#endif
 
-    if (wra) return WRA;
-    if (tra) return TRA;
-    if (wrc) return WRC;
-    if (!wrc) return TRC;
-
-    return 0;
+    if (wra)
+        return WRA;
+    if (tra)
+        return TRA;
+    if (wrc)
+        return WRC;
+    return TRC;
 }

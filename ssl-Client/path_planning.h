@@ -17,6 +17,9 @@
 #include "net/robocup_ssl_client.h"
 #include "header.h"
 
+// Uncomment to debug A* (A Star) path finding algorithm
+#define DEBUG_PATH
+
 template <typename T, typename priority_t>
 struct PriorityQueue
 {

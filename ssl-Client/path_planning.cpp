@@ -109,6 +109,15 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
         circles.push_back(circle);
     }
 
+#ifdef DEBUG_PATH
+    int i;
+    for (auto circle : circles)
+    {
+        printf("c %f %f %f %i\n", circle.center.x, circle.center.y, circle.radius, i);
+        i++;
+    }
+#endif
+
     // Implementation details:
     // For special reasons we are not going to tell you,
     // we need the goal and the current position to be circles as well.
@@ -206,6 +215,11 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     // Now, storing all the edges together:
     surfing_edges.insert(surfing_edges.end(), hugging_edges.begin(), hugging_edges.end());
 
+#ifdef DEBUG_PATH
+    for (auto edge : surfing_edges)
+        printf("e %f %f %f %f\n", edge.n1.coord.x, edge.n1.coord.y, edge.n2.coord.x, edge.n2.coord.y);
+#endif
+
     // A* Star
     node_t start_node = circle_to_node((int)circles.size() - 2, nodes);
     node_t goal_node = circle_to_node((int)circles.size() - 1, nodes);
@@ -239,27 +253,27 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     }
 
     // Generating all path
-    node_t current = goal_node;
-    float_pair ant = current.coord;
     vector<node_t> path;
+    node_t current = goal_node;
+#ifdef DEBUG_PATH
+    float_pair ant = current.coord;
+#endif
     while (!(current == start_node))
     {
-        // printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
+#ifdef DEBUG_PATH
+        printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
         ant.x = current.coord.x;
         ant.y = current.coord.y;
+#endif
         path.push_back(current);
         current = came_from[current];
     }
-    // printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
+#ifdef DEBUG_PATH
+    printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
+#endif
     path.push_back(start_node); // optional
     reverse(path.begin(), path.end());
 
     // We need to define an appropriate angle, but return value is kinda like this
-    int i = 0;
-    for (auto circle : circles)
-    {
-        // printf("c %f %f %f %i\n", circle.center.x, circle.center.y, circle.radius, i);
-        i++;
-    }
     return Objective(path[1].coord.x, path[1].coord.y, M_PI / 4.);
 }

@@ -206,11 +206,6 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     // Now, storing all the edges together:
     surfing_edges.insert(surfing_edges.end(), hugging_edges.begin(), hugging_edges.end());
 
-#ifdef DEBUG_PATH
-    for (auto edge : surfing_edges)
-        printf("e %f %f %f %f\n", edge.n1.coord.x, edge.n1.coord.y, edge.n2.coord.x, edge.n2.coord.y);
-#endif
-
     // A* Star
     node_t start_node = circle_to_node((int)circles.size() - 2, nodes);
     node_t goal_node = circle_to_node((int)circles.size() - 1, nodes);
@@ -244,28 +239,37 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     }
 
     // Generating all path
+#ifndef DEBUG_PATH
     vector<node_t> path;
     node_t current = goal_node;
-#ifdef DEBUG_PATH
-    float_pair ant = current.coord;
-#endif
     while (!(current == start_node))
     {
-#ifdef DEBUG_PATH
-        printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
-        ant.x = current.coord.x;
-        ant.y = current.coord.y;
-#endif
         path.push_back(current);
         current = came_from[current];
     }
-#ifdef DEBUG_PATH
-    printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
-#endif
+    path.push_back(start_node); // optional
+    reverse(path.begin(), path.end());
+#else
+    for (auto edge : surfing_edges)
+        printf("e %f %f %f %f\n", edge.n1.coord.x, edge.n1.coord.y, edge.n2.coord.x, edge.n2.coord.y);
+
+    vector<node_t> path;
+    node_t current = goal_node;
+    float_pair ant = current.coord;
+
+    while (!(current == start_node))
+    {
+        printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
+        ant.x = current.coord.x;
+        ant.y = current.coord.y;
+
+        path.push_back(current);
+        current = came_from[current];
+    }
     path.push_back(start_node); // optional
     reverse(path.begin(), path.end());
 
-#ifdef DEBUG_PATH
+    printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
     int i;
     for (auto circle : circles)
     {

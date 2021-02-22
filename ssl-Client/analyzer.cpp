@@ -13,6 +13,7 @@
 #include "header.h"
 #include "math_operations.h"
 
+// print a bot array info
 void print_bot_info(fira_message::sim_to_ref::Robot bots[NUM_BOTS], int color)
 {
     for (int i = 0; i < NUM_BOTS; i++){
@@ -23,6 +24,7 @@ void print_bot_info(fira_message::sim_to_ref::Robot bots[NUM_BOTS], int color)
     printf("\n");
 }
 
+// prints ball info
 void print_ball_info(fira_message::sim_to_ref::Ball ball)
 {
     printf("Ball:\n");
@@ -31,7 +33,7 @@ void print_ball_info(fira_message::sim_to_ref::Ball ball)
     printf("\n");
 }
 
-
+// return the index of the biggest double in a array
 int max_dist_index(double d[NUM_BOTS])
 {
     int max = 0;
@@ -41,6 +43,7 @@ int max_dist_index(double d[NUM_BOTS])
     return max;
 }
 
+// return the index of the smallest double in a array
 int min_dist_index(double d[NUM_BOTS])
 {
     int min = 0;
@@ -50,16 +53,13 @@ int min_dist_index(double d[NUM_BOTS])
     return min;
 }
 
-bool ball_is_on_my_field(fira_message::sim_to_ref::Ball ball, bool mray)
-{
-    return mray ? ball.x() > MID_FIELD : ball.x() < MID_FIELD;
-}
-
+// true if x is on your field, false otherwise
 bool is_on_my_field(double x, bool mray)
 {
     return mray ? x > MID_FIELD : x < MID_FIELD;
 }
 
+// true if the closest bot to the ball is yours, false otherwise
 bool we_are_closer(field_t *f)
 {
     double our_distances[NUM_BOTS];
@@ -79,6 +79,8 @@ bool we_are_closer(field_t *f)
     return our_distances[min_dist_index(our_distances)] < their_distances[min_dist_index(their_distances)];
 }   
 
+// true if the ball and and offender are on your field simoutaniously
+// false otherwise
 bool they_are_atacking(field_t *f)
 {
     if (!ball_is_on_my_field(f->ball, f->my_robots_are_yellow))
@@ -90,6 +92,8 @@ bool they_are_atacking(field_t *f)
     return i != NUM_BOTS;
 }
 
+// true if the ball and one of your bots are on the oposite field
+// false otherwise
 bool we_are_atacking(field_t *f)
 {
     if (ball_is_on_my_field(f->ball, f->my_robots_are_yellow))
@@ -101,6 +105,8 @@ bool we_are_atacking(field_t *f)
     return i != NUM_BOTS;
 }
 
+// main exported function of lib
+// returns the field status based on field info
 int field_analyzer(field_t *f )
 {
     bool wrc = we_are_closer(f);

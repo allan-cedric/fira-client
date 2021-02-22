@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
       fira_message::sim_to_ref::Frame detection = packet.frame();
 
       fill_field(detection, &field);
-      field_analyzer(&field);
+      int field_status = field_analyzer(&field);
 
       //Our robot info:
       for (int i = 0; i < field.our_bots_n; i++){

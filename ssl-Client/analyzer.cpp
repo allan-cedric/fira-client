@@ -50,35 +50,73 @@ int min_dist_index(double d[NUM_BOTS])
     return min;
 }
 
-int we_are_closer(fira_message::sim_to_ref::Robot our_bots[NUM_BOTS], 
-                fira_message::sim_to_ref::Robot their_bots[NUM_BOTS], 
-                fira_message::sim_to_ref::Ball ball )
+bool ball_is_on_my_field(fira_message::sim_to_ref::Ball ball, bool mray)
+{
+    return mray ? ball.x() > MID_FIELD : ball.x() < MID_FIELD;
+}
+
+bool is_on_my_field(double x, bool mray)
+{
+    return mray ? x > MID_FIELD : x < MID_FIELD;
+}
+
+bool we_are_closer(field_t *f)
 {
     double our_distances[NUM_BOTS];
     double their_distances[NUM_BOTS];
-    float_pair ball_p = {.x = ball.x(), .y = ball.y() };
+    float_pair ball_p = {.x = f->ball.x(), .y = f->ball.y() };
 
     for (int i = 0; i < NUM_BOTS; i++) {
-        float_pair bot_p = {.x = our_bots[i].x(), .y = our_bots[i].y() };
+        float_pair bot_p = {.x = f->our_bots[i].x(), .y = f->our_bots[i].y() };
         our_distances[i] = vec_distance(bot_p, ball_p);
     }
 
     for (int i = 0; i < NUM_BOTS; i++) {
-        float_pair bot_p = {.x = their_bots[i].x(), .y = their_bots[i].y() };
+        float_pair bot_p = {.x = f->their_bots[i].x(), .y = f->their_bots[i].y() };
         their_distances[i] = vec_distance(bot_p, ball_p);
     }
 
     return our_distances[min_dist_index(our_distances)] < their_distances[min_dist_index(their_distances)];
 }   
 
+bool they_are_atacking(field_t *f)
+{
+    if (!ball_is_on_my_field(f->ball, f->my_robots_are_yellow))
+        return false;
+
+    int i = 0;
+    while (!is_on_my_field(f->their_bots[i].x(), f->my_robots_are_yellow) && (i++ < NUM_BOTS));
+
+    return i != NUM_BOTS;
+}
+
+bool we_are_atacking(field_t *f)
+{
+    if (ball_is_on_my_field(f->ball, f->my_robots_are_yellow))
+        return false;
+
+    int i = 0;
+    while (is_on_my_field(f->our_bots[i].x(), f->my_robots_are_yellow) && (i++ < NUM_BOTS));
+
+    return i != NUM_BOTS;
+}
+
 int field_analyzer(field_t *f )
 {
-    int wrc = we_are_closer(f->our_bots, f->their_bots, f->ball);
+    bool wrc = we_are_closer(f);
+    bool tra = they_are_atacking(f);
+    bool wra = we_are_atacking(f);
 
-    printf("%s WRC: %d\n", f->my_robots_are_yellow ? "y" : "b",  wrc);
-    print_ball_info(f->ball);
-    print_bot_info(f->our_bots, f->my_robots_are_yellow);
-    print_bot_info(f->their_bots, f->my_robots_are_yellow);
+    // printf("WRC: %d\n", wrc);
+    printf("TRA: %d\n", tra);
+    printf("WRA: %d\n", wra);
+    printf("\n");
+    // print_ball_info(f->ball);
+    // print_bot_info(f->our_bots, f->my_robots_are_yellow);
+    // print_bot_info(f->their_bots, f->my_robots_are_yellow);
 
+    if (wrc) return WRC;
+    if (!wrc) return TRC;
+    
     return 1;
 }

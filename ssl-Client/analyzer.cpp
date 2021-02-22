@@ -11,10 +11,9 @@
 #include "math_operations.h"
 
 // print a bot array info
-void print_bot_info(fira_message::sim_to_ref::Robot bots[NUM_BOTS], int color)
+void print_bot_info(fira_message::sim_to_ref::Robot bots[NUM_BOTS])
 {
     for (int i = 0; i < NUM_BOTS; i++){
-        printf("%s: %d ", !color ? "Blue" : "Yellow", i);
         printf("x: %f y: %f a: %f \n", bots[i].x(), bots[i].y(), bots[i].orientation());
         printf("vx: %f vy: %f va: %f \n", bots[i].vx(), bots[i].vy(), bots[i].vorientation());
     }
@@ -86,7 +85,7 @@ bool they_are_atacking(field_t *f)
     int i = 0;
     while (!is_on_my_field(f->their_bots[i].x(), f->my_robots_are_yellow) && (i++ < NUM_BOTS));
 
-    return i != NUM_BOTS;
+    return i < NUM_BOTS;
 }
 
 // true if the ball and one of your bots are on the oposite field
@@ -99,7 +98,7 @@ bool we_are_atacking(field_t *f)
     int i = 0;
     while (is_on_my_field(f->our_bots[i].x(), f->my_robots_are_yellow) && (i++ < NUM_BOTS));
 
-    return i != NUM_BOTS;
+    return i < NUM_BOTS;
 }
 
 // main exported function of lib
@@ -110,16 +109,19 @@ int field_analyzer(field_t *f )
     bool tra = they_are_atacking(f);
     bool wra = we_are_atacking(f);
 
-    // printf("WRC: %d\n", wrc);
-    printf("TRA: %d\n", tra);
-    printf("WRA: %d\n", wra);
-    printf("\n");
-    // print_ball_info(f->ball);
-    // print_bot_info(f->our_bots, f->my_robots_are_yellow);
-    // print_bot_info(f->their_bots, f->my_robots_are_yellow);
+    printf("========================================\n");
+    printf("%s\n", f->my_robots_are_yellow ? "YELLOW" : "BLUE");
+    printf("%s\n\n", wra ? "WRA" : (tra ? "TRA" : (wrc ? "WRC" : "TRC")));
+    print_ball_info(f->ball);
+    printf("OUR BOTS:\n");
+    print_bot_info(f->our_bots);
+    printf("THEIR BOTS:\n");
+    print_bot_info(f->their_bots);
 
+    if (wra) return WRA;
+    if (tra) return TRA;
     if (wrc) return WRC;
     if (!wrc) return TRC;
-    
-    return 1;
+
+    return 0;
 }

@@ -26,7 +26,7 @@ enum
 {
     WRC = 1, // we are closer
     TRC, // they are closer
-    WRD, // we are atacking
+    WRA, // we are atacking
     TRA, // they are atacking
 };
 

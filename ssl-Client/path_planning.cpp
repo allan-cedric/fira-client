@@ -191,7 +191,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
                     if (circle_nodes[i].circle_index != k) // Not the same circle
                     {
                         // If the circles are overlap
-                        if (vec_distance(circles[k].center, circles[circle_nodes[i].circle_index].center) <= circles[k].radius + circles[circle_nodes[i].circle_index].radius)
+                        if (vec_distance(circles[k].center, circles[circle_nodes[i].circle_index].center) <= (circles[k].radius + circles[circle_nodes[i].circle_index].radius))
                         {
                             blocking_edge = is_blocking_js(circles[k], circles[circle_nodes[i].circle_index]);
                         }

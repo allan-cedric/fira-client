@@ -2,7 +2,7 @@
 #define ANALYZER
 
 // Uncomment to print information about all robots
-//#define ALL_META_INFO_ROBOTS
+#define ALL_META_INFO_ROBOTS
 
 #include "net/robocup_ssl_client.h"
 #include "net/grSim_client.h"

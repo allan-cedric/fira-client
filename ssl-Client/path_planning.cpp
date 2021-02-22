@@ -244,13 +244,13 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     vector<node_t> path;
     while (!(current == start_node))
     {
-        printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
+        // printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
         ant.x = current.coord.x;
         ant.y = current.coord.y;
         path.push_back(current);
         current = came_from[current];
     }
-    printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
+    // printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
     path.push_back(start_node); // optional
     reverse(path.begin(), path.end());
 
@@ -258,7 +258,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     int i = 0;
     for (auto circle : circles)
     {
-        printf("c %f %f %f %i\n", circle.center.x, circle.center.y, circle.radius, i);
+        // printf("c %f %f %f %i\n", circle.center.x, circle.center.y, circle.radius, i);
         i++;
     }
     return Objective(path[1].coord.x, path[1].coord.y, M_PI / 4.);

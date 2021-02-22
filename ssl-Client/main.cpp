@@ -11,17 +11,6 @@
 #include "analyzer.h"
 #include "path_planning.h"
 
-void printRobotInfo(const fira_message::sim_to_ref::Robot &robot)
-{
-  printf("ID=%3d \n", robot.robot_id());
-
-  printf(" POS=<%9.2f,%9.2f> \n", robot.x(), robot.y());
-  printf(" VEL=<%9.2f,%9.2f> \n", robot.vx(), robot.vy());
-
-  printf("ANGLE=%6.3f \n", robot.orientation());
-  printf("ANGLE VEL=%6.3f \n", robot.vorientation());
-}
-
 double to180range(double angle)
 {
   angle = fmod(angle, 2 * M_PI);
@@ -111,13 +100,47 @@ void PID(fira_message::sim_to_ref::Robot robot, Objective objective, int index, 
   grSim_client->sendCommand(leftMotorSpeed, rightMotorSpeed, my_robots_are_yellow, index);
 }
 
+void fill_field(fira_message::sim_to_ref::Frame detection, field_t *f)
+{
+  if (f->my_robots_are_yellow) {
+    f->our_bots_n = detection.robots_yellow_size();
+    f->their_bots_n = detection.robots_blue_size();
+  } else {
+    f->our_bots_n = detection.robots_blue_size();
+    f->their_bots_n = detection.robots_yellow_size();
+  }
+
+  f->ball = detection.ball();
+  f->ball.set_x((length + f->ball.x()) * 100);
+  f->ball.set_y((width + f->ball.y()) * 100);
+
+  for (int i = 0; i < NUM_BOTS; i++){
+    if (f->my_robots_are_yellow) {
+      f->our_bots[i] = detection.robots_yellow(i);
+      f->their_bots[i] = detection.robots_blue(i);
+    } else {
+      f->our_bots[i] = detection.robots_blue(i);
+      f->their_bots[i] = detection.robots_yellow(i);
+    }
+    f->our_bots[i].set_x((length + f->our_bots[i].x()) * 100);
+    f->our_bots[i].set_y((width + f->our_bots[i].y()) * 100);
+    f->our_bots[i].set_orientation(to180range(f->our_bots[i].orientation()));
+    f->their_bots[i].set_x((length + f->their_bots[i].x()) * 100);
+    f->their_bots[i].set_y((width + f->their_bots[i].y()) * 100);
+    f->their_bots[i].set_orientation(to180range(f->their_bots[i].orientation()));
+  }
+
+}
+
 int main(int argc, char *argv[])
 {
   (void)argc;
   (void)argv;
 
+  field_t field;
+
   //define your team color here
-  bool my_robots_are_yellow = false;
+  field.my_robots_are_yellow = false;
 
   // the ip address need to be in the range 224.0.0.0 through 239.255.255.255
   RoboCupSSLClient *visionClient = new RoboCupSSLClient("224.0.0.1", 10002);
@@ -130,57 +153,23 @@ int main(int argc, char *argv[])
   while (true){
     if (visionClient->receive(packet) && packet.has_frame()){
       fira_message::sim_to_ref::Frame detection = packet.frame();
+      fill_field(detection, &field);
 
-      int our_bots_n, their_bots_n;
-      if (my_robots_are_yellow) {
-        our_bots_n = detection.robots_yellow_size();
-        their_bots_n = detection.robots_blue_size();
-      } else {
-        our_bots_n = detection.robots_blue_size();
-        their_bots_n = detection.robots_yellow_size();
-      }
-
-      //Ball info:
-      fira_message::sim_to_ref::Ball ball = detection.ball();
-      ball.set_x((length + ball.x()) * 100);
-      ball.set_y((width + ball.y()) * 100);
-
-      fira_message::sim_to_ref::Robot our_bots[NUM_BOTS];
-      fira_message::sim_to_ref::Robot their_bots[NUM_BOTS];
-
-      for (int i = 0; i < NUM_BOTS; i++){
-        if (my_robots_are_yellow) {
-          our_bots[i] = detection.robots_yellow(i);
-          their_bots[i] = detection.robots_blue(i);
-        } else {
-          our_bots[i] = detection.robots_blue(i);
-          their_bots[i] = detection.robots_yellow(i);
-        }
-        our_bots[i].set_x((length + our_bots[i].x()) * 100);
-        our_bots[i].set_y((width + our_bots[i].y()) * 100);
-        our_bots[i].set_orientation(to180range(our_bots[i].orientation()));
-        their_bots[i].set_x((length + their_bots[i].x()) * 100);
-        their_bots[i].set_y((width + their_bots[i].y()) * 100);
-        their_bots[i].set_orientation(to180range(their_bots[i].orientation()));
-      }
-      
       //Our robot info:
-      for (int i = 0; i < our_bots_n; i++){
+      for (int i = 0; i < field.our_bots_n; i++){
         vector<fira_message::sim_to_ref::Robot> other_robots;
-        for(int j = 0; j < our_bots_n; j++)
-        {
+        for(int j = 0; j < field.our_bots_n; j++) {
           if(i != j)
             other_robots.push_back(detection.robots_blue(j));
         }
-        for(int j = 0; j < their_bots_n; j++)
+        for(int j = 0; j < field.their_bots_n; j++)
             other_robots.push_back(detection.robots_yellow(j));
 
-        Objective o = path(other_robots, our_bots[i], ball.x(), ball.y(), 0);
+        Objective o = path(other_robots, field.our_bots[i], field.ball.x(), field.ball.y(), 0);
         other_robots.clear();
-        PID(our_bots[i], o, i, my_robots_are_yellow, commandClient);
+        PID(field.our_bots[i], o, i, field.my_robots_are_yellow, commandClient);
       }
-
-      field_analyzer(detection, my_robots_are_yellow);
+      field_analyzer(detection, field.my_robots_are_yellow);
     } else {
       // pass and wait for wwindow
     }

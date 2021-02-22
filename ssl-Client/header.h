@@ -9,6 +9,12 @@
 
 #define MID_FIELD 160/2
 
+enum {
+    GOALKEEPER = 0,
+    ATACKER,
+    DEFENDER
+};
+
 typedef struct {
     bool
         especial_case, 
@@ -24,8 +30,9 @@ typedef struct {
 typedef struct {
     double x, y, a, // positions
         vx, vy, va; // speeds
-    int status; // what should the bot do
+    int fun; // what is th bot function now
     objective_t obj;
+    int index;
 } bot_t;
 
 typedef struct {

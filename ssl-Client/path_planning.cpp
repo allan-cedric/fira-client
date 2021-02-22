@@ -109,15 +109,6 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
         circles.push_back(circle);
     }
 
-#ifdef DEBUG_PATH
-    int i;
-    for (auto circle : circles)
-    {
-        printf("c %f %f %f %i\n", circle.center.x, circle.center.y, circle.radius, i);
-        i++;
-    }
-#endif
-
     // Implementation details:
     // For special reasons we are not going to tell you,
     // we need the goal and the current position to be circles as well.
@@ -273,6 +264,15 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
 #endif
     path.push_back(start_node); // optional
     reverse(path.begin(), path.end());
+
+#ifdef DEBUG_PATH
+    int i;
+    for (auto circle : circles)
+    {
+        printf("c %f %f %f %i\n", circle.center.x, circle.center.y, circle.radius, i);
+        i++;
+    }
+#endif
 
     // We need to define an appropriate angle, but return value is kinda like this
     return Objective(path[1].coord.x, path[1].coord.y, M_PI / 4.);

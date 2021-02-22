@@ -334,10 +334,15 @@ int main(int argc, char *argv[])
       fira_message::sim_to_ref::Ball ball = detection.ball();
       ball.set_x((length + ball.x()) * 100);
       ball.set_y((width + ball.y()) * 100);
+<<<<<<< HEAD
+=======
+      //printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
+>>>>>>> c13edd1bf9ee5d63943aa9b33838dd868e9f422b
       
       // Path planning test
       //Blue robot info:
-      for (int i = 0; i < robots_blue_n; i++){
+      //for (int i = 0; i < robots_blue_n; i++){
+        int i = 0;
         fira_message::sim_to_ref::Robot robot_B = detection.robots_blue(i);
         robot_B.set_x((length + robot_B.x()) * 100); //convertendo para centimetros
         robot_B.set_y((width + robot_B.y()) * 100);
@@ -356,8 +361,9 @@ int main(int argc, char *argv[])
             other_robots.push_back(detection.robots_yellow(j));
 
         Objective o = path(other_robots, robot_B, ball.x(), ball.y(), 0);
-        PID(robot_B, o, i, my_robots_are_yellow, commandClient);
-      }
+        other_robots.clear();
+        //PID(robot_B, o, i, my_robots_are_yellow, commandClient);
+      //}
 
       //Yellow robot info:
       

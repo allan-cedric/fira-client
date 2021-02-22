@@ -1,4 +1,4 @@
-// From: 
+// From:
 // https://redblobgames.github.io/circular-obstacle-pathfinding/
 // https://www.redblobgames.com/pathfinding/a-star/introduction.html
 // https://www.redblobgames.com/pathfinding/a-star/implementation.html
@@ -85,8 +85,8 @@ double edge_cost(node_t a, node_t b, vector<circle_t> &circles)
 double heuristic(node_t next, node_t goal)
 {
     // We are not using yet
-    (void) next;
-    (void) goal;
+    (void)next;
+    (void)goal;
     return 0; // TODO: not working yet
     //return vec_distance(goal_node, node);
 }
@@ -97,11 +97,17 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     // We are not using yet
     (void)theta;
 
+    double width, length;
+    width = 1.3 / 2.0;
+    length = 1.7 / 2.0;
+
     // transforming robots into circles
-    vector<circle_t> circles(other_robots.size());
+    vector<circle_t> circles;
 
     for (int i = 0; i < (int)other_robots.size(); i++)
     {
+        other_robots[i].set_x((length + other_robots[i].x()) * 100); //convertendo para centimetros
+        other_robots[i].set_y((width + other_robots[i].y()) * 100);
         float_pair center = {.x = other_robots[i].x(), .y = other_robots[i].y()};
         circle_t circle = {.center = center, .radius = RADIUS};
         circles.push_back(circle);
@@ -138,7 +144,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
 
             auto internal = InternalBitangents(circles[i], circles[j]);
 
-            if(!internal.empty()) // there are internal bitangents, circles don't overlap
+            if (!internal.empty()) // there are internal bitangents, circles don't overlap
             {
                 C = internal[0];
                 D = internal[1];
@@ -172,6 +178,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
         nodes_in_each_circle[node.circle_index].push_back(node);
 
     vector<edge_t> hugging_edges;
+    bool blocking_edge;
 
     for (auto circle_nodes : nodes_in_each_circle)
     {
@@ -181,7 +188,21 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
             for (int j = 0; j < i; j++)
             {
                 edge_t edge = {.n1 = circle_nodes[i], .n2 = circle_nodes[j]};
-                hugging_edges.push_back(edge);
+                for (int k = 0; k < (int)circles.size(); k++)
+                {
+                    blocking_edge = false;
+                    // For each circle check whether it's block the hugging edges
+                    if (circle_nodes[i].circle_index != k) // Not the same circle
+                    {
+                        // If the circles are overlap
+                        if (vec_distance(circles[k].center, circles[circle_nodes[i].circle_index].center) <= circles[k].radius + circles[circle_nodes[i].circle_index].radius)
+                        {
+                            blocking_edge = is_blocking_js(circles[k], circles[circle_nodes[i].circle_index]);
+                        }
+                    }
+                    if (!blocking_edge)
+                        hugging_edges.push_back(edge);
+                }
             }
         }
     }
@@ -223,15 +244,26 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
 
     // Generating all path
     node_t current = goal_node;
+    float_pair ant = current.coord;
     vector<node_t> path;
     while (!(current == start_node))
     {
+        printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
+        ant.x = current.coord.x;
+        ant.y = current.coord.y;
         path.push_back(current);
         current = came_from[current];
     }
+    printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
     path.push_back(start_node); // optional
     reverse(path.begin(), path.end());
 
     // We need to define an appropriate angle, but return value is kinda like this
-    return Objective(path[1].coord.x, path[1].coord.y, M_PI/4.);
+    int i = 0;
+    for (auto circle : circles)
+    {
+        printf("c %f %f %f %i\n", circle.center.x, circle.center.y, circle.radius, i);
+        i++;
+    }
+    return Objective(path[1].coord.x, path[1].coord.y, M_PI / 4.);
 }

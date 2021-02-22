@@ -161,18 +161,20 @@ int main(int argc, char *argv[])
       field_analyzer(&field);
 
       //Our robot info:
-      for (int i = 0; i < field.our_bots_n; i++){
-        vector<fira_message::sim_to_ref::Robot> other_robots;
-        for(int j = 0; j < field.our_bots_n; j++) {
-          if(i != j)
-            other_robots.push_back(detection.robots_blue(j));
-        }
-        for(int j = 0; j < field.their_bots_n; j++)
-            other_robots.push_back(detection.robots_yellow(j));
+      for (int i = 0; i < field.our_bots_n - field.our_bots_n + 1; i++){
+        
+          bot_t other_robots[field.our_bots_n + field.their_bots_n - 1];
 
-        // objective_t o = path(other_robots, field.our_bots[i], field.ball.x(), field.ball.y(), 0);
-        // other_robots.clear();
-        // PID(field.our_bots[i], o, i, field.my_robots_are_yellow, commandClient);
+          for(int a = 0, b = 0; a < field.our_bots_n + field.their_bots_n - 1; b++)
+          {
+            if(b != i)
+              other_robots[a++] = field.our_bots[b];
+            other_robots[a++] = field.their_bots[b];
+          }
+
+          //objective_t o = path(other_robots, &field, field.our_bots[i], field.ball.x, field.ball.y, 0);
+          // other_robots.clear();
+          // PID(field.our_bots[i], o, i, field.my_robots_are_yellow, commandClient);
       }
     } else {
       // pass and wait for wwindow

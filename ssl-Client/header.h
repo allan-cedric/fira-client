@@ -7,21 +7,25 @@
 #define width 1.3 / 2.0f
 #define length 1.7 / 2.0f
 
+#define MID_FIELD 160/2
+
+typedef struct {
+    double x, y, vx, vy;
+} bot_t;
+
 typedef struct {
     int our_bots_n, their_bots_n;
     fira_message::sim_to_ref::Ball ball;
     fira_message::sim_to_ref::Robot our_bots[NUM_BOTS];
     fira_message::sim_to_ref::Robot their_bots[NUM_BOTS];
-    int my_robots_are_yellow;
+    bool my_robots_are_yellow;
 } field_t;
 
+// field status
 enum
 {
-    APROXIMA = 0,
-    DECIDE_DESVIO,
-    SOBE,
-    DESCE,
-    VOLTA
+    WRC = 1, // we are closer
+    TRC, // they are closer
 };
 
 class Objective

@@ -333,10 +333,6 @@ int main(int argc, char *argv[])
         their_bots_n = detection.robots_yellow_size();
       }
 
-      double width, length;
-      width = 1.3 / 2.0;
-      length = 1.7 / 2.0;
-
       //Ball info:
       fira_message::sim_to_ref::Ball ball = detection.ball();
       ball.set_x((length + ball.x()) * 100);

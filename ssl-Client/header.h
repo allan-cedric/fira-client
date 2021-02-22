@@ -2,6 +2,9 @@
 #define HEADER
 
 #define NUM_BOTS 3
+#define width 1.3 / 2.0f
+#define length 1.7 / 2.0f
+
 
 enum
 {

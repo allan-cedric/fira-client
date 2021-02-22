@@ -1,3 +1,7 @@
+// Made by Artur Coelho for Yapira UFPR on Feb 2021 
+// for the FIRASim simulator competition 
+// on the virtual IRONCUP 2021
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -8,8 +12,6 @@
 
 #include "header.h"
 #include "math_operations.h"
-
-const double width = 1.3 / 2.0, length = 1.7 / 2.0;
 
 inline double get_len(double base)
 {

@@ -97,10 +97,6 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     // We are not using yet
     (void)theta;
 
-    double width, length;
-    width = 1.3 / 2.0;
-    length = 1.7 / 2.0;
-
     // transforming robots into circles
     vector<circle_t> circles;
 

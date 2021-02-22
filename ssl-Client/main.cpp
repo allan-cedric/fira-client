@@ -308,6 +308,7 @@ int main(int argc, char *argv[])
 {
   (void)argc;
   (void)argv;
+
   //define your team color here
   bool my_robots_are_yellow = false;
 
@@ -323,67 +324,62 @@ int main(int argc, char *argv[])
     if (visionClient->receive(packet) && packet.has_frame()){
       fira_message::sim_to_ref::Frame detection = packet.frame();
 
-      int robots_blue_n = detection.robots_blue_size();
-      int robots_yellow_n = detection.robots_yellow_size();
+      int our_bots_n, their_bots_n;
+      if (my_robots_are_yellow) {
+        our_bots_n = detection.robots_yellow_size();
+        their_bots_n = detection.robots_blue_size();
+      } else {
+        our_bots_n = detection.robots_blue_size();
+        their_bots_n = detection.robots_yellow_size();
+      }
+
       double width, length;
       width = 1.3 / 2.0;
       length = 1.7 / 2.0;
 
       //Ball info:
-
       fira_message::sim_to_ref::Ball ball = detection.ball();
       ball.set_x((length + ball.x()) * 100);
       ball.set_y((width + ball.y()) * 100);
-<<<<<<< HEAD
-=======
-      //printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
->>>>>>> c13edd1bf9ee5d63943aa9b33838dd868e9f422b
-      
-      // Path planning test
-      //Blue robot info:
-      //for (int i = 0; i < robots_blue_n; i++){
-        int i = 0;
-        fira_message::sim_to_ref::Robot robot_B = detection.robots_blue(i);
-        robot_B.set_x((length + robot_B.x()) * 100); //convertendo para centimetros
-        robot_B.set_y((width + robot_B.y()) * 100);
-        robot_B.set_orientation(to180range(robot_B.orientation()));
-        // printf("-Robot(B) (%2d/%2d): ", i + 1, robots_blue_n);
-        // printRobotInfo(robot_B);
 
-        //Objective o = defineObjectiveBlue(robot_B, ball);
+      fira_message::sim_to_ref::Robot our_bots[NUM_BOTS];
+      fira_message::sim_to_ref::Robot their_bots[NUM_BOTS];
+
+      for (int i = 0; i < NUM_BOTS; i++){
+        if (my_robots_are_yellow) {
+          our_bots[i] = detection.robots_yellow(i);
+          their_bots[i] = detection.robots_blue(i);
+        } else {
+          our_bots[i] = detection.robots_blue(i);
+          their_bots[i] = detection.robots_yellow(i);
+        }
+        our_bots[i].set_x((length + our_bots[i].x()) * 100);
+        our_bots[i].set_y((width + our_bots[i].y()) * 100);
+        our_bots[i].set_orientation(to180range(our_bots[i].orientation()));
+        their_bots[i].set_x((length + their_bots[i].x()) * 100);
+        their_bots[i].set_y((width + their_bots[i].y()) * 100);
+        their_bots[i].set_orientation(to180range(their_bots[i].orientation()));
+      }
+      
+      //Our robot info:
+      for (int i = 0; i < our_bots_n; i++){
         vector<fira_message::sim_to_ref::Robot> other_robots;
-        for(int j = 0; j < robots_blue_n; j++)
+        for(int j = 0; j < our_bots_n; j++)
         {
           if(i != j)
             other_robots.push_back(detection.robots_blue(j));
         }
-        for(int j = 0; j < robots_yellow_n; j++)
+        for(int j = 0; j < their_bots_n; j++)
             other_robots.push_back(detection.robots_yellow(j));
 
-        Objective o = path(other_robots, robot_B, ball.x(), ball.y(), 0);
+        Objective o = path(other_robots, our_bots[i], ball.x(), ball.y(), 0);
         other_robots.clear();
-        //PID(robot_B, o, i, my_robots_are_yellow, commandClient);
-      //}
-
-      //Yellow robot info:
-      
-      //  for (int i = 0; i < robots_yellow_n; i++){
-      //   fira_message::sim_to_ref::Robot robot_Y = detection.robots_yellow(i);
-      //   robot_Y.set_x((length + robot_Y.x()) * 100); //convertendo para centimetros
-      //   robot_Y.set_y((width + robot_Y.y()) * 100);
-      //   robot_Y.set_orientation(to180range(robot_Y.orientation()));
-      //   // printf("-Robot(Y) (%2d/%2d): ", i + 1, robots_yellow_n);
-      //   // printRobotInfo(robot_Y);
-      
-      //   Objective o = defineObjectiveYellow(robot_Y, ball);
-      //   // PID(robot_Y, o, i, !my_robots_are_yellow, commandClient);
-      // }
-      
-
+        PID(our_bots[i], o, i, my_robots_are_yellow, commandClient);
+      }
 
       field_analyzer(detection, my_robots_are_yellow);
     } else {
-      // pass
+      // pass and wait for wwindow
     }
   }
 

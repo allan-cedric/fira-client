@@ -123,6 +123,8 @@ void field_analyzer(field_t *f)
     if (!f->fs.tra){
         f->fs.wra = we_are_atacking(f);
     }
+    
+
 #ifdef ALL_META_INFO_ROBOTS
     print_field(f);
 #endif

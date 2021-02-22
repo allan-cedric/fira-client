@@ -10,7 +10,9 @@
 #define MID_FIELD 160/2
 
 typedef struct {
-    bool wrc, // we are closer
+    bool
+        especial_case, 
+        wrc, // we are closer
         tra, // they are atacking
         wra; // we are atacking
 } field_status_t;

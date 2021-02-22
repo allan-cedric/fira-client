@@ -334,7 +334,6 @@ int main(int argc, char *argv[])
       fira_message::sim_to_ref::Ball ball = detection.ball();
       ball.set_x((length + ball.x()) * 100);
       ball.set_y((width + ball.y()) * 100);
-      printf("-Ball:  POS=<%9.2f,%9.2f> \n", ball.x(), ball.y());
       
       // Path planning test
       //Blue robot info:
@@ -354,25 +353,29 @@ int main(int argc, char *argv[])
             other_robots.push_back(detection.robots_blue(j));
         }
         for(int j = 0; j < robots_yellow_n; j++)
-            other_robots.push_back(detection.robots_blue(j));
+            other_robots.push_back(detection.robots_yellow(j));
 
         Objective o = path(other_robots, robot_B, ball.x(), ball.y(), 0);
         PID(robot_B, o, i, my_robots_are_yellow, commandClient);
       }
 
       //Yellow robot info:
-      /*for (int i = 0; i < robots_yellow_n; i++){
-        fira_message::sim_to_ref::Robot robot_Y = detection.robots_yellow(i);
-        robot_Y.set_x((length + robot_Y.x()) * 100); //convertendo para centimetros
-        robot_Y.set_y((width + robot_Y.y()) * 100);
-        robot_Y.set_orientation(to180range(robot_Y.orientation()));
-        // printf("-Robot(Y) (%2d/%2d): ", i + 1, robots_yellow_n);
-        // printRobotInfo(robot_Y);
+      
+      //  for (int i = 0; i < robots_yellow_n; i++){
+      //   fira_message::sim_to_ref::Robot robot_Y = detection.robots_yellow(i);
+      //   robot_Y.set_x((length + robot_Y.x()) * 100); //convertendo para centimetros
+      //   robot_Y.set_y((width + robot_Y.y()) * 100);
+      //   robot_Y.set_orientation(to180range(robot_Y.orientation()));
+      //   // printf("-Robot(Y) (%2d/%2d): ", i + 1, robots_yellow_n);
+      //   // printRobotInfo(robot_Y);
+      
+      //   Objective o = defineObjectiveYellow(robot_Y, ball);
+      //   // PID(robot_Y, o, i, !my_robots_are_yellow, commandClient);
+      // }
+      
 
-        Objective o = defineObjectiveYellow(robot_Y, ball);
-        PID(robot_Y, o, i, !my_robots_are_yellow, commandClient);
-      }*/
-      field_analyzer(detection);
+
+      field_analyzer(detection, my_robots_are_yellow);
     } else {
       // pass
     }

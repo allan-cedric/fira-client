@@ -1,6 +1,8 @@
 #ifndef HEADER
 #define HEADER
 
+#define NUM_BOTS 3
+
 enum
 {
     APROXIMA = 0,

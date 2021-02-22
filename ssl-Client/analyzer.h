@@ -8,5 +8,5 @@
 
 #include "header.h"
 
-void print_bot_info(fira_message::sim_to_ref::Robot bots[3], int color);
-int field_analyzer(fira_message::sim_to_ref::Frame detection);
+void print_bot_info(fira_message::sim_to_ref::Robot[3], int);
+int field_analyzer(fira_message::sim_to_ref::Frame, bool);

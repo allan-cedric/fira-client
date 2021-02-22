@@ -78,12 +78,17 @@ bool we_are_closer(field_t *f)
     for (int i = 0; i < NUM_BOTS; i++){
         float_pair bot_p = {.x = f->our_bots[i].x, .y = f->our_bots[i].y};
         our_distances[i] = vec_distance(bot_p, ball_p);
+        f->our_bots[i].fun = NONE;
     }
 
     for (int i = 0; i < NUM_BOTS; i++){
         float_pair bot_p = {.x = f->their_bots[i].x, .y = f->their_bots[i].y};
         their_distances[i] = vec_distance(bot_p, ball_p);
     }
+
+    f->our_bots[0].fun = GOALKEEPER;
+    f->our_bots[min_dist_index(our_distances)].fun = CLOSER;
+    f->closer_bot = &f->our_bots[min_dist_index(our_distances)];
 
     return our_distances[min_dist_index(our_distances)] < their_distances[min_dist_index(their_distances)];
 }

@@ -10,9 +10,11 @@
 #define MID_FIELD 160/2
 
 enum {
-    GOALKEEPER = 0,
+    NONE = 0,
+    GOALKEEPER,
     ATACKER,
-    DEFENDER
+    DEFENDER,
+    CLOSER
 };
 
 typedef struct {
@@ -47,6 +49,7 @@ typedef struct {
     bot_t their_bots[NUM_BOTS];
     bool my_robots_are_yellow;
     field_status_t fs;
+    bot_t *closer_bot;
 } field_t;
 
 #endif

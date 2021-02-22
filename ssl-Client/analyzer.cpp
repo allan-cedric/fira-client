@@ -14,8 +14,7 @@
 // print a bot array info
 void print_bot_info(fira_message::sim_to_ref::Robot bots[NUM_BOTS])
 {
-    for (int i = 0; i < NUM_BOTS; i++)
-    {
+    for (int i = 0; i < NUM_BOTS; i++){
         printf("x: %f y: %f a: %f \n", bots[i].x(), bots[i].y(), bots[i].orientation());
         printf("vx: %f vy: %f va: %f \n", bots[i].vx(), bots[i].vy(), bots[i].vorientation());
     }
@@ -76,14 +75,12 @@ bool we_are_closer(field_t *f)
     double their_distances[NUM_BOTS];
     float_pair ball_p = {.x = f->ball.x(), .y = f->ball.y()};
 
-    for (int i = 0; i < NUM_BOTS; i++)
-    {
+    for (int i = 0; i < NUM_BOTS; i++){
         float_pair bot_p = {.x = f->our_bots[i].x(), .y = f->our_bots[i].y()};
         our_distances[i] = vec_distance(bot_p, ball_p);
     }
 
-    for (int i = 0; i < NUM_BOTS; i++)
-    {
+    for (int i = 0; i < NUM_BOTS; i++){
         float_pair bot_p = {.x = f->their_bots[i].x(), .y = f->their_bots[i].y()};
         their_distances[i] = vec_distance(bot_p, ball_p);
     }

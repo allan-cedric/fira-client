@@ -9,8 +9,18 @@
 
 #define MID_FIELD 160/2
 
+enum {
+    NONE = 0,
+    GOALKEEPER,
+    ATACKER,
+    DEFENDER,
+    CLOSER
+};
+
 typedef struct {
-    bool wrc, // we are closer
+    bool
+        especial_case, 
+        wrc, // we are closer
         tra, // they are atacking
         wra; // we are atacking
 } field_status_t;
@@ -22,8 +32,9 @@ typedef struct {
 typedef struct {
     double x, y, a, // positions
         vx, vy, va; // speeds
-    int status; // what should the bot do
+    int fun; // what is th bot function now
     objective_t obj;
+    int index;
 } bot_t;
 
 typedef struct {
@@ -38,6 +49,7 @@ typedef struct {
     bot_t their_bots[NUM_BOTS];
     bool my_robots_are_yellow;
     field_status_t fs;
+    bot_t *closer_bot;
 } field_t;
 
 #endif

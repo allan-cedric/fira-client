@@ -165,9 +165,9 @@ int main(int argc, char *argv[])
         for(int j = 0; j < field.their_bots_n; j++)
             other_robots.push_back(detection.robots_yellow(j));
 
-        Objective o = path(other_robots, field.our_bots[i], field.ball.x(), field.ball.y(), 0);
-        other_robots.clear();
-        PID(field.our_bots[i], o, i, field.my_robots_are_yellow, commandClient);
+        // Objective o = path(other_robots, field.our_bots[i], field.ball.x(), field.ball.y(), 0);
+        // other_robots.clear();
+        // PID(field.our_bots[i], o, i, field.my_robots_are_yellow, commandClient);
       }
       field_analyzer(detection, field.my_robots_are_yellow);
     } else {

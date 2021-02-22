@@ -92,7 +92,7 @@ double heuristic(node_t next, node_t goal)
     //return vec_distance(goal_node, node);
 }
 
-objective_t path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_message::sim_to_ref::Robot &my_robot,
+objective_t path(bot_t *other_robots, field_t *field, bot_t my_robot,
                double x, double y, double theta)
 {
     // We are not using yet
@@ -101,11 +101,9 @@ objective_t path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_mes
     // transforming robots into circles
     vector<circle_t> circles;
 
-    for (int i = 0; i < (int)other_robots.size(); i++)
+    for (int i = 0; i < field->their_bots_n + field->our_bots_n - 1; i++)
     {
-        other_robots[i].set_x((length + other_robots[i].x()) * 100); //convertendo para centimetros
-        other_robots[i].set_y((width + other_robots[i].y()) * 100);
-        float_pair center = {.x = other_robots[i].x(), .y = other_robots[i].y()};
+        float_pair center = {.x = other_robots[i].x, .y = other_robots[i].y};
         circle_t circle = {.center = center, .radius = RADIUS};
         circles.push_back(circle);
     }
@@ -116,7 +114,7 @@ objective_t path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_mes
     // these circles are special, though: their radius is equal to 0.
 
     // start circle
-    float_pair center = {.x = my_robot.x(), .y = my_robot.y()};
+    float_pair center = {.x = my_robot.x, .y = my_robot.y};
     circle_t start_circle = {.center = center, .radius = 0};
 
     // goal circle

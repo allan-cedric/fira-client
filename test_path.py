@@ -92,4 +92,4 @@ while True:
 
 
     cv.imshow("output", image)
-    cv.waitKey(1)
+    cv.waitKey(0)

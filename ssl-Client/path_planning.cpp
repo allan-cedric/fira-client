@@ -163,8 +163,6 @@ double heuristic(node_t next, node_t goal)
 objective_t path(bot_t *other_robots, field_t *field, bot_t my_robot,
                double x, double y, double theta)
 {
-    // We are not using yet
-    (void)theta;
 
     // transforming robots into circles
     vector<circle_t> circles;
@@ -320,8 +318,8 @@ objective_t path(bot_t *other_robots, field_t *field, bot_t my_robot,
     path.push_back(start_node); // optional
     reverse(path.begin(), path.end());
 #else
-    for (auto edge : surfing_edges)
-        printf("e %f %f %f %f\n", edge.n1.coord.x, edge.n1.coord.y, edge.n2.coord.x, edge.n2.coord.y);
+    // for (auto edge : surfing_edges)
+    //     printf("e %f %f %f %f\n", edge.n1.coord.x, edge.n1.coord.y, edge.n2.coord.x, edge.n2.coord.y);
 
     printf("Clear\n");
 

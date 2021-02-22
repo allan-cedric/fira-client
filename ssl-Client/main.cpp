@@ -39,7 +39,7 @@ double smallestAngleDiff(double target, double source)
   return a;
 }
 
-void PID(fira_message::sim_to_ref::Robot robot, Objective objective, int index, bool my_robots_are_yellow, GrSim_Client *grSim_client)
+void PID(fira_message::sim_to_ref::Robot robot, objective_t objective, int index, bool my_robots_are_yellow, GrSim_Client *grSim_client)
 {
   double Kp = 20;
   double Kd = 2.5;
@@ -52,7 +52,7 @@ void PID(fira_message::sim_to_ref::Robot robot, Objective objective, int index, 
 
   double angle_rob = robot.orientation();
 
-  double angle_obj = atan2(objective.y() - robot.y(), objective.x() - robot.x());
+  double angle_obj = atan2(objective.y - robot.y(), objective.x - robot.x());
 
   double error = smallestAngleDiff(angle_rob, angle_obj);
 
@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
       fira_message::sim_to_ref::Frame detection = packet.frame();
 
       fill_field(detection, &field);
-      int field_status = field_analyzer(&field);
+      field_analyzer(&field);
 
       //Our robot info:
       for (int i = 0; i < field.our_bots_n; i++){
@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
         for(int j = 0; j < field.their_bots_n; j++)
             other_robots.push_back(detection.robots_yellow(j));
 
-        // Objective o = path(other_robots, field.our_bots[i], field.ball.x(), field.ball.y(), 0);
+        // objective_t o = path(other_robots, field.our_bots[i], field.ball.x(), field.ball.y(), 0);
         // other_robots.clear();
         // PID(field.our_bots[i], o, i, field.my_robots_are_yellow, commandClient);
       }

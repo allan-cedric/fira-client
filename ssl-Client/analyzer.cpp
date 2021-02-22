@@ -31,6 +31,18 @@ void print_ball_info(fira_message::sim_to_ref::Ball ball)
     printf("\n");
 }
 
+void print_field(field_t *f)
+{
+    printf("========================================\n");
+    printf("%s\n", f->my_robots_are_yellow ? "YELLOW" : "BLUE");
+    printf("%s\n\n", f->fs.wra ? "WRA" : (f->fs.tra ? "TRA" : (f->fs.wrc ? "WRC" : "TRC")));
+    print_ball_info(f->ball);
+    printf("OUR BOTS:\n");
+    print_bot_info(f->our_bots);
+    printf("THEIR BOTS:\n");
+    print_bot_info(f->their_bots);
+}
+
 // return the index of the biggest double in a array
 int max_dist_index(double d[NUM_BOTS])
 {
@@ -107,28 +119,14 @@ bool we_are_atacking(field_t *f)
 
 // main exported function of lib
 // returns the field status based on field info
-int field_analyzer(field_t *f)
+void field_analyzer(field_t *f)
 {
-    bool wrc = we_are_closer(f);
-    bool tra = they_are_atacking(f);
-    bool wra = we_are_atacking(f);
+    f->fs.wrc = we_are_closer(f);
+    f->fs.tra = they_are_atacking(f);
+    if (!f->fs.tra){
+        f->fs.wra = we_are_atacking(f);
+    }
 
-#ifdef ALL_META_INFO_ROBOTS
-    printf("========================================\n");
-    printf("%s\n", f->my_robots_are_yellow ? "YELLOW" : "BLUE");
-    printf("%s\n\n", wra ? "WRA" : (tra ? "TRA" : (wrc ? "WRC" : "TRC")));
-    print_ball_info(f->ball);
-    printf("OUR BOTS:\n");
-    print_bot_info(f->our_bots);
-    printf("THEIR BOTS:\n");
-    print_bot_info(f->their_bots);
-#endif
+    print_field(f);
 
-    if (wra)
-        return WRA;
-    if (tra)
-        return TRA;
-    if (wrc)
-        return WRC;
-    return TRC;
 }

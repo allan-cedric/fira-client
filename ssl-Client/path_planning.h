@@ -57,7 +57,7 @@ double edge_cost(node_t a, node_t b, vector<circle_t> &circles);
 
 double heuristic(node_t next, node_t goal);
 
-Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_message::sim_to_ref::Robot &my_robot,
+objective_t path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_message::sim_to_ref::Robot &my_robot,
                double x, double y, double theta);
 
 #endif

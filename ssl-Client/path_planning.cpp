@@ -7,6 +7,7 @@
 
 // Translated to C++ by Gabriel Hishida and Allan Cedric for Yapira UFPR
 
+#include "header.h"
 #include "path_planning.h"
 
 // Try to add edge from circle i point P to circle j point Q
@@ -91,7 +92,7 @@ double heuristic(node_t next, node_t goal)
     //return vec_distance(goal_node, node);
 }
 
-Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_message::sim_to_ref::Robot &my_robot,
+objective_t path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_message::sim_to_ref::Robot &my_robot,
                double x, double y, double theta)
 {
     // We are not using yet
@@ -275,5 +276,6 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
 #endif
 
     // We need to define an appropriate angle, but return value is kinda like this
-    return Objective(path[1].coord.x, path[1].coord.y, M_PI / 4.);
+    objective_t o = {path[1].coord.x, path[1].coord.y, M_PI / 4.};
+    return o;
 }

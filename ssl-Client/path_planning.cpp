@@ -183,21 +183,24 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
             // For every circle, make an edge for each pair of nodes it has
             for (int j = 0; j < i; j++)
             {
-                edge_t edge = {.n1 = circle_nodes[i], .n2 = circle_nodes[j]};
-                for (int k = 0; k < (int)circles.size(); k++)
+                if (i != j)
                 {
-                    blocking_edge = false;
-                    // For each circle check whether it's block the hugging edges
-                    if (circle_nodes[i].circle_index != k) // Not the same circle
+                    edge_t edge = {.n1 = circle_nodes[i], .n2 = circle_nodes[j]};
+                    for (int k = 0; k < (int)circles.size(); k++)
                     {
-                        // If the circles are overlap
-                        if (vec_distance(circles[k].center, circles[circle_nodes[i].circle_index].center) <= (circles[k].radius + circles[circle_nodes[i].circle_index].radius))
+                        blocking_edge = false;
+                        // For each circle check whether it's block the hugging edges
+                        if (circle_nodes[i].circle_index != k) // Not the same circle
                         {
-                            blocking_edge = is_blocking_js(circles[k], circles[circle_nodes[i].circle_index]);
+                            // If the circles are overlap
+                            if (vec_distance(circles[k].center, circles[circle_nodes[i].circle_index].center) <= (circles[k].radius + circles[circle_nodes[i].circle_index].radius))
+                            {
+                                blocking_edge = is_blocking_js(circles[k], circles[circle_nodes[i].circle_index]);
+                            }
                         }
+                        if (!blocking_edge)
+                            hugging_edges.push_back(edge);
                     }
-                    if (!blocking_edge)
-                        hugging_edges.push_back(edge);
                 }
             }
         }
@@ -270,7 +273,7 @@ Objective path(vector<fira_message::sim_to_ref::Robot> &other_robots, fira_messa
     reverse(path.begin(), path.end());
 
     printf("l %f %f %f %f\n", current.coord.x, current.coord.y, ant.x, ant.y);
-    int i;
+    int i = 0;
     for (auto circle : circles)
     {
         printf("c %f %f %f %i\n", circle.center.x, circle.center.y, circle.radius, i);

@@ -10,6 +10,74 @@
 #include "header.h"
 #include "path_planning.h"
 
+vector<objective_t> intermediate_steps(float_pair start, float_pair end, circle_t circle)
+// in a hugging edge, get intermediate steps as objectives in order to run around the circle
+{
+    float_pair center = circle.center;
+    int number_of_steps = HUGGING_EDGE_STEPS;
+
+    double theta_start = atan2(start.y - center.y, start.x - center.x);
+    
+    if (theta_start < 0)
+        theta_start += 2 * M_PI;
+
+    double theta_end = atan2(end.y - center.y, end.x - center.x);
+    if (theta_end < 0)
+        theta_end += 2 * M_PI;
+
+    double PHI = theta_end - theta_start;
+
+    //acha o sentido de rotação pelo menor arco de circunferência
+    double gamma_1 = max(theta_end, theta_start) - min(theta_end, theta_start);
+    double gamma_2 = min(theta_end, theta_start) + 2 * M_PI - max(theta_end, theta_start);
+
+    vector<objective_t> intermediate_points;
+    objective_t obj;
+
+    if (PHI < MIN_HUGGING_ANGLE) // distance too small, no need for intermediate step
+    {
+        obj.x = end.x;
+        obj.y = end.y;
+
+        if (gamma_1 < gamma_2) // anticlockwise
+            obj.angle = theta_end + M_PI/2;
+        else
+            obj.angle = theta_end - M_PI/2;
+
+        intermediate_points.push_back(obj);
+    }
+    else // enough distance for an intermediate
+    {
+
+        float_pair intermediate_point;
+        double angle;
+ 
+        for(int i = 1; i < number_of_steps; i++)
+        {
+
+            if (gamma_1 < gamma_2) //anticlockwise
+            {
+                intermediate_point = vec_add(vec_polar(circle.radius,theta_start + (PHI/number_of_steps) * i), center);
+                angle = theta_start + (PHI/number_of_steps) * i + M_PI/2;
+            }
+            else //clockwise
+            {
+                intermediate_point = vec_add(vec_polar(circle.radius,theta_start - (PHI/number_of_steps) * i), center);
+                angle = theta_start + (PHI/number_of_steps) * i - M_PI/2;
+            }
+
+            obj.x = intermediate_point.x;
+            obj.y = intermediate_point.y;
+            obj.angle = angle;
+
+            intermediate_points.push_back(obj);
+        }
+    }
+
+    return intermediate_points;
+}
+
+
 // Try to add edge from circle i point P to circle j point Q
 void add_edge(vector<edge_t> &surfing_edges, vector<circle_t> &circles, vector<node_t> &nodes, int i,
               float_pair P, int j, float_pair Q)
@@ -255,6 +323,8 @@ objective_t path(bot_t *other_robots, field_t *field, bot_t my_robot,
     for (auto edge : surfing_edges)
         printf("e %f %f %f %f\n", edge.n1.coord.x, edge.n1.coord.y, edge.n2.coord.x, edge.n2.coord.y);
 
+    printf("Clear\n");
+
     vector<node_t> path;
     node_t current = goal_node;
     float_pair ant = current.coord;
@@ -280,7 +350,43 @@ objective_t path(bot_t *other_robots, field_t *field, bot_t my_robot,
     }
 #endif
 
-    // We need to define an appropriate angle, but return value is kinda like this
-    objective_t o = {path[1].coord.x, path[1].coord.y, M_PI / 4.};
-    return o;
+
+   objective_t obj;    
+   
+   if (path[0].circle_index == path[1].circle_index)
+    // if we are in a hugging edge
+   {
+        vector<objective_t> intermediate = intermediate_steps(path[0].coord, path[1].coord, circles[path[0].circle_index]); 
+        printf("FODASE KKKKKKKKKKKKKKKKKKKKKKKKKK\n");
+        #ifdef DEBUG_PATH
+        for(auto objective: intermediate)
+        {
+            printf("step %f %f\n", objective.x, objective.y);
+        }
+        #endif
+   
+        obj = intermediate[intermediate.size() - 1];
+   
+   }
+
+    else // not a hugging edge
+    {
+        double angle;
+
+        if (path.size() == 2) // next goal is last goal
+            angle = theta;
+
+        else
+        {
+            // get the angle of the surfing edge
+            angle = atan2((path[1].coord.y - path[0].coord.y), (path[1].coord.x - path[0].coord.x));
+            if (angle < 0)
+                angle += 2* M_PI;
+        }
+
+        obj = {path[1].coord.x, path[1].coord.y, angle};
+    
+    }
+
+    return obj;
 }

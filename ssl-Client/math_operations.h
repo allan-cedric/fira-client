@@ -19,6 +19,9 @@ struct float_pair
 };
 
 #define RADIUS 13.0
+#define MIN_HUGGING_ANGLE M_PI/6
+#define HUGGING_EDGE_STEPS 3
+
 
 struct circle_t
 {

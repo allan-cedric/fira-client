@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
             set_bot_strategies(&field); // TODO (Coelho)
 
             // Executes each bot objective
-            execute_bot_strats(f.our_bots, commandClient); // TODO (Allan/Hishida)
+            execute_bot_strats(&field, commandClient); // TODO (Allan/Hishida)
 
         } else {
         // pass and wait for window

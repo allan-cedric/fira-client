@@ -100,8 +100,10 @@ void PID(fira_message::sim_to_ref::Robot robot, Objective objective, int index, 
   grSim_client->sendCommand(leftMotorSpeed, rightMotorSpeed, my_robots_are_yellow, index);
 }
 
+// fill the field struct with the frame data
 void fill_field(fira_message::sim_to_ref::Frame detection, field_t *f)
 {
+  // number of bots
   if (f->my_robots_are_yellow) {
     f->our_bots_n = detection.robots_yellow_size();
     f->their_bots_n = detection.robots_blue_size();
@@ -110,10 +112,12 @@ void fill_field(fira_message::sim_to_ref::Frame detection, field_t *f)
     f->their_bots_n = detection.robots_yellow_size();
   }
 
+  // ball data
   f->ball = detection.ball();
   f->ball.set_x((length + f->ball.x()) * 100);
   f->ball.set_y((width + f->ball.y()) * 100);
 
+  // ours and theirs bots data
   for (int i = 0; i < NUM_BOTS; i++){
     if (f->my_robots_are_yellow) {
       f->our_bots[i] = detection.robots_yellow(i);
@@ -153,7 +157,9 @@ int main(int argc, char *argv[])
   while (true){
     if (visionClient->receive(packet) && packet.has_frame()){
       fira_message::sim_to_ref::Frame detection = packet.frame();
+
       fill_field(detection, &field);
+      field_analyzer(&field);
 
       //Our robot info:
       for (int i = 0; i < field.our_bots_n; i++){
@@ -169,7 +175,6 @@ int main(int argc, char *argv[])
         // other_robots.clear();
         // PID(field.our_bots[i], o, i, field.my_robots_are_yellow, commandClient);
       }
-      field_analyzer(detection, field.my_robots_are_yellow);
     } else {
       // pass and wait for wwindow
     }

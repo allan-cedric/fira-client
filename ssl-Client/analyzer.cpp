@@ -13,21 +13,11 @@
 #include "header.h"
 #include "math_operations.h"
 
-inline double get_len(double base)
-{
-    return (length + base) * 100;
-}
-
-inline double get_wid(double base)
-{
-    return (width + base) * 100;
-}
-
 void print_bot_info(fira_message::sim_to_ref::Robot bots[NUM_BOTS], int color)
 {
     for (int i = 0; i < NUM_BOTS; i++){
-        printf("%s: %d ", color ? "Blue" : "Yellow", i);
-        printf("x: %f y: %f a: %f \n", get_len(bots[i].x()), get_wid(bots[i].y()), bots[i].orientation());
+        printf("%s: %d ", !color ? "Blue" : "Yellow", i);
+        printf("x: %f y: %f a: %f \n", bots[i].x(), bots[i].y(), bots[i].orientation());
         printf("vx: %f vy: %f va: %f \n", bots[i].vx(), bots[i].vy(), bots[i].vorientation());
     }
     printf("\n");
@@ -36,7 +26,7 @@ void print_bot_info(fira_message::sim_to_ref::Robot bots[NUM_BOTS], int color)
 void print_ball_info(fira_message::sim_to_ref::Ball ball)
 {
     printf("Ball:\n");
-    printf("x: %f y: %f\n", get_len(ball.x()), get_wid(ball.y()));
+    printf("x: %f y: %f\n", ball.x(), ball.y());
     printf("vx: %f vy: %f\n", ball.vx(), ball.vy());
     printf("\n");
 }
@@ -81,25 +71,14 @@ int we_are_closer(fira_message::sim_to_ref::Robot our_bots[NUM_BOTS],
     return our_distances[min_dist_index(our_distances)] < their_distances[min_dist_index(their_distances)];
 }   
 
-int field_analyzer(fira_message::sim_to_ref::Frame detection, bool mray )
+int field_analyzer(field_t *f )
 {
-    fira_message::sim_to_ref::Ball ball = detection.ball();
-    fira_message::sim_to_ref::Robot blue_bots[NUM_BOTS];
-    fira_message::sim_to_ref::Robot yellow_bots[NUM_BOTS];
+    int wrc = we_are_closer(f->our_bots, f->their_bots, f->ball);
 
-    for (int i = 0; i < NUM_BOTS; i++) {
-        blue_bots[i] = detection.robots_blue(i);
-        yellow_bots[i] = detection.robots_yellow(i);
-    }
-
-    int wrc = we_are_closer(mray ? yellow_bots : blue_bots, 
-                    mray ? blue_bots : yellow_bots, 
-                    ball);
-
-    printf("%s WRC: %d\n",mray ? "y" : "b",  wrc);
-    print_ball_info(ball);
-    print_bot_info(blue_bots, 1);
-    print_bot_info(yellow_bots, 0);
+    printf("%s WRC: %d\n", f->my_robots_are_yellow ? "y" : "b",  wrc);
+    print_ball_info(f->ball);
+    print_bot_info(f->our_bots, f->my_robots_are_yellow);
+    print_bot_info(f->their_bots, f->my_robots_are_yellow);
 
     return 1;
 }

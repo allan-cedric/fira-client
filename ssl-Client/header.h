@@ -16,15 +16,21 @@ typedef struct {
 } field_status_t;
 
 typedef struct {
-    double x, y, a, vx, vy, va; // positions and speeds
+    double x, y, a, // positions
+        vx, vy, va; // speeds
     int status; // what should the bot do
 } bot_t;
 
 typedef struct {
+    double x, y, // position
+        vx, vy; // speeds 
+} ball_t;
+
+typedef struct {
     int our_bots_n, their_bots_n;
-    fira_message::sim_to_ref::Ball ball;
-    fira_message::sim_to_ref::Robot our_bots[NUM_BOTS];
-    fira_message::sim_to_ref::Robot their_bots[NUM_BOTS];
+    ball_t ball;
+    bot_t our_bots[NUM_BOTS];
+    bot_t their_bots[NUM_BOTS];
     bool my_robots_are_yellow;
     field_status_t fs;
 } field_t;

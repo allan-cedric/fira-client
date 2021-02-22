@@ -100,38 +100,37 @@ void PID(fira_message::sim_to_ref::Robot robot, objective_t objective, int index
   grSim_client->sendCommand(leftMotorSpeed, rightMotorSpeed, my_robots_are_yellow, index);
 }
 
+void set_bot_parametres(bot_t *a, fira_message::sim_to_ref::Robot b)
+{
+    a->x = (length + b.x()) * 100;
+    a->y = (width + b.y()) * 100;
+    a->a = to180range(b.orientation());
+    a->vx = b.vx();
+    a->vy = b.vy();
+    a->va = b.vorientation();
+}
+
 // fill the field struct with the frame data
 void fill_field(fira_message::sim_to_ref::Frame detection, field_t *f)
 {
   // number of bots
-  if (f->my_robots_are_yellow) {
-    f->our_bots_n = detection.robots_yellow_size();
-    f->their_bots_n = detection.robots_blue_size();
-  } else {
-    f->our_bots_n = detection.robots_blue_size();
-    f->their_bots_n = detection.robots_yellow_size();
-  }
+  f->our_bots_n = f->my_robots_are_yellow ? detection.robots_yellow_size() : detection.robots_blue_size();
+  f->their_bots_n = f->my_robots_are_yellow ? detection.robots_blue_size() : detection.robots_yellow_size();
 
   // ball data
-  f->ball = detection.ball();
-  f->ball.set_x((length + f->ball.x()) * 100);
-  f->ball.set_y((width + f->ball.y()) * 100);
+  fira_message::sim_to_ref::Ball ball = detection.ball();
+  f->ball.x = (length + ball.x()) * 100;
+  f->ball.y = (width + ball.y()) * 100;
+  f->ball.vx = ball.vx();
+  f->ball.vy = ball.vy();
 
   // ours and theirs bots data
   for (int i = 0; i < NUM_BOTS; i++){
-    if (f->my_robots_are_yellow) {
-      f->our_bots[i] = detection.robots_yellow(i);
-      f->their_bots[i] = detection.robots_blue(i);
-    } else {
-      f->our_bots[i] = detection.robots_blue(i);
-      f->their_bots[i] = detection.robots_yellow(i);
-    }
-    f->our_bots[i].set_x((length + f->our_bots[i].x()) * 100);
-    f->our_bots[i].set_y((width + f->our_bots[i].y()) * 100);
-    f->our_bots[i].set_orientation(to180range(f->our_bots[i].orientation()));
-    f->their_bots[i].set_x((length + f->their_bots[i].x()) * 100);
-    f->their_bots[i].set_y((width + f->their_bots[i].y()) * 100);
-    f->their_bots[i].set_orientation(to180range(f->their_bots[i].orientation()));
+    fira_message::sim_to_ref::Robot our_robot = f->my_robots_are_yellow ? detection.robots_yellow(i) : detection.robots_blue(i);
+    fira_message::sim_to_ref::Robot their_robot = !f->my_robots_are_yellow ? detection.robots_yellow(i) : detection.robots_blue(i);
+
+    set_bot_parametres(&f->our_bots[i], our_robot);
+    set_bot_parametres(&f->their_bots[i], their_robot);
   }
 
 }

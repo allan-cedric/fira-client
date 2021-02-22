@@ -12,21 +12,21 @@
 #include "math_operations.h"
 
 // print a bot array info
-void print_bot_info(fira_message::sim_to_ref::Robot bots[NUM_BOTS])
+void print_bot_info(bot_t bots[NUM_BOTS])
 {
     for (int i = 0; i < NUM_BOTS; i++){
-        printf("x: %f y: %f a: %f \n", bots[i].x(), bots[i].y(), bots[i].orientation());
-        printf("vx: %f vy: %f va: %f \n", bots[i].vx(), bots[i].vy(), bots[i].vorientation());
+        printf("x: %f y: %f a: %f \n", bots[i].x, bots[i].y, bots[i].a);
+        printf("vx: %f vy: %f va: %f \n", bots[i].vx, bots[i].vy, bots[i].va);
     }
     printf("\n");
 }
 
 // prints ball info
-void print_ball_info(fira_message::sim_to_ref::Ball ball)
+void print_ball_info(ball_t ball)
 {
     printf("Ball:\n");
-    printf("x: %f y: %f\n", ball.x(), ball.y());
-    printf("vx: %f vy: %f\n", ball.vx(), ball.vy());
+    printf("x: %f y: %f\n", ball.x, ball.y);
+    printf("vx: %f vy: %f\n", ball.vx, ball.vy);
     printf("\n");
 }
 
@@ -73,15 +73,15 @@ bool we_are_closer(field_t *f)
 {
     double our_distances[NUM_BOTS];
     double their_distances[NUM_BOTS];
-    float_pair ball_p = {.x = f->ball.x(), .y = f->ball.y()};
+    float_pair ball_p = {.x = f->ball.x, .y = f->ball.y};
 
     for (int i = 0; i < NUM_BOTS; i++){
-        float_pair bot_p = {.x = f->our_bots[i].x(), .y = f->our_bots[i].y()};
+        float_pair bot_p = {.x = f->our_bots[i].x, .y = f->our_bots[i].y};
         our_distances[i] = vec_distance(bot_p, ball_p);
     }
 
     for (int i = 0; i < NUM_BOTS; i++){
-        float_pair bot_p = {.x = f->their_bots[i].x(), .y = f->their_bots[i].y()};
+        float_pair bot_p = {.x = f->their_bots[i].x, .y = f->their_bots[i].y};
         their_distances[i] = vec_distance(bot_p, ball_p);
     }
 
@@ -92,11 +92,11 @@ bool we_are_closer(field_t *f)
 // false otherwise
 bool they_are_atacking(field_t *f)
 {
-    if (!is_on_my_field(f->ball.x(), f->my_robots_are_yellow))
+    if (!is_on_my_field(f->ball.x, f->my_robots_are_yellow))
         return false;
 
     int i = 0;
-    while (!is_on_my_field(f->their_bots[i].x(), f->my_robots_are_yellow) && (i++ < NUM_BOTS));
+    while (!is_on_my_field(f->their_bots[i].x, f->my_robots_are_yellow) && (i++ < NUM_BOTS));
 
     return i < NUM_BOTS;
 }
@@ -105,11 +105,11 @@ bool they_are_atacking(field_t *f)
 // false otherwise
 bool we_are_atacking(field_t *f)
 {
-    if (is_on_my_field(f->ball.x(), f->my_robots_are_yellow))
+    if (is_on_my_field(f->ball.x, f->my_robots_are_yellow))
         return false;
 
     int i = 0;
-    while (is_on_my_field(f->our_bots[i].x(), f->my_robots_are_yellow) && (i++ < NUM_BOTS));
+    while (is_on_my_field(f->our_bots[i].x, f->my_robots_are_yellow) && (i++ < NUM_BOTS));
 
     return i < NUM_BOTS;
 }

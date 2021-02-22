@@ -1,31 +1,33 @@
-CC = g++
-CFLAGS = -Wall -Wextra
+CXX = g++
+CXXFLAGS = -Wall -Wextra
+LDFLAGS = -L/usr/local/lib/ -lpthread -lprotobuf -lz
 
-# system library links
-GLOBAL_LINKS = -L/usr/local/lib/ -lpthread -lprotobuf -lz
-
-# local source files and objects
-SOURCES = net/robocup_ssl_client.cpp net/netraw.cpp net/grSim_client.cpp net/pb/common.pb.cc header.cpp path_planning.cpp math_operations.cpp analyzer.cpp
-OBJECTS = robocup_ssl_client.o netraw.o grSim_client.o common.pb.o header.o path_planning.o math_operations.o analyzer.o
+OBJECTS = robocup_ssl_client.o netraw.o grSim_client.o common.pb.o header.o path_planning.o math_operations.o analyzer.o main.o
 
 # compile all
 all: main
 
-# compile all abjects
-$(OBJECTS): $(SOURCES)
-	$(CC) -c $^ $(CFLAGS) $(GLOBAL_LINKS)
+robocup_ssl_client.o: net/robocup_ssl_client.cpp
+	$(CXX) -c $<
+netraw.o: net/netraw.cpp
+	$(CXX) -c $<
+grSim_client.o: net/grSim_client.cpp
+	$(CXX) -c $<
+common.pb.o: net/pb/common.pb.cc
+	$(CXX) -c $<
 
-# compile the main object
+header.o: header.cpp header.h
+path_planning.o: path_planning.cpp path_planning.h
+math_operations.o: math_operations.cpp math_operations.h
+analyzer.o: analyzer.cpp analyzer.h
 main.o: main.cpp
-	$(CC) -c main.cpp $(CFLAGS) $(GLOBAL_LINKS)
 
-# link the main file
-main: $(OBJECTS) main.o
-	$(CC) main.o $(OBJECTS) $(GLOBAL_LINKS) -o $@
-
+main: $(OBJECTS)
+	$(CXX) $(OBJECTS) $(CXXFLAGS) $(LDFLAGS) -o main
+	
 # clean objects
 clean: 
-	rm -rf $(OBJECTS) main.o
+	rm -rf *.o
 
 # clean all non source files
 purge: clean

@@ -6,9 +6,6 @@
 #include <stdlib.h>
 
 #include "net/robocup_ssl_client.h"
-#include "net/grSim_client.h"
-#include "util/timer.h"
-#include "util/util.h"
 
 #include "header.h"
 #include "math_operations.h"
@@ -83,7 +80,7 @@ bool we_are_closer(field_t *f)
 // false otherwise
 bool they_are_atacking(field_t *f)
 {
-    if (!ball_is_on_my_field(f->ball, f->my_robots_are_yellow))
+    if (!is_on_my_field(f->ball.x(), f->my_robots_are_yellow))
         return false;
 
     int i = 0;
@@ -96,7 +93,7 @@ bool they_are_atacking(field_t *f)
 // false otherwise
 bool we_are_atacking(field_t *f)
 {
-    if (ball_is_on_my_field(f->ball, f->my_robots_are_yellow))
+    if (is_on_my_field(f->ball.x(), f->my_robots_are_yellow))
         return false;
 
     int i = 0;

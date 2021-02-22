@@ -16,9 +16,14 @@ typedef struct {
 } field_status_t;
 
 typedef struct {
+    double x, y, angle; 
+} objective_t;
+
+typedef struct {
     double x, y, a, // positions
         vx, vy, va; // speeds
     int status; // what should the bot do
+    objective_t obj;
 } bot_t;
 
 typedef struct {
@@ -34,9 +39,5 @@ typedef struct {
     bool my_robots_are_yellow;
     field_status_t fs;
 } field_t;
-
-typedef struct {
-    double x, y, angle; 
-} objective_t;
 
 #endif

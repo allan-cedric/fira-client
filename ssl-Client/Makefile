@@ -13,9 +13,16 @@ OBJECTS = robocup_ssl_client.o \
 			bot_execute.o \
 			main.o 
 
-TEST_OBJECTS = robocup_ssl_client.o netraw.o grSim_client.o common.pb.o \ 
-			path_planning.o math_operations.o analyzer.o bot_strategy.o \ 
-			bot_execute.o test_path.o
+TEST_OBJECTS = robocup_ssl_client.o \
+				netraw.o \
+				grSim_client.o \
+				common.pb.o \
+				path_planning.o \
+				math_operations.o \
+				analyzer.o \
+				bot_strategy.o \
+				bot_execute.o \
+				test_path.o
 
 # compile all
 all: main

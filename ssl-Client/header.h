@@ -2,6 +2,7 @@
 #define HEADER
 
 #include "net/robocup_ssl_client.h"
+#include "math.h"
 
 #define NUM_BOTS 3
 #define width 1.3 / 2.0f

@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
             // set_goalkeeper_strategy(&field); // Hishida e Resenha
 
             // Executes each bot objective
-            execute_bot_strats(&field, commandClient); // Allan e Xandão
+            // execute_bot_strats(&field, commandClient); // Allan e Xandão
 
         } else {
             // pass and wait for window

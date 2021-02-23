@@ -17,6 +17,7 @@ void print_bot_info(bot_t bots[NUM_BOTS])
     for (int i = 0; i < NUM_BOTS; i++){
         printf("x: %f y: %f a: %f \n", bots[i].x, bots[i].y, bots[i].a);
         printf("vx: %f vy: %f va: %f \n", bots[i].vx, bots[i].vy, bots[i].va);
+        printf("FUN: %d\n", bots[i].fun);
     }
     printf("\n");
 }
@@ -84,6 +85,7 @@ bool we_are_closer(field_t *f)
     for (int i = 0; i < NUM_BOTS; i++){
         float_pair bot_p = {.x = f->their_bots[i].x, .y = f->their_bots[i].y};
         their_distances[i] = vec_distance(bot_p, ball_p);
+        f->their_bots[i].fun = NONE;
     }
 
     f->our_bots[0].fun = GOALKEEPER;

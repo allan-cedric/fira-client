@@ -4,6 +4,7 @@
 #include "util/util.h"
 
 #include "header.h"
+#include "path_planning.h"
 
 double to180range(double angle)
 {
@@ -98,4 +99,8 @@ void execute_bot_strats(field_t *f, GrSim_Client* commandClient)
 {
     // do stuff
     // PID(...);
+    for (int i = 0; i < NUM_BOTS; i++){
+        objective_t b = { .x = f->our_bots[i].obj.x, .y = f->our_bots[i].obj.y, .angle = 0 };
+        PID(f->our_bots[i], b, i, false, commandClient);
+    }
 }

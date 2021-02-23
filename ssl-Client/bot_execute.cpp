@@ -9,10 +9,12 @@
 double to180range(double angle)
 {
     angle = fmod(angle, 2 * M_PI);
-    if (angle < -M_PI) {
+    if (angle < -M_PI)
+    {
         angle = angle + 2 * M_PI;
     }
-    else if (angle > M_PI) {
+    else if (angle > M_PI)
+    {
         angle = angle - 2 * M_PI;
     }
     return angle;
@@ -89,16 +91,16 @@ void PID(bot_t robot,
 
     if (reversed)
     {
-    if (motorSpeed > 0)
-    {
-        leftMotorSpeed = -baseSpeed + motorSpeed;
-        rightMotorSpeed = -baseSpeed;
-    }
-    else
-    {
-        leftMotorSpeed = -baseSpeed;
-        rightMotorSpeed = -baseSpeed - motorSpeed;
-    }
+        if (motorSpeed > 0)
+        {
+            leftMotorSpeed = -baseSpeed + motorSpeed;
+            rightMotorSpeed = -baseSpeed;
+        }
+        else
+        {
+            leftMotorSpeed = -baseSpeed;
+            rightMotorSpeed = -baseSpeed - motorSpeed;
+        }
     }
     grSim_client->sendCommand(leftMotorSpeed, 
                                 rightMotorSpeed, 
@@ -106,15 +108,23 @@ void PID(bot_t robot,
                                 index);
 }
 
-void execute_bot_strats(field_t *f, GrSim_Client* commandClient)
+void execute_bot_strats(field_t *f, GrSim_Client *commandClient)
 {
-    // do stuff
-    // PID(...);
-    for (int i = 0; i < NUM_BOTS; i++){
-        objective_t b = { .x = f->our_bots[i].obj.x, 
-                            .y = f->our_bots[i].obj.y, 
-                            .angle = 0 };
+    for (auto our_robot : f->our_bots)
+    {
+        vector<bot_t> other_robots;
 
-        PID(f->our_bots[i], b, i, false, commandClient);
+        for (int i = 0; i < f->our_bots_n; i++)
+        {
+            if (i != our_robot.index)
+                other_robots.push_back(f->our_bots[i]);
+        }
+        for (int i = 0; i < f->their_bots_n; i++)
+            other_robots.push_back(f->their_bots[i]);
+
+        objective_t o = path(other_robots, our_robot, 
+                            f->ball.x, f->ball.y, M_PI / 4);
+        PID(our_robot, o, our_robot.index, 
+            f->my_robots_are_yellow, commandClient);
     }
 }

@@ -90,11 +90,11 @@ int main(int argc, char *argv[])
             // extra_cases(); // faltas, tiros de meta, penaltis -> Allan e TJ
 
             // Fill each bot objective data
-            set_bot_strategies(&field); // TODO Coelho e Jimmy
+            // set_bot_strategies(&field); // TODO Coelho e Jimmy
             // set_goalkeeper_strategy(&field); // Hishida e Resenha
 
             // Executes each bot objective
-            // execute_bot_strats(&field, commandClient); // Allan e Xandão
+            execute_bot_strats(&field, commandClient); // Allan e Xandão
 
         } else {
             // pass and wait for window

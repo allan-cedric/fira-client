@@ -135,4 +135,8 @@ void execute_bot_strats(field_t *f, GrSim_Client *commandClient)
         PID(our_robot, o, our_robot.index, 
             f->my_robots_are_yellow, commandClient);
     }
+
+    // PID(f->our_bots[0], f->our_bots[0].obj, 0, 
+    //     f->my_robots_are_yellow, commandClient);
+
 }

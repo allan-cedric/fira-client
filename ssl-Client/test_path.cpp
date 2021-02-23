@@ -85,7 +85,6 @@ int main(int argc, char *argv[])
       
       objective_t o = path(other_robots, my_robot, field.ball.x, field.ball.y, 0);
       PID(my_robot, o, 0, false, commandClient);
-      other_robots.clear();
 
     } else {
       // pass and wait for wwindow

@@ -172,8 +172,10 @@ bool line_of_sight(vector<circle_t> &circles, int i, float_pair P, int j, float_
     {
         if (k != i && k != j && segment_circle_intersection(P, Q, circles[k]))
            return false;
-        // if (segment_circle_intersection(P, Q, circles[k]))
-        //     return false;
+        // else if (k == i || k == j)
+        // {
+        //     if()   
+        // }
     }
     return true;
 }
@@ -235,7 +237,7 @@ bool is_blocking(float_pair D, float_pair E, float_pair I, float_pair J, float_p
 
 bool inrange(double a, double b, double to_test)
 {
-    return (to_test > a && to_test < b);
+    return (to_test >= a && to_test <= b);
 }
 
 bool is_blocking_js(circle_t A, circle_t B)
@@ -253,4 +255,9 @@ bool is_blocking_js(circle_t A, circle_t B)
     double AE_angle = vec_facing(A.center, E);
 
     return (AD_angle < 0 || AE_angle < 0);
+}
+
+bool node_found(node_t node)
+{
+    return (!isnan(node.coord.x) && !isnan(node.coord.y));
 }

@@ -18,7 +18,7 @@ struct float_pair
     double x, y;
 };
 
-#define RADIUS 8.0
+#define RADIUS 13.0
 #define MIN_HUGGING_ANGLE M_PI/6
 #define HUGGING_EDGE_STEPS 3
 
@@ -98,5 +98,7 @@ bool is_blocking(float_pair D, float_pair E, float_pair I, float_pair J, float_p
 bool inrange(double a, double b, double to_test);
 
 bool is_blocking_js(circle_t A, circle_t B);
+
+bool node_found(node_t node);
 
 #endif

@@ -113,7 +113,7 @@ void execute_bot_strats(field_t *f, GrSim_Client *commandClient)
         for (int i = 0; i < f->their_bots_n; i++)
             other_robots.push_back(f->their_bots[i]);
 
-        objective_t o = path(other_robots, our_robot, f->ball.x, f->ball.y, M_PI / 4);
+        objective_t o = path(other_robots, our_robot, our_robot.obj.x, our_robot.obj.y, our_robot.obj.angle);
         PID(our_robot, o, our_robot.index, f->my_robots_are_yellow, commandClient);
     }
 }

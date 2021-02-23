@@ -100,14 +100,19 @@ void set_bot_strategies(field_t *f)
     //         // intercept_to_defend(auxiliary, ball_def_p);
     // }
 
-    if (f->our_bots[0].x > ball_p.x ) {
-        f->our_bots[0].wants_to_hit_ball = false;
-    }
+    // if (f->our_bots[0].x > ball_p.x ) {
+    // }
 
-    if (vec_distance(ball_p, {.x = dominant->x, .y = dominant->y}) > 12.5){
+    // f->our_bots[0].wants_to_hit_ball = true;
+
+    if (vec_distance(ball_p, {.x = f->our_bots[0].x, .y = f->our_bots[0].y}) > 12.5){
         send_bot_to(&f->our_bots[0], ball_atk_p);
     } else {
-        send_bot_to(&f->our_bots[0], {.x = ball_p.x, .y = ball_p.y, .angle = 0});
+        if (vec_distance(ball_p, {.x = f->our_bots[0].x, .y = f->our_bots[0].y}) > 8){
+            send_bot_to(&f->our_bots[0], {.x = ball_p.x, .y = ball_p.y, .angle = 0});
+        } else {
+            send_bot_to(&f->our_bots[0], {.x = their_goal_x(mray), .y = their_goal_y(), .angle = 0});
+        }
     }
 
 }

@@ -18,7 +18,11 @@
 #include "header.h"
 
 // Uncomment to debug A* (A Star) path finding algorithm
+<<<<<<< HEAD
 // #define DEBUG_PATH
+=======
+#define DEBUG_PATH
+>>>>>>> 2d0958eaf97d6f9334f34bdc0a5771a1615f39f5
 
 template <typename T, typename priority_t>
 struct PriorityQueue

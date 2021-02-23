@@ -205,7 +205,7 @@ objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
     for (int i = 0; i < (int)other_robots.size(); i++)
     {
         float_pair center = {.x = other_robots[i].x, .y = other_robots[i].y};
-        circle_t circle = {.center = center, .radius = RADIUS};
+        circle_t circle = {.center = center, .radius = other_robots[i].radius};
         circles.push_back(circle);
     }
 

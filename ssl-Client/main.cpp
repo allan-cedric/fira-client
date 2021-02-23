@@ -28,6 +28,7 @@ void set_bot_parametres(bot_t *a, fira_message::sim_to_ref::Robot b, int index)
     a->vy = b.vy();
     a->va = b.vorientation();
     a->index = index;
+    a->wants_to_hit_ball = true;
 }
 
 // fill the field struct with the frame data

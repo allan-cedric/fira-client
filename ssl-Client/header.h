@@ -35,6 +35,7 @@ typedef struct {
     int fun; // what is th bot function now
     objective_t obj;
     int index;
+    bool wants_to_hit_ball;
 } bot_t;
 
 typedef struct {

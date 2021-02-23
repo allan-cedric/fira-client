@@ -13,7 +13,7 @@
 #include "bot_strategy.h"
 #include "bot_execute.h"
 
-void set_bot_parametres(bot_t *a, fira_message::sim_to_ref::Robot b)
+void set_bot_parametres(bot_t *a, fira_message::sim_to_ref::Robot b, int index)
 {
     a->x = (length + b.x()) * 100;
     a->y = (width + b.y()) * 100;
@@ -21,6 +21,7 @@ void set_bot_parametres(bot_t *a, fira_message::sim_to_ref::Robot b)
     a->vx = b.vx();
     a->vy = b.vy();
     a->va = b.vorientation();
+    a->index = index;
 }
 
 // fill the field struct with the frame data
@@ -42,8 +43,8 @@ void fill_field(fira_message::sim_to_ref::Frame detection, field_t *f)
         fira_message::sim_to_ref::Robot our_robot = f->my_robots_are_yellow ? detection.robots_yellow(i) : detection.robots_blue(i);
         fira_message::sim_to_ref::Robot their_robot = !f->my_robots_are_yellow ? detection.robots_yellow(i) : detection.robots_blue(i);
 
-        set_bot_parametres(&f->our_bots[i], our_robot);
-        set_bot_parametres(&f->their_bots[i], their_robot);
+        set_bot_parametres(&f->our_bots[i], our_robot, i);
+        set_bot_parametres(&f->their_bots[i], their_robot, i);
     }
 }
 
@@ -77,11 +78,11 @@ int main(int argc, char *argv[])
             // extra_cases(); // faltas, tiros de meta, penaltis -> Allan e TJ
 
             // Fill each bot objective data
-            set_bot_strategies(&field); // TODO Coelho e Jimmy
+            // set_bot_strategies(&field); // TODO Coelho e Jimmy
             // set_goalkeeper_strategy(&field); // Hishida e Resenha
 
             // Executes each bot objective
-            // execute_bot_strats(&field, commandClient); // Allan e Xandão
+            execute_bot_strats(&field, commandClient); // Allan e Xandão
 
         } else {
             // pass and wait for window

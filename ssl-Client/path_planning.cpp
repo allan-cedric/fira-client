@@ -107,11 +107,15 @@ void add_edge(vector<edge_t> &surfing_edges, vector<circle_t> &circles, vector<n
             break;
         }
     }
-    if (!isnan(P.x) && !isnan(Q.x))
+
+    if (!isnan(P.x))
     {
         if (!inrange(-10, 200, P.x) || !inrange(-10, 140, P.y))
             return;
+    }
 
+    if (!isnan(Q.x))
+    {
         if (!inrange(-10, 200, Q.x) || !inrange(-10, 140, Q.y))
             return;
     }
@@ -139,9 +143,9 @@ node_t circle_to_node(int circle_index, vector<node_t> &nodes)
     }
 
     if ((int)nodes_on_circle.size() != 1)
-        cout << "start/goal should be on r=0 circle " << (int)nodes_on_circle.size() << endl;
-    
-    if((int)nodes_on_circle.size() == 0)
+        cout << "start/goal should be on r=0 circle: " << (int)nodes_on_circle.size() << endl;
+
+    if ((int)nodes_on_circle.size() == 0)
         cout << "Not in RANGE !!!" << endl;
 
     return nodes_on_circle[0];
@@ -250,10 +254,6 @@ objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
 
             auto external = ExternalBitangents(circles[i], circles[j]);
 
-            //printf("empty: %i\n", external.empty());
-
-            //if(!external.empty())
-            //{
             C = external[0];
             D = external[1];
             E = external[2];
@@ -264,7 +264,6 @@ objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
 
             if (circles[i].radius != 0 && circles[j].radius != 0)
                 add_edge(surfing_edges, circles, nodes, i, D, j, E);
-            //}
         }
     }
 
@@ -285,24 +284,21 @@ objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
             // For every circle, make an edge for each pair of nodes it has
             for (int j = 0; j < i; j++)
             {
-                if (i != j)
+                edge_t edge = {.n1 = circle_nodes[i], .n2 = circle_nodes[j]};
+                for (int k = 0; k < (int)circles.size(); k++)
                 {
-                    edge_t edge = {.n1 = circle_nodes[i], .n2 = circle_nodes[j]};
-                    for (int k = 0; k < (int)circles.size(); k++)
+                    blocking_edge = false;
+                    // For each circle check whether it's block the hugging edges
+                    if (circle_nodes[i].circle_index != k) // Not the same circle
                     {
-                        blocking_edge = false;
-                        // For each circle check whether it's block the hugging edges
-                        if (circle_nodes[i].circle_index != k) // Not the same circle
+                        // If the circles are overlap
+                        if (vec_distance(circles[k].center, circles[circle_nodes[i].circle_index].center) <= (circles[k].radius + circles[circle_nodes[i].circle_index].radius))
                         {
-                            // If the circles are overlap
-                            if (vec_distance(circles[k].center, circles[circle_nodes[i].circle_index].center) <= (circles[k].radius + circles[circle_nodes[i].circle_index].radius))
-                            {
-                                blocking_edge = is_blocking_js(circles[k], circles[circle_nodes[i].circle_index]);
-                            }
+                            blocking_edge = is_blocking_js(circles[k], circles[circle_nodes[i].circle_index]);
                         }
-                        if (!blocking_edge)
-                            hugging_edges.push_back(edge);
                     }
+                    if (!blocking_edge)
+                        hugging_edges.push_back(edge);
                 }
             }
         }
@@ -311,12 +307,7 @@ objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
     // Now, storing all the edges together:
     surfing_edges.insert(surfing_edges.end(), hugging_edges.begin(), hugging_edges.end());
 
-    // for(auto circle : circles)
-    // {
-    //     printf("circle: %f %f\n", circle.center.x, circle.center.y);
-    // }
-
-    // A* Star
+    // A* (A Star)
     node_t start_node = circle_to_node((int)circles.size() - 2, nodes);
     node_t goal_node = circle_to_node((int)circles.size() - 1, nodes);
 
@@ -367,7 +358,7 @@ objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
         start_node = {.coord = {.x = my_robot.x, .y = my_robot.y}, .circle_index = (int)circles.size() - 2};
 
     path.push_back(start_node); // optional
-    reverse(path.begin(), path.end());
+    std::reverse(path.begin(), path.end());
 #else
     // for (auto edge : surfing_edges)
     //     printf("e %f %f %f %f\n", edge.n1.coord.x, edge.n1.coord.y, edge.n2.coord.x, edge.n2.coord.y);
@@ -390,7 +381,7 @@ objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
 
     if (!node_found(goal_node))
     {
-        goal_node = {.coord = {.x = my_robot.x, .y = my_robot.y}, .circle_index = (int)circles.size() - 1};
+        goal_node = {.coord = {.x = x, .y = y}, .circle_index = (int)circles.size() - 1};
         path.push_back(goal_node);
     }
 
@@ -398,7 +389,7 @@ objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
         start_node = {.coord = {.x = my_robot.x, .y = my_robot.y}, .circle_index = (int)circles.size() - 2};
 
     path.push_back(start_node); // optional
-    reverse(path.begin(), path.end());
+    std::reverse(path.begin(), path.end());
 
     printf("l %f %f %f %f\n", path[0].coord.x, path[0].coord.y, path[1].coord.x, path[1].coord.y);
 
@@ -410,42 +401,42 @@ objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
     }
 #endif
 
-    objective_t obj;
+//     objective_t obj;
 
-    if (path[0].circle_index == path[1].circle_index)
-    // if we are in a hugging edge
-    {
-        vector<objective_t> intermediate = intermediate_steps(path[0].coord, path[1].coord, circles[path[0].circle_index]);
-#ifdef DEBUG_PATH
-        for (auto objective : intermediate)
-        {
-            printf("step %f %f\n", objective.x, objective.y);
-        }
-#endif
+//     if (path[0].circle_index == path[1].circle_index)
+//     // if we are in a hugging edge
+//     {
+//         vector<objective_t> intermediate = intermediate_steps(path[0].coord, path[1].coord, circles[path[0].circle_index]);
+// #ifdef DEBUG_PATH
+//         for (auto objective : intermediate)
+//         {
+//             printf("step %f %f\n", objective.x, objective.y);
+//         }
+// #endif
 
-        obj = intermediate[intermediate.size() - 1];
-    }
+//         obj = intermediate[intermediate.size() - 1];
+//     }
 
-    else // not a hugging edge
-    {
-        double angle;
+//     else // not a hugging edge
+//     {
+//         double angle;
 
-        if (path.size() == 2) // next goal is last goal
-            angle = theta;
+//         if (path.size() == 2) // next goal is last goal
+//             angle = theta;
 
-        else
-        {
-            // get the angle of the surfing edge
-            angle = atan2((path[1].coord.y - path[0].coord.y), (path[1].coord.x - path[0].coord.x));
-            if (angle < 0)
-                angle += 2 * M_PI;
-        }
+//         else
+//         {
+//             // get the angle of the surfing edge
+//             angle = atan2((path[1].coord.y - path[0].coord.y), (path[1].coord.x - path[0].coord.x));
+//             if (angle < 0)
+//                 angle += 2 * M_PI;
+//         }
 
-        obj = {path[1].coord.x, path[1].coord.y, angle};
-    }
+//         obj = {path[1].coord.x, path[1].coord.y, angle};
+//     }
 
-    return obj;
+//     return obj;
 
-    // objective_t o = {.x = path[1].coord.x, .y = path[1].coord.y, .angle = M_PI / 4.};
-    // return o;
+    objective_t o = {.x = path[1].coord.x, .y = path[1].coord.y, .angle = theta};
+    return o;
 }

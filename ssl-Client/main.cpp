@@ -1,6 +1,12 @@
-//author  Renato Sousa, 2018
-// (Heavly) Modified by Artur Coelho, Gabriel Hishida & Allan Cedric on Feb 2021
-// For Yapira UFPR 
+// Original author: Renato Sousa, 2018
+//
+// (Heavly) Modified by 
+//                      Artur Coelho & 
+//                      Gabriel Hishida & 
+//                      Allan Cedric &
+//                      many more on Yapira UFPR
+// 2021 Yapira UFPR 
+// Feel free to use and please reference us
 
 //#include <QtNetwork>
 #include <stdio.h>
@@ -28,8 +34,10 @@ void set_bot_parametres(bot_t *a, fira_message::sim_to_ref::Robot b, int index)
 void fill_field(fira_message::sim_to_ref::Frame detection, field_t *f)
 {
     // number of bots
-    f->our_bots_n = f->my_robots_are_yellow ? detection.robots_yellow_size() : detection.robots_blue_size();
-    f->their_bots_n = f->my_robots_are_yellow ? detection.robots_blue_size() : detection.robots_yellow_size();
+    f->our_bots_n = f->my_robots_are_yellow ? detection.robots_yellow_size() 
+                                            : detection.robots_blue_size();
+    f->their_bots_n = f->my_robots_are_yellow ? detection.robots_blue_size() 
+                                            : detection.robots_yellow_size();
 
     // ball data
     fira_message::sim_to_ref::Ball ball = detection.ball();
@@ -40,8 +48,12 @@ void fill_field(fira_message::sim_to_ref::Frame detection, field_t *f)
 
     // ours and theirs bots data
     for (int i = 0; i < NUM_BOTS; i++){
-        fira_message::sim_to_ref::Robot our_robot = f->my_robots_are_yellow ? detection.robots_yellow(i) : detection.robots_blue(i);
-        fira_message::sim_to_ref::Robot their_robot = !f->my_robots_are_yellow ? detection.robots_yellow(i) : detection.robots_blue(i);
+        fira_message::sim_to_ref::Robot our_robot = f->my_robots_are_yellow 
+                                                    ? detection.robots_yellow(i) 
+                                                    : detection.robots_blue(i);
+        fira_message::sim_to_ref::Robot their_robot = !f->my_robots_are_yellow 
+                                                    ? detection.robots_yellow(i) 
+                                                    : detection.robots_blue(i);
 
         set_bot_parametres(&f->our_bots[i], our_robot, i);
         set_bot_parametres(&f->their_bots[i], their_robot, i);

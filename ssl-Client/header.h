@@ -10,11 +10,11 @@
 #define MID_FIELD 160/2
 
 enum {
-    NONE = 0,
-    GOALKEEPER,
-    ATACKER,
-    DEFENDER,
-    CLOSER
+    GOALKEEPER = 0,
+    NONE, // 1
+    ATACKER, // 2
+    DEFENDER, // 3
+    CLOSER // 4
 };
 
 typedef struct {

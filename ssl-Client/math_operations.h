@@ -18,7 +18,7 @@ struct float_pair
     double x, y;
 };
 
-#define RADIUS 13.0
+#define RADIUS 8.0
 #define MIN_HUGGING_ANGLE M_PI/6
 #define HUGGING_EDGE_STEPS 3
 

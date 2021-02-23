@@ -56,7 +56,6 @@ int main(int argc, char *argv[])
 
   //define your team color here
   field.my_robots_are_yellow = false;
-  bool one_time = true;
 
   // the ip address need to be in the range 224.0.0.0 through 239.255.255.255
   RoboCupSSLClient *visionClient = new RoboCupSSLClient("224.0.0.1", 10002);
@@ -74,22 +73,20 @@ int main(int argc, char *argv[])
       field_analyzer(&field);
 
       //Our robot info:
-      int i = 0;
-      //for (int i = 0; i < field.our_bots_n - field.our_bots_n + 1; i++){
-        
-        bot_t other_robots[field.our_bots_n + field.their_bots_n - 1];
+      vector<bot_t> other_robots;
+      bot_t my_robot = field.our_bots[0];
+      for(int i = 0; i < field.our_bots_n; i++)
+      {
+        if(i != 0)
+          other_robots.push_back(field.our_bots[i]);
+      }
+      for(int i = 0; i < field.their_bots_n; i++)
+        other_robots.push_back(field.their_bots[i]);
+      
+      objective_t o = path(other_robots, my_robot, field.ball.x, field.ball.y, 0);
+      PID(my_robot, o, 0, false, commandClient);
+      other_robots.clear();
 
-        for(int a = 0, b = 0; a < field.our_bots_n + field.their_bots_n - 1; b++)
-        {
-          if(b != i)
-            other_robots[a++] = field.our_bots[b];
-        }
-        
-        if(one_time)
-          objective_t o = path(other_robots, &field, field.our_bots[i], field.ball.x, field.ball.y, 0);
-        one_time = false;
-        // PID(field.our_bots[i], o, i, field.my_robots_are_yellow, commandClient);
-      //}
     } else {
       // pass and wait for wwindow
     }

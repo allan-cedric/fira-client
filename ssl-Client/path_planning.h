@@ -57,7 +57,7 @@ double edge_cost(node_t a, node_t b, vector<circle_t> &circles);
 
 double heuristic(node_t next, node_t goal);
 
-objective_t path(bot_t *other_robots, field_t *field, bot_t my_robot,
+objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
                double x, double y, double theta);
 
 #endif

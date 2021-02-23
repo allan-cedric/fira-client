@@ -73,12 +73,6 @@ while True:
             path_edges.clear()
             image.fill(255 * negated)
 
-
-    for line in path_edges:
-        cv.circle(image, (magnitude * line.p1x,  (h - magnitude *line.p1y)), 5, (0, 255, 0), cv.FILLED)
-        cv.circle(image, (magnitude * line.p2x,  (h - magnitude *line.p2y)), 5, (0, 255, 0), cv.FILLED)
-        cv.line(image, (magnitude *line.p1x, (h - magnitude *line.p1y)), (magnitude *line.p2x,(h - magnitude *line.p2y)), (255, 0, 0), 3)
-
     for circle in circles:
         cv.circle(image, (magnitude * circle.x,  (h - magnitude *circle.y)), circle.radius * magnitude, (0, 0, 255), 2)
         cv.putText(image, circle.index, (magnitude *circle.x, (h - magnitude *circle.y)), cv.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255))
@@ -90,6 +84,12 @@ while True:
         cv.circle(image, (magnitude * edge.p2x,  (h - magnitude *edge.p2y)), 5, (0, 255, 255), cv.FILLED)
         cv.line(image, (magnitude *edge.p1x, (h - magnitude *edge.p1y)), (magnitude *edge.p2x,(h - magnitude *edge.p2y)), (255, 255, 0), 3)
 
+    for line in path_edges:
+        cv.circle(image, (magnitude * line.p1x,  (h - magnitude *line.p1y)), 5, (0, 255, 0), cv.FILLED)
+        cv.circle(image, (magnitude * line.p2x,  (h - magnitude *line.p2y)), 5, (0, 255, 0), cv.FILLED)
+        cv.line(image, (magnitude *line.p1x, (h - magnitude *line.p1y)), (magnitude *line.p2x,(h - magnitude *line.p2y)), (255, 0, 0), 3)
+
+
 
     cv.imshow("output", image)
-    cv.waitKey(0)
+    cv.waitKey(1)

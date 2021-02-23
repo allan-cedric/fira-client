@@ -84,18 +84,43 @@ void add_edge(vector<edge_t> &surfing_edges, vector<circle_t> &circles, vector<n
 {
     if (!line_of_sight(circles, i, P, j, Q))
         return;
+    
+    // If both points are inside the interval
+    // if(!inrange(0, 150, P.x) || !inrange(0, 150, P.y))
+    //     return;
+    
+    // if(!inrange(0, 150, Q.x) || !inrange(0, 150, Q.y))
+    //     return;
 
     // n1 = (i, P)
     node_t n1 = {.coord = {.x = P.x, .y = P.y}, .circle_index = i};
-    nodes.push_back(n1); // we need to store them nodes
-
     // n2 = (j, Q)
     node_t n2 = {.coord = {.x = Q.x, .y = Q.y}, .circle_index = j};
-    nodes.push_back(n2);
 
     // n1 ----- n2
     edge_t edge = {.n1 = n1, .n2 = n2};
 
+    for(int i = 0; i < (int)nodes.size(); i++)
+    {
+        //printf("n1.index: %i, n2.index: %i\n", n1.circle_index, n2.circle_index);
+        if(n1 == nodes[i])
+        {
+            // Node is a start node or a goal node
+            if(n1.circle_index != 6 && n1.circle_index != 5)
+                return; 
+        }
+        if(n2 == nodes[i])
+        {
+            // Node is a start node or a goal node
+            if(n2.circle_index != 6 && n2.circle_index != 5)
+                return;
+        }
+    }
+
+    nodes.push_back(n1); // we need to store them nodes
+    nodes.push_back(n2);
+
+    //printf("puta vida\n");
     surfing_edges.push_back(edge); // We need to store the new edge
 }
 
@@ -106,11 +131,16 @@ node_t circle_to_node(int circle_index, vector<node_t> &nodes)
     for (auto node : nodes)
     {
         if (node.circle_index == circle_index)
+        {
+            //printf("node: %f %f\n", node.coord.x, node.coord.y);
             nodes_on_circle.push_back(node);
+        }
     }
 
-    /*if ((int)nodes_on_circle.size() != 1)
-        cout << "start/goal should be on r=0 circle" << endl;*/
+    //printf("puta vida 3\n");
+
+    if ((int)nodes_on_circle.size() != 1)
+        cout << "start/goal should be on r=0 circle " << (int)nodes_on_circle.size() << endl;
 
     return nodes_on_circle[0];
 }
@@ -160,14 +190,13 @@ double heuristic(node_t next, node_t goal)
     //return vec_distance(goal_node, node);
 }
 
-objective_t path(bot_t *other_robots, field_t *field, bot_t my_robot,
+objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
                double x, double y, double theta)
 {
-
     // transforming robots into circles
     vector<circle_t> circles;
 
-    for (int i = 0; i < field->their_bots_n + field->our_bots_n - 1; i++)
+    for (int i = 0; i < (int)other_robots.size(); i++)
     {
         float_pair center = {.x = other_robots[i].x, .y = other_robots[i].y};
         circle_t circle = {.center = center, .radius = RADIUS};
@@ -218,16 +247,22 @@ objective_t path(bot_t *other_robots, field_t *field, bot_t my_robot,
             }
 
             auto external = ExternalBitangents(circles[i], circles[j]);
-            C = external[0];
-            D = external[1];
-            E = external[2];
-            F = external[3];
 
-            if (circles[i].radius != 0 || circles[j].radius != 0)
-                add_edge(surfing_edges, circles, nodes, i, C, j, F);
+            //printf("empty: %i\n", external.empty());
 
-            if (circles[i].radius != 0 && circles[j].radius != 0)
-                add_edge(surfing_edges, circles, nodes, i, D, j, E);
+            //if(!external.empty())
+            //{
+                C = external[0];
+                D = external[1];
+                E = external[2];
+                F = external[3];
+
+                if (circles[i].radius != 0 || circles[j].radius != 0)
+                    add_edge(surfing_edges, circles, nodes, i, C, j, F);
+
+                if (circles[i].radius != 0 && circles[j].radius != 0)
+                    add_edge(surfing_edges, circles, nodes, i, D, j, E);
+            //}
         }
     }
 
@@ -273,6 +308,11 @@ objective_t path(bot_t *other_robots, field_t *field, bot_t my_robot,
 
     // Now, storing all the edges together:
     surfing_edges.insert(surfing_edges.end(), hugging_edges.begin(), hugging_edges.end());
+
+    // for(auto circle : circles)
+    // {
+    //     printf("circle: %f %f\n", circle.center.x, circle.center.y);
+    // }
 
     // A* Star
     node_t start_node = circle_to_node((int)circles.size() - 2, nodes);
@@ -322,7 +362,7 @@ objective_t path(bot_t *other_robots, field_t *field, bot_t my_robot,
     //     printf("e %f %f %f %f\n", edge.n1.coord.x, edge.n1.coord.y, edge.n2.coord.x, edge.n2.coord.y);
 
     printf("Clear\n");
-
+    
     vector<node_t> path;
     node_t current = goal_node;
     float_pair ant = current.coord;
@@ -349,7 +389,7 @@ objective_t path(bot_t *other_robots, field_t *field, bot_t my_robot,
 #endif
 
 
-   objective_t obj;    
+   /*objective_t obj;    
    
    if (path[0].circle_index == path[1].circle_index)
     // if we are in a hugging edge
@@ -386,5 +426,8 @@ objective_t path(bot_t *other_robots, field_t *field, bot_t my_robot,
     
     }
 
-    return obj;
+    return obj;*/
+
+    objective_t o = {.x = path[1].coord.x, .y = path[1].coord.y, .angle = M_PI/4.};
+    return o;
 }

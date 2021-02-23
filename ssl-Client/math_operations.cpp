@@ -126,6 +126,10 @@ vector<float_pair> ExternalBitangents(circle_t A, circle_t B)
     double cos_angle = fabs(A.radius - B.radius) / P;
     double theta = acos(cos_angle);
 
+    // Circle inside another, no external bitangents.
+    // if (!(cos_angle < 1 || cos_angle > -1))
+    //     return vector<float_pair>();
+
     double AB_angle = vec_facing(A.center, B.center);
 
     float_pair C = direction_step(A.center, A.radius, AB_angle - theta);
@@ -144,6 +148,8 @@ vector<float_pair> ExternalBitangents(circle_t A, circle_t B)
 
 bool segment_circle_intersection(float_pair A, float_pair B, circle_t C)
 {
+    if(C.radius <= 0)
+        return false;
 
     float_pair CA = vec_sub(C.center, A), BA = vec_sub(B, A);
 
@@ -157,7 +163,7 @@ bool segment_circle_intersection(float_pair A, float_pair B, circle_t C)
     float_pair E = vec_interpolate(A, B, u);
     double d = vec_distance(C.center, E);
 
-    return (d <= C.radius);
+    return (d < C.radius);
 }
 
 bool line_of_sight(vector<circle_t> &circles, int i, float_pair P, int j, float_pair Q)
@@ -165,7 +171,9 @@ bool line_of_sight(vector<circle_t> &circles, int i, float_pair P, int j, float_
     for (int k = 0; k < (int)circles.size(); k++)
     {
         if (k != i && k != j && segment_circle_intersection(P, Q, circles[k]))
-            return false;
+           return false;
+        // if (segment_circle_intersection(P, Q, circles[k]))
+        //     return false;
     }
     return true;
 }

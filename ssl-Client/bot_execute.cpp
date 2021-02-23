@@ -127,6 +127,7 @@ void execute_bot_strats(field_t *f, GrSim_Client *commandClient)
             bot_t ball_translated;
             ball_translated.x = f->ball.x;
             ball_translated.y = f->ball.y;
+            ball_translated.radius = 5;
             other_robots.push_back(ball_translated);
         }
 

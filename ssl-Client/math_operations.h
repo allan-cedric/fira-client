@@ -26,7 +26,7 @@ struct float_pair
 struct circle_t
 {
     float_pair center;
-    float radius;
+    double radius;
 };
 
 struct node_t

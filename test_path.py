@@ -10,10 +10,11 @@ class Edge:
         self.p2y = y2
 
 class Circle:
-    def __init__(self, x, y, radius):
+    def __init__(self, x, y, radius, index):
         self.x = x
         self.y = y
         self.radius = radius
+        self.index = index
 
 negated = True
 
@@ -43,7 +44,7 @@ while True:
             if radius == 0:
                 radius = 1
             
-            c = Circle(x, y, radius)
+            c = Circle(x, y, radius, index)
             circles.append(c)
         
         if command[0] == "l":
@@ -66,7 +67,7 @@ while True:
             edges.append(e)
 
 
-        if command[0] == "clear":
+        if command[0] == "C": # clear
             circles.clear()
             edges.clear()
             path_edges.clear()
@@ -80,7 +81,7 @@ while True:
 
     for circle in circles:
         cv.circle(image, (magnitude * circle.x,  (h - magnitude *circle.y)), circle.radius * magnitude, (0, 0, 255), 2)
-        cv.putText(image, index, (magnitude *circle.x, (h - magnitude *circle.y)), cv.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255))
+        cv.putText(image, circle.index, (magnitude *circle.x, (h - magnitude *circle.y)), cv.FONT_HERSHEY_COMPLEX, 1, (0, 0, 255))
         
     for edge in edges:
         cv.circle(image, (magnitude * edge.p1x,  (h - magnitude *edge.p1y)), 5, (0, 255, 255), cv.FILLED)
@@ -91,4 +92,4 @@ while True:
 
 
     cv.imshow("output", image)
-    cv.waitKey(1)
+    cv.waitKey(0)

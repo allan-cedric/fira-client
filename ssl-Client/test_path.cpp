@@ -83,7 +83,6 @@ int main(int argc, char *argv[])
         {
           if(b != i)
             other_robots[a++] = field.our_bots[b];
-          other_robots[a++] = field.their_bots[b];
         }
         
         if(one_time)

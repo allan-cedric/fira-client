@@ -3,3 +3,4 @@ test_path
 teste
 *.o
 .vscode/
+../.vscode/

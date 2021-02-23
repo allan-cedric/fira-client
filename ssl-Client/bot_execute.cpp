@@ -21,7 +21,8 @@ double to180range(double angle)
 double smallestAngleDiff(double target, double source)
 {
     double a;
-    a = fmod(target + 2 * M_PI, 2 * M_PI) - fmod(source + 2 * M_PI, 2 * M_PI);
+    a = fmod(target + 2 * M_PI, 2 * M_PI) 
+        - fmod(source + 2 * M_PI, 2 * M_PI);
 
     if (a > M_PI)
     {
@@ -34,7 +35,11 @@ double smallestAngleDiff(double target, double source)
     return a;
 }
 
-void PID(bot_t robot, objective_t objective, int index, bool my_robots_are_yellow, GrSim_Client *grSim_client)
+void PID(bot_t robot, 
+        objective_t objective, 
+        int index, 
+        bool my_robots_are_yellow, 
+        GrSim_Client *grSim_client )
 {
     double Kp = 20;
     double Kd = 2.5;
@@ -47,7 +52,8 @@ void PID(bot_t robot, objective_t objective, int index, bool my_robots_are_yello
 
     double angle_rob = robot.a;
 
-    double angle_obj = atan2(objective.y - robot.y, objective.x - robot.x);
+    double angle_obj = atan2( objective.y - robot.y, 
+                            objective.x - robot.x );
 
     double error = smallestAngleDiff(angle_rob, angle_obj);
 
@@ -59,7 +65,9 @@ void PID(bot_t robot, objective_t objective, int index, bool my_robots_are_yello
         error = smallestAngleDiff(angle_rob, angle_obj);
     }
 
-    double motorSpeed = (Kp * error) + (Kd * (error - lastError)); // + 0.2 * sumErr;
+    double motorSpeed = (Kp * error) + (Kd * (error - lastError)); 
+    // + 0.2 * sumErr;
+    
     lastError = error;
 
     double baseSpeed = 30;
@@ -92,7 +100,10 @@ void PID(bot_t robot, objective_t objective, int index, bool my_robots_are_yello
         rightMotorSpeed = -baseSpeed - motorSpeed;
     }
     }
-    grSim_client->sendCommand(leftMotorSpeed, rightMotorSpeed, my_robots_are_yellow, index);
+    grSim_client->sendCommand(leftMotorSpeed, 
+                                rightMotorSpeed, 
+                                my_robots_are_yellow, 
+                                index);
 }
 
 void execute_bot_strats(field_t *f, GrSim_Client* commandClient)
@@ -100,7 +111,10 @@ void execute_bot_strats(field_t *f, GrSim_Client* commandClient)
     // do stuff
     // PID(...);
     for (int i = 0; i < NUM_BOTS; i++){
-        objective_t b = { .x = f->our_bots[i].obj.x, .y = f->our_bots[i].obj.y, .angle = 0 };
+        objective_t b = { .x = f->our_bots[i].obj.x, 
+                            .y = f->our_bots[i].obj.y, 
+                            .angle = 0 };
+
         PID(f->our_bots[i], b, i, false, commandClient);
     }
 }

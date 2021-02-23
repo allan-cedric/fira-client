@@ -35,7 +35,8 @@ void print_field(field_t *f)
 {
     printf("========================================\n");
     printf("%s\n", f->my_robots_are_yellow ? "YELLOW" : "BLUE");
-    printf("%s\n\n", f->fs.wra ? "WRA" : (f->fs.tra ? "TRA" : (f->fs.wrc ? "WRC" : "TRC")));
+    printf("%s\n\n", f->fs.wra 
+            ? "WRA" : (f->fs.tra ? "TRA" : (f->fs.wrc ? "WRC" : "TRC")));
     print_ball_info(f->ball);
     printf("OUR BOTS:\n");
     print_bot_info(f->our_bots);
@@ -83,7 +84,8 @@ bool we_are_closer(field_t *f)
     }
 
     for (int i = 0; i < NUM_BOTS; i++){
-        float_pair bot_p = {.x = f->their_bots[i].x, .y = f->their_bots[i].y};
+        float_pair bot_p = {.x = f->their_bots[i].x, 
+                            .y = f->their_bots[i].y };
         their_distances[i] = vec_distance(bot_p, ball_p);
         f->their_bots[i].fun = NONE;
     }
@@ -92,7 +94,8 @@ bool we_are_closer(field_t *f)
     f->our_bots[min_dist_index(our_distances)].fun = CLOSER;
     f->closer_bot = &f->our_bots[min_dist_index(our_distances)];
 
-    return our_distances[min_dist_index(our_distances)] < their_distances[min_dist_index(their_distances)];
+    return our_distances[min_dist_index(our_distances)] 
+            < their_distances[min_dist_index(their_distances)];
 }
 
 // true if the ball and and offender are on your field simoutaniously
@@ -103,7 +106,8 @@ bool they_are_atacking(field_t *f)
         return false;
 
     int i = 0;
-    while (!is_on_my_field(f->their_bots[i].x, f->my_robots_are_yellow) && (i++ < NUM_BOTS));
+    while (!is_on_my_field(f->their_bots[i].x, f->my_robots_are_yellow) 
+            && (i++ < NUM_BOTS));
 
     return i < NUM_BOTS;
 }
@@ -116,7 +120,8 @@ bool we_are_atacking(field_t *f)
         return false;
 
     int i = 0;
-    while (is_on_my_field(f->our_bots[i].x, f->my_robots_are_yellow) && (i++ < NUM_BOTS));
+    while (is_on_my_field(f->our_bots[i].x, f->my_robots_are_yellow) 
+            && (i++ < NUM_BOTS));
 
     return i < NUM_BOTS;
 }

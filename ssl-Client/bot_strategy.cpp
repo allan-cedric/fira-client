@@ -27,7 +27,8 @@ void set_bot_strategies(field_t *f)
     // goalkeeper do his stuff
 
     bot_t *dominant = f->closer_bot;
-    bot_t *auxiliary = f->closer_bot == &f->our_bots[1] ? &f->our_bots[2] : &f->our_bots[1];
+    bot_t *auxiliary = f->closer_bot == &f->our_bots[1] 
+                        ? &f->our_bots[2] : &f->our_bots[1];
 
     objective_t ball_p = {.x = f->ball.x, .y = f->ball.y, .angle = 0};
 

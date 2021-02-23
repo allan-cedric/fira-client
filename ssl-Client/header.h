@@ -37,6 +37,7 @@ typedef struct {
     objective_t obj;
     int index;
     bool wants_to_hit_ball;
+    double radius;
 } bot_t;
 
 typedef struct {

@@ -122,6 +122,14 @@ void execute_bot_strats(field_t *f, GrSim_Client *commandClient)
         for (int i = 0; i < f->their_bots_n; i++)
             other_robots.push_back(f->their_bots[i]);
 
+        if(!our_robot.wants_to_hit_ball)
+        {
+            bot_t ball_translated;
+            ball_translated.x = f->ball.x;
+            ball_translated.y = f->ball.y;
+            other_robots.push_back(ball_translated);
+        }
+
         objective_t o = path(other_robots, our_robot, 
                             our_robot.obj.x, our_robot.obj.y, our_robot.obj.angle);
         PID(our_robot, o, our_robot.index, 

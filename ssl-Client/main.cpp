@@ -1,6 +1,6 @@
 // Original author: Renato Sousa, 2018
 //
-// (Heavly) Modified by 
+// (Heavily) Modified by 
 //                      Artur Coelho & 
 //                      Gabriel Hishida & 
 //                      Allan Cedric &

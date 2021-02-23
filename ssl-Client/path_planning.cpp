@@ -401,42 +401,42 @@ objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
     }
 #endif
 
-//     objective_t obj;
+    objective_t obj;
 
-//     if (path[0].circle_index == path[1].circle_index)
-//     // if we are in a hugging edge
-//     {
-//         vector<objective_t> intermediate = intermediate_steps(path[0].coord, path[1].coord, circles[path[0].circle_index]);
-// #ifdef DEBUG_PATH
-//         for (auto objective : intermediate)
-//         {
-//             printf("step %f %f\n", objective.x, objective.y);
-//         }
-// #endif
+    if (path[0].circle_index == path[1].circle_index)
+    // if we are in a hugging edge
+    {
+        vector<objective_t> intermediate = intermediate_steps(path[0].coord, path[1].coord, circles[path[0].circle_index]);
+#ifdef DEBUG_PATH
+        for (auto objective : intermediate)
+        {
+            printf("step %f %f\n", objective.x, objective.y);
+        }
+#endif
 
-//         obj = intermediate[intermediate.size() - 1];
-//     }
+        obj = intermediate[intermediate.size() - 1];
+    }
 
-//     else // not a hugging edge
-//     {
-//         double angle;
+    else // not a hugging edge
+    {
+        double angle;
 
-//         if (path.size() == 2) // next goal is last goal
-//             angle = theta;
+        if (path.size() == 2) // next goal is last goal
+            angle = theta;
 
-//         else
-//         {
-//             // get the angle of the surfing edge
-//             angle = atan2((path[1].coord.y - path[0].coord.y), (path[1].coord.x - path[0].coord.x));
-//             if (angle < 0)
-//                 angle += 2 * M_PI;
-//         }
+        else
+        {
+            // get the angle of the surfing edge
+            angle = atan2((path[1].coord.y - path[0].coord.y), (path[1].coord.x - path[0].coord.x));
+            if (angle < 0)
+                angle += 2 * M_PI;
+        }
 
-//         obj = {path[1].coord.x, path[1].coord.y, angle};
-//     }
+        obj = {path[1].coord.x, path[1].coord.y, angle};
+    }
 
-//     return obj;
+    return obj;
 
-    objective_t o = {.x = path[1].coord.x, .y = path[1].coord.y, .angle = theta};
-    return o;
+    // objective_t o = {.x = path[1].coord.x, .y = path[1].coord.y, .angle = angle};
+    // return o;
 }

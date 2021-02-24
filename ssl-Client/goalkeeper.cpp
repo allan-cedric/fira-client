@@ -1,6 +1,7 @@
 #include "header.h"
 #include "math_operations.h"
 #include <math.h>
+#include "bot_strategy.h"
 
 // default positions: blue robots (left side)
 
@@ -51,6 +52,13 @@ objective_t  goalkeeper_default_position(bool is_yellow)
 
 objective_t between_goal_and_ball(ball_t ball, bool is_yellow)
 {
+    float_pair ball_center = {.x = ball.x, .y = ball.y };
+    float_pair ball_vec = {.x = ball.vx, .y = ball.vy};
+    line_t ball_path = get_line_from_vec(ball_center, ball_vec);
+
+    if (is_yellow){
+        
+    }
     ball.vx
     ball.vy
     return;

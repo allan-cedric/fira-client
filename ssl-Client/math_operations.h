@@ -13,7 +13,7 @@
 
 using namespace std;
 
-struct float_pair {
+struct float_pair_t {
     double x, y;
 };
 
@@ -24,13 +24,13 @@ struct float_pair {
 
 struct circle_t
 {
-    float_pair center;
+    float_pair_t center;
     double radius;
 };
 
 struct node_t
 {
-    float_pair coord;
+    float_pair_t coord;
     int circle_index;
 
     bool operator<(const node_t &t) const
@@ -58,41 +58,41 @@ struct edge_t
 
 // from lib.js:
 
-float_pair vec_polar(double r, double a);
+float_pair_t vec_polar(double r, double a);
 
-float_pair vec_add(float_pair p, float_pair q);
+float_pair_t vec_add(float_pair_t p, float_pair_t q);
 
-float_pair vec_sub(float_pair p, float_pair q);
+float_pair_t vec_sub(float_pair_t p, float_pair_t q);
 
-double vec_dot(float_pair p, float_pair q);
+double vec_dot(float_pair_t p, float_pair_t q);
 
-double vec_cross(float_pair p, float_pair q);
+double vec_cross(float_pair_t p, float_pair_t q);
 
-float_pair vec_interpolate(float_pair p, float_pair q, double t);
+float_pair_t vec_interpolate(float_pair_t p, float_pair_t q, double t);
 
-double vec_facing(float_pair p, float_pair q);
+double vec_facing(float_pair_t p, float_pair_t q);
 
-double vec_length(float_pair p);
+double vec_length(float_pair_t p);
 
-double vec_distance(float_pair p, float_pair q);
+double vec_distance(float_pair_t p, float_pair_t q);
 
-float_pair vec_normalize(float_pair p);
+float_pair_t vec_normalize(float_pair_t p);
 
 double angle_difference(double a, double b);
 
 // from belt_problem.js:
 
-float_pair direction_step(float_pair start, double distance, double angle);
+float_pair_t direction_step(float_pair_t start, double distance, double angle);
 
-vector<float_pair> InternalBitangents(circle_t A, circle_t B);
+vector<float_pair_t> InternalBitangents(circle_t A, circle_t B);
 
-vector<float_pair> ExternalBitangents(circle_t A, circle_t B);
+vector<float_pair_t> ExternalBitangents(circle_t A, circle_t B);
 
-bool segment_circle_intersection(float_pair A, float_pair B, circle_t C);
+bool segment_circle_intersection(float_pair_t A, float_pair_t B, circle_t C);
 
-bool line_of_sight(vector<circle_t> &circles, int i, float_pair P, int j, float_pair Q);
+bool line_of_sight(vector<circle_t> &circles, int i, float_pair_t P, int j, float_pair_t Q);
 
-bool is_blocking(float_pair D, float_pair E, float_pair I, float_pair J, float_pair A);
+bool is_blocking(float_pair_t D, float_pair_t E, float_pair_t I, float_pair_t J, float_pair_t A);
 
 bool inrange(double a, double b, double to_test);
 

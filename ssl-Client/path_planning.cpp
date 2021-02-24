@@ -10,10 +10,10 @@
 #include "header.h"
 #include "path_planning.h"
 
-vector<objective_t> intermediate_steps(float_pair start, float_pair end, circle_t circle)
+vector<objective_t> intermediate_steps(float_pair_t start, float_pair_t end, circle_t circle)
 // in a hugging edge, get intermediate steps as objectives in order to run around the circle
 {
-    float_pair center = circle.center;
+    float_pair_t center = circle.center;
     int number_of_steps = HUGGING_EDGE_STEPS;
 
     double theta_start = atan2(start.y - center.y, start.x - center.x);
@@ -49,7 +49,7 @@ vector<objective_t> intermediate_steps(float_pair start, float_pair end, circle_
     else // enough distance for an intermediate
     {
 
-        float_pair intermediate_point;
+        float_pair_t intermediate_point;
         double angle;
 
         for (int i = 1; i < number_of_steps; i++)
@@ -79,7 +79,7 @@ vector<objective_t> intermediate_steps(float_pair start, float_pair end, circle_
 
 // Try to add edge from circle i point P to circle j point Q
 void add_edge(vector<edge_t> &surfing_edges, vector<circle_t> &circles, vector<node_t> &nodes, int i,
-              float_pair P, int j, float_pair Q)
+              float_pair_t P, int j, float_pair_t Q)
 {
     if (!line_of_sight(circles, i, P, j, Q))
         return;
@@ -173,7 +173,7 @@ double edge_cost(node_t a, node_t b, vector<circle_t> &circles)
     {
         // Hugging edge
 
-        float_pair center = circles[a.circle_index].center;
+        float_pair_t center = circles[a.circle_index].center;
 
         double a_angle = vec_facing(center, a.coord);
         double b_angle = vec_facing(center, b.coord);
@@ -204,7 +204,7 @@ objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
 
     for (int i = 0; i < (int)other_robots.size(); i++)
     {
-        float_pair center = {.x = other_robots[i].x, .y = other_robots[i].y};
+        float_pair_t center = {.x = other_robots[i].x, .y = other_robots[i].y};
         circle_t circle = {.center = center, .radius = other_robots[i].radius};
         circles.push_back(circle);
     }
@@ -215,7 +215,7 @@ objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
     // these circles are special, though: their radius is equal to 0.
 
     // start circle
-    float_pair center = {.x = my_robot.x, .y = my_robot.y};
+    float_pair_t center = {.x = my_robot.x, .y = my_robot.y};
     circle_t start_circle = {.center = center, .radius = 0};
 
     // goal circle
@@ -236,7 +236,7 @@ objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
     {
         for (int j = 0; j < i; j++)
         {
-            float_pair C, D, E, F;
+            float_pair_t C, D, E, F;
 
             auto internal = InternalBitangents(circles[i], circles[j]);
 
@@ -367,7 +367,7 @@ objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
 
     vector<node_t> path;
     node_t current = goal_node;
-    float_pair ant = current.coord;
+    float_pair_t ant = current.coord;
 
     while (!(current == start_node) && node_found(current))
     {

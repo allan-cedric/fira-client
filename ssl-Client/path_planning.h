@@ -47,7 +47,7 @@ struct PriorityQueue
 };
 
 void add_edge(vector<edge_t> &surfing_edges, vector<circle_t> &circles, vector<node_t> &nodes, int i,
-              float_pair P, int j, float_pair Q);
+              float_pair_t P, int j, float_pair_t Q);
 
 node_t circle_to_node(int circle_index, vector<node_t> &nodes);
 

@@ -26,24 +26,24 @@ double our_goal_y()
     return GOAL_Y;
 }
 
-float_pair our_goal_pair(bool mray)
+float_pair_t our_goal_pair(bool mray)
 {
     return {.x = our_goal_x(mray), .y = our_goal_y()};
 }
 
-float_pair their_goal_pair(bool mray)
+float_pair_t their_goal_pair(bool mray)
 {
     return {.x = their_goal_x(mray), .y = their_goal_y()};
 }
 
-float_pair their_goal_pair_with_correction(bool mray, float_pair ball_p)
+float_pair_t their_goal_pair_with_correction(bool mray, float_pair_t ball_p)
 {
     double x = their_goal_x(mray);
     double y = their_goal_y() + (their_goal_y() - ball_p.y) * GOAL_DIFF_CORRECTION;
     return {.x = x, .y = y};
 }
 
-bool ball_is_aligned_to_goal(float_pair ball_p, float_pair bot_p)
+bool ball_is_aligned_to_goal(float_pair_t ball_p, float_pair_t bot_p)
 {
     if (ball_p.y > their_goal_y()) {
         return bot_p.y > ball_p.y - HEIGHT_ACEPTANCE;
@@ -59,7 +59,7 @@ void send_bot_to(bot_t *b, objective_t dest)
 }
 
 objective_t get_interception_point(line_t ball_l, 
-                                    float_pair ball_p, 
+                                    float_pair_t ball_p, 
                                     double dist, 
                                     bool mray )
 {
@@ -76,7 +76,7 @@ objective_t get_interception_point(line_t ball_l,
             //  .angle = M_PI_4 };
 }
 
-line_t get_line(float_pair a, float_pair b)
+line_t get_line(float_pair_t a, float_pair_t b)
 {
     double res_a = (a.y - b.y) 
             / (a.x - b.x);
@@ -84,9 +84,9 @@ line_t get_line(float_pair a, float_pair b)
     return {.a = res_a, .b = res_b};
 }
 
-line_t get_line_from_vec(float_pair p, float_pair v)
+line_t get_line_from_vec(float_pair_t p, float_pair_t v)
 {
-    float_pair u = vec_add(p,v);
+    float_pair_t u = vec_add(p,v);
     return get_line(p,u);
 }
 
@@ -107,8 +107,8 @@ void set_bot_strategies(field_t *f)
                         ? &f->our_bots[2] : &f->our_bots[1];
 
     // ball pair
-    float_pair ball_p = {.x = f->ball.x, .y = f->ball.y};
-    float_pair bot_p = {.x = f->our_bots[0].x, .y = f->our_bots[0].y};
+    float_pair_t ball_p = {.x = f->ball.x, .y = f->ball.y};
+    float_pair_t bot_p = {.x = f->our_bots[0].x, .y = f->our_bots[0].y};
 
     // line Y = aX + b 
     // pass through ball and goal

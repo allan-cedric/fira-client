@@ -75,16 +75,16 @@ bool we_are_closer(field_t *f)
 {
     double our_distances[NUM_BOTS];
     double their_distances[NUM_BOTS];
-    float_pair ball_p = {.x = f->ball.x, .y = f->ball.y};
+    float_pair_t ball_p = {.x = f->ball.x, .y = f->ball.y};
 
     for (int i = 0; i < NUM_BOTS; i++){
-        float_pair bot_p = {.x = f->our_bots[i].x, .y = f->our_bots[i].y};
+        float_pair_t bot_p = {.x = f->our_bots[i].x, .y = f->our_bots[i].y};
         our_distances[i] = vec_distance(bot_p, ball_p);
         f->our_bots[i].fun = NONE;
     }
 
     for (int i = 0; i < NUM_BOTS; i++){
-        float_pair bot_p = {.x = f->their_bots[i].x, 
+        float_pair_t bot_p = {.x = f->their_bots[i].x, 
                             .y = f->their_bots[i].y };
         their_distances[i] = vec_distance(bot_p, ball_p);
         f->their_bots[i].fun = NONE;

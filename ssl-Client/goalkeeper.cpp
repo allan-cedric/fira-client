@@ -56,11 +56,12 @@ objective_t between_goal_and_ball(ball_t ball, bool is_yellow)
     float_pair ball_vec = {.x = ball.vx, .y = ball.vy};
     line_t ball_path = get_line_from_vec(ball_center, ball_vec);
 
+    // once we have the ball path, we can try to predict whether it is going
+    // for the goal or not.
+
     if (is_yellow){
         
     }
-    ball.vx
-    ball.vy
     return;
 }
 

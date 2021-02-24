@@ -3,37 +3,7 @@
 #include <math.h>
 #include "bot_strategy.h"
 
-// default positions: blue robots (left side)
-
-// field.height/2 == 65
-#define GK_DEFAULT_X 5.0
-#define GK_DEFAULT_Y 65.0
-
-#define GOAL_MAX_Y 85 //65 + 20
-#define GOAL_MIN_Y 45 //65 - 20
-
-#define GOAL_MAX_X 15.0 
-#define GOAL_MIN_X -10.0
-
-
-// typedef struct {
-//     bool
-//         especial_case, 
-//         wrc, // we are closer
-//         tra, // they are atacking
-//         wra; // we are atacking
-// } field_status_t;
-
-// typedef struct {
-//     int our_bots_n, their_bots_n;
-//     ball_t ball;
-//     bot_t our_bots[NUM_BOTS];
-//     bot_t their_bots[NUM_BOTS];
-//     bool my_robots_are_yellow;
-//     field_status_t fs;
-//     bot_t *closer_bot;
-// } field_t;
-
+#include "goalkeeper.h"
 
 objective_t  goalkeeper_default_position(bool is_yellow)
 {
@@ -149,7 +119,7 @@ objective_t between_goal_and_ball(bot_t goalkeeper, ball_t ball, bool is_yellow,
     return obj;
 }
 
-objective_t goalkeeper_objective(field_t* field, int* wants_to_hit_ball)
+objective_t goalkeeper_objective(field_t* field)
 {
     if(!field->fs.tra) {// they are not attacking, no need to worry.
         return goalkeeper_default_position(field->my_robots_are_yellow);       
@@ -157,8 +127,8 @@ objective_t goalkeeper_objective(field_t* field, int* wants_to_hit_ball)
     } else { // WE'RE UNDER ATTACK!
         // we need to position the goalkeeper between the goal and the ball,
         // but it cannot go beyond the boundaries of the goal area.
-        return between_goal_and_ball(/* INSIRA O ROBO AQUI */, field->ball,
-                                    field->my_robots_are_yellow, wants_to_hit_ball);
+        return between_goal_and_ball(field->our_bots[0], field->ball,
+                                    field->my_robots_are_yellow, &field->our_bots[0].wants_to_hit_ball);
 
     }
 

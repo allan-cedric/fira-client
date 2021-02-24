@@ -11,6 +11,7 @@ OBJECTS = robocup_ssl_client.o \
 			analyzer.o \
 			bot_strategy.o \
 			bot_execute.o \
+			goalkeeper.o \
 			main.o 
 
 TEST_OBJECTS = robocup_ssl_client.o \
@@ -41,6 +42,7 @@ math_operations.o: math_operations.cpp math_operations.h
 analyzer.o: analyzer.cpp analyzer.h
 bot_strategy.o: bot_strategy.cpp bot_strategy.h
 bot_execute.o: bot_execute.cpp bot_execute.h
+goalkeeper.o: goalkeeper.cpp goalkeeper.h
 main.o: main.cpp
 test_path.o: test_path.cpp
 

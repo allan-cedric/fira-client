@@ -3,6 +3,7 @@
 #include "bot_strategy.h"
 #include "math_operations.h"
 #include "analyzer.h"
+#include "goalkeeper.h"
 
 // set each goal mid positions based on side
 double our_goal_x(bool mray)
@@ -127,9 +128,7 @@ void set_bot_strategies(field_t *f)
 
 
     // ========= TODO goalkeeper do his stuff ==========
-    if (dominant == &f->our_bots[0]) {
-        // kick_away_from_everyone();
-    }
+    // f->our_bots[0].obj = goalkeeper_objective(f);
     // ========= TODO goalkeeper do his stuff ==========
 
 

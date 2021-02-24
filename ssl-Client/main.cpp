@@ -9,6 +9,7 @@
 // Feel free to use and please reference us
 
 //#include <QtNetwork>
+#include "../FIRAClient/clients/referee/refereeclient.h"
 #include <stdio.h>
 #include "net/robocup_ssl_client.h"
 #include "net/grSim_client.h"
@@ -82,7 +83,7 @@ int main(int argc, char *argv[])
     visionClient->open(false);
 
     // Referee client
-    // RefereeClient *refereeClient = new RefereeClient("224.5.23.2", 10003);
+    RefereeClient *refereeClient = new RefereeClient("224.5.23.2", 10003);
 
     // Command (actuator) client
     GrSim_Client *commandClient = new GrSim_Client();
@@ -91,7 +92,7 @@ int main(int argc, char *argv[])
 
     while (true){
         // Running referee client
-        // refereeClient->run();
+        refereeClient->run();
 
         // referee_analyzer(refereeClient, &referee);
 

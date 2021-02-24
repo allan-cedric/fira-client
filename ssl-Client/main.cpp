@@ -68,7 +68,11 @@ int main(int argc, char *argv[])
     (void)argc;
     (void)argv;
 
+    // Field analysis
     field_t field;
+
+    // Referee flags
+    referee_flags_t referee;
 
     //define your team color here
     field.my_robots_are_yellow = false;
@@ -77,11 +81,20 @@ int main(int argc, char *argv[])
     RoboCupSSLClient *visionClient = new RoboCupSSLClient("224.0.0.1", 10002);
     visionClient->open(false);
 
+    // Referee client
+    // RefereeClient *refereeClient = new RefereeClient("224.5.23.2", 10003);
+
+    // Command (actuator) client
     GrSim_Client *commandClient = new GrSim_Client();
 
     fira_message::sim_to_ref::Environment packet;
 
     while (true){
+        // Running referee client
+        // refereeClient->run();
+
+        // referee_analyzer(refereeClient, &referee);
+
         if (visionClient->receive(packet) && packet.has_frame()){
             fira_message::sim_to_ref::Frame detection = packet.frame();
 
@@ -103,6 +116,9 @@ int main(int argc, char *argv[])
             // pass and wait for window
         }
     }
+
+    // Closing client
+    // refereeClient->close();
 
     return 0;
 }

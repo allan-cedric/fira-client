@@ -95,25 +95,26 @@ int main(int argc, char *argv[])
 
         // referee_analyzer(refereeClient, &referee);
 
-        if (visionClient->receive(packet) && packet.has_frame()){
+        if (visionClient->receive(packet) && packet.has_frame() && !halt){
             fira_message::sim_to_ref::Frame detection = packet.frame();
 
             // Fill field ball and bots detection data
             fill_field(detection, &field);
 
             // Fill field status data
-            field_analyzer(&field); // TO COMPLETE Allan e TJ
-            // extra_cases(); // faltas, tiros de meta, penaltis -> Allan e TJ
+            field_analyzer(&field);
 
             // Fill each bot objective data
             set_bot_strategies(&field); // TODO Coelho e Jimmy
-            // set_goalkeeper_strategy(&field); // Hishida e Resenha
 
-            // Executes each bot objective
-            execute_bot_strats(&field, commandClient); // Allan e Xandão
+            if (game_on){
+                // Executes each bot objective
+                execute_bot_strats(&field, commandClient);
+            }
 
         } else {
             // pass and wait for window
+            stop_all();
         }
     }
 

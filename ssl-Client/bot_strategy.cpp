@@ -4,6 +4,7 @@
 #include "math_operations.h"
 #include "analyzer.h"
 
+// set each goal mid positions based on side
 double our_goal_x(bool mray)
 {
     return mray ? YELLOW_GOAL_X : BLUE_GOAL_X;
@@ -43,7 +44,9 @@ float_pair_t their_goal_pair_with_correction(bool mray, float_pair_t ball_p)
     return {.x = x, .y = y};
 }
 
-bool ball_is_aligned_to_goal(float_pair_t ball_p, float_pair_t bot_p)
+// check if bot is above or below the ball
+// checks accordinly to side and allows for error
+bool is_aligned_to_goal(float_pair_t ball_p, float_pair_t bot_p)
 {
     if (ball_p.y > their_goal_y()) {
         return bot_p.y > ball_p.y - HEIGHT_ACEPTANCE;
@@ -51,6 +54,7 @@ bool ball_is_aligned_to_goal(float_pair_t ball_p, float_pair_t bot_p)
     return bot_p.y < ball_p.y + HEIGHT_ACEPTANCE;
 }
 
+// set a bot objective
 void send_bot_to(bot_t *b, objective_t dest)
 {
     b->obj.x = dest.x;
@@ -58,6 +62,7 @@ void send_bot_to(bot_t *b, objective_t dest)
     b->obj.angle = dest.angle;
 }
 
+// get a point on the same line, behind the ball
 objective_t get_interception_point(line_t ball_l, 
                                     float_pair_t ball_p, 
                                     double dist, 
@@ -76,6 +81,7 @@ objective_t get_interception_point(line_t ball_l,
             //  .angle = M_PI_4 };
 }
 
+// gets a line reduced equation based on two points
 line_t get_line(float_pair_t a, float_pair_t b)
 {
     double res_a = (a.y - b.y) 
@@ -84,12 +90,15 @@ line_t get_line(float_pair_t a, float_pair_t b)
     return {.a = res_a, .b = res_b};
 }
 
+// get a reduced line equation based on point and 
+// director vector
 line_t get_line_from_vec(float_pair_t p, float_pair_t v)
 {
     float_pair_t u = vec_add(p,v);
     return get_line(p,u);
 }
 
+// calculates a distance for the bot to go behind the ball
 double get_atack_diff(line_t ball_l, line_t bot_l)
 {
     double ball_incl = atan(ball_l.a);
@@ -116,6 +125,7 @@ void set_bot_strategies(field_t *f)
     line_t def_line = get_line(ball_p, our_goal_pair(mray));
     line_t bot_to_ball_line = get_line(ball_p, bot_p);
 
+
     // ========= TODO goalkeeper do his stuff ==========
     if (dominant == &f->our_bots[0]) {
         // kick_away_from_everyone();
@@ -130,8 +140,9 @@ void set_bot_strategies(field_t *f)
     objective_t ball_def_p = get_interception_point(
                             def_line, ball_p, DEF_DISP_DIST, mray);
 
+
     if (vec_distance(ball_p, {.x = f->our_bots[0].x, .y = f->our_bots[0].y}) 
-                    > atk_diff * 1.5 || !ball_is_aligned_to_goal(ball_p, bot_p)) {
+                    > atk_diff * 1.5 || !is_aligned_to_goal(ball_p, bot_p)) {
         send_bot_to(&f->our_bots[0], ball_atk_o);
     } else {
         send_bot_to(&f->our_bots[0], {.x = ball_p.x, .y = ball_p.y, .angle = 0});

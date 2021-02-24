@@ -66,6 +66,13 @@ line_t get_line(float_pair a, float_pair b)
     return {.a = res_a, .b = res_b};
 }
 
+line_t get_line_from_vec(float_pair p, float_pair v){
+
+    float_pair u = vec_add(p,v);
+    return get_line(p,u);
+
+}
+
 void set_bot_strategies(field_t *f)
 {
     bool mray = f->my_robots_are_yellow;

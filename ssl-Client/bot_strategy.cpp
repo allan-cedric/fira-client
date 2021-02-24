@@ -71,6 +71,11 @@ line_t get_line_from_vec(float_pair p, float_pair v){
     float_pair u = vec_add(p,v);
     return get_line(p,u);
 
+double get_atack_diff(line_t ball_l, line_t bot_l)
+{
+    double ball_incl = atan(ball_l.a);
+    double bot_incl = atan(bot_l.a);
+    return ATK_DISP_DIST * (1 + fabs(ball_incl) + fabs(bot_incl));
 }
 
 void set_bot_strategies(field_t *f)
@@ -85,52 +90,29 @@ void set_bot_strategies(field_t *f)
     // ball pair
     float_pair ball_p = {.x = f->ball.x, .y = f->ball.y};
 
+    // line Y = aX + b 
+    // pass through ball and goal
+    line_t atk_line = get_line(ball_p, their_goal_pair(mray));
+    line_t def_line = get_line(ball_p, our_goal_pair(mray));
+    line_t bot_to_ball_line = get_line(ball_p, {.x = f->our_bots[0].x, 
+                                                .y = f->our_bots[0].x});
+
     // ========= TODO goalkeeper do his stuff ==========
     if (dominant == &f->our_bots[0]) {
         // kick_away_from_everyone();
     }
     // ========= TODO goalkeeper do his stuff ==========
-    
-    // line Y = aX + b 
-    // pass through ball and their goal
-    line_t atk_line = get_line(ball_p, their_goal_pair(mray));
-
-    // pass through ball and our goal
-    line_t def_line = get_line(ball_p, our_goal_pair(mray));
-
+    double atk_diff = get_atack_diff(atk_line, bot_to_ball_line);
     objective_t ball_atk_o = get_interception_point(
-                            atk_line, ball_p, ATK_DISP_DIST, mray);
+                            atk_line, ball_p, atk_diff, mray);
 
     objective_t ball_def_p = get_interception_point(
                             def_line, ball_p, DEF_DISP_DIST, mray);
 
-    // if (f->fs.wrc) {
-    //     // go_to_goal(dominant);
-    // }
-
-    // if (f->fs.wra) {
-    //     // go_to_goal(dominant);
-    // }
-
-    // if (f->fs.tra) {
-    //     // if (dominant is close enough to intercept)
-    //         // intercepr_to_defend(dominant, ball_def_p);
-    //     // else 
-    //         // intercept_to_defend(auxiliary, ball_def_p);
-    // }
-
-    // if (f->our_bots[0].x > ball_p.x ) {
-    //     f->our_bots[0].wants_to_hit_ball = true;
-    // }
-
-    if (vec_distance(ball_p, {.x = f->our_bots[0].x, .y = f->our_bots[0].y}) > 15.0){
+    if (vec_distance(ball_p, {.x = f->our_bots[0].x, .y = f->our_bots[0].y}) > atk_diff * 1.5){
         send_bot_to(&f->our_bots[0], ball_atk_o);
     } else {
-        // if (vec_distance(ball_p, {.x = f->our_bots[0].x, .y = f->our_bots[0].y}) > 8){
         send_bot_to(&f->our_bots[0], {.x = ball_p.x, .y = ball_p.y, .angle = 0});
-        // } else {
-        //     send_bot_to(&f->our_bots[0], {.x = their_goal_x(mray), .y = their_goal_y(), .angle = 0});
-        // }
     }
 
 }

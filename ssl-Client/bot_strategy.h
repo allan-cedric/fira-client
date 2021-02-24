@@ -10,6 +10,10 @@
 #define ATK_DISP_DIST 7.5
 #define DEF_DISP_DIST 15.0
 
+#define GOAL_DIFF_CORRECTION 0.225
+
+#define HEIGHT_ACEPTANCE 10
+
 typedef struct {
     double a, b;
 } line_t;

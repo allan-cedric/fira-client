@@ -13,8 +13,7 @@
 
 using namespace std;
 
-struct float_pair
-{
+struct float_pair {
     double x, y;
 };
 

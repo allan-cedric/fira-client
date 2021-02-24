@@ -36,6 +36,21 @@ float_pair their_goal_pair(bool mray)
     return {.x = their_goal_x(mray), .y = their_goal_y()};
 }
 
+float_pair their_goal_pair_with_correction(bool mray, float_pair ball_p)
+{
+    double x = their_goal_x(mray);
+    double y = their_goal_y() + (their_goal_y() - ball_p.y) * GOAL_DIFF_CORRECTION;
+    return {.x = x, .y = y};
+}
+
+bool ball_is_aligned_to_goal(float_pair ball_p, float_pair bot_p)
+{
+    if (ball_p.y > their_goal_y()) {
+        return bot_p.y > ball_p.y - HEIGHT_ACEPTANCE;
+    } 
+    return bot_p.y < ball_p.y + HEIGHT_ACEPTANCE;
+}
+
 void send_bot_to(bot_t *b, objective_t dest)
 {
     b->obj.x = dest.x;
@@ -43,7 +58,10 @@ void send_bot_to(bot_t *b, objective_t dest)
     b->obj.angle = dest.angle;
 }
 
-objective_t get_interception_point(line_t ball_l, float_pair ball_p, double dist, bool mray)
+objective_t get_interception_point(line_t ball_l, 
+                                    float_pair ball_p, 
+                                    double dist, 
+                                    bool mray )
 {
     double dist_x = sqrt(dist*dist / (1 + ball_l.a*ball_l.a));
     double target_x = !mray ? ball_p.x - dist_x : ball_p.x + dist_x;
@@ -84,19 +102,21 @@ void set_bot_strategies(field_t *f)
 
     // ball pair
     float_pair ball_p = {.x = f->ball.x, .y = f->ball.y};
+    float_pair bot_p = {.x = f->our_bots[0].x, .y = f->our_bots[0].y};
 
     // line Y = aX + b 
     // pass through ball and goal
-    line_t atk_line = get_line(ball_p, their_goal_pair(mray));
+    line_t atk_line = get_line(ball_p, their_goal_pair_with_correction(mray, ball_p));
     line_t def_line = get_line(ball_p, our_goal_pair(mray));
-    line_t bot_to_ball_line = get_line(ball_p, {.x = f->our_bots[0].x, 
-                                                .y = f->our_bots[0].x});
+    line_t bot_to_ball_line = get_line(ball_p, bot_p);
 
     // ========= TODO goalkeeper do his stuff ==========
     if (dominant == &f->our_bots[0]) {
         // kick_away_from_everyone();
     }
     // ========= TODO goalkeeper do his stuff ==========
+
+
     double atk_diff = get_atack_diff(atk_line, bot_to_ball_line);
     objective_t ball_atk_o = get_interception_point(
                             atk_line, ball_p, atk_diff, mray);
@@ -104,7 +124,8 @@ void set_bot_strategies(field_t *f)
     objective_t ball_def_p = get_interception_point(
                             def_line, ball_p, DEF_DISP_DIST, mray);
 
-    if (vec_distance(ball_p, {.x = f->our_bots[0].x, .y = f->our_bots[0].y}) > atk_diff * 1.5){
+    if (vec_distance(ball_p, {.x = f->our_bots[0].x, .y = f->our_bots[0].y}) 
+                    > atk_diff * 1.5 || !ball_is_aligned_to_goal(ball_p, bot_p)) {
         send_bot_to(&f->our_bots[0], ball_atk_o);
     } else {
         send_bot_to(&f->our_bots[0], {.x = ball_p.x, .y = ball_p.y, .angle = 0});

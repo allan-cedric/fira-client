@@ -1,0 +1,3 @@
+[submodule "FIRAClient"]
+	path = FIRAClient
+	url = git@github.com:allan-cedric/FIRAClient.git

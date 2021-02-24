@@ -18,6 +18,25 @@ enum {
     CLOSER // 4
 };
 
+// Note that all players must stop at any FOUL, except at GAME_ON
+typedef struct{
+    bool
+        is_kickoff,
+        is_wo_kickoff, 
+        is_free_ball, 
+        is_goal_kick, 
+        is_penalty_kick,
+        is_halt, // Stop everything even processing !
+        is_stop,
+        is_game_on,
+        is_overtime,
+        is_penalty_kick,
+        is_quadrant_1, // Top-right
+        is_quadrant_2, // Top-left
+        is_quadrant_3, // Bottom-left
+        is_quadrant_4; // Bottom-right
+}referee_flags_t;
+
 typedef struct {
     bool
         especial_case, 

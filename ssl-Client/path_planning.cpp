@@ -108,17 +108,17 @@ void add_edge(vector<edge_t> &surfing_edges, vector<circle_t> &circles, vector<n
         }
     }
 
-    if (!isnan(P.x))
-    {
-        if (!inrange(-10, 200, P.x) || !inrange(-10, 140, P.y))
-            return;
-    }
+    // if (!isnan(P.x))
+    // {
+    //     if (!inrange(-10, 200, P.x) || !inrange(-10, 140, P.y))
+    //         return;
+    // }
 
-    if (!isnan(Q.x))
-    {
-        if (!inrange(-10, 200, Q.x) || !inrange(-10, 140, Q.y))
-            return;
-    }
+    // if (!isnan(Q.x))
+    // {
+    //     if (!inrange(-10, 200, Q.x) || !inrange(-10, 140, Q.y))
+    //         return;
+    // }
 
     if (!n1_exist)
         nodes.push_back(n1);

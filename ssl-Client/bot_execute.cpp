@@ -78,30 +78,12 @@ void PID(bot_t robot,
     motorSpeed = motorSpeed > 30 ? 30 : motorSpeed;
     motorSpeed = motorSpeed < -30 ? -30 : motorSpeed;
 
-    if (motorSpeed > 0)
-    {
-        leftMotorSpeed = baseSpeed;
-        rightMotorSpeed = baseSpeed - motorSpeed;
-    }
-    else
-    {
-        leftMotorSpeed = baseSpeed + motorSpeed;
-        rightMotorSpeed = baseSpeed;
-    }
+    if (reversed) baseSpeed = -baseSpeed;
 
-    if (reversed)
-    {
-        if (motorSpeed > 0)
-        {
-            leftMotorSpeed = -baseSpeed + motorSpeed;
-            rightMotorSpeed = -baseSpeed;
-        }
-        else
-        {
-            leftMotorSpeed = -baseSpeed;
-            rightMotorSpeed = -baseSpeed - motorSpeed;
-        }
-    }
+    leftMotorSpeed = baseSpeed + motorSpeed / 2;
+    rightMotorSpeed = baseSpeed - motorSpeed / 2;
+
+    // send the command
     grSim_client->sendCommand(leftMotorSpeed, 
                                 rightMotorSpeed, 
                                 my_robots_are_yellow, 

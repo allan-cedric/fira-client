@@ -104,7 +104,7 @@ objective_t between_goal_and_ball(bot_t goalkeeper, ball_t ball, bool is_yellow,
         obj.x = ball_predicted_x;
 
         // the robot shall hit the ball if the
-        // ball is closer to the ball than he is
+        // ball is closer to the goal than it is
         *should_hit_ball = ball.x > goalkeeper.x;
 
 
@@ -142,7 +142,7 @@ objective_t between_goal_and_ball(bot_t goalkeeper, ball_t ball, bool is_yellow,
 
 
         // the robot shall hit the ball if the
-        // ball is closer to the ball than he is
+        // ball is closer to the goal than it is
         *should_hit_ball = ball.x < goalkeeper.x;
     }
     
@@ -151,11 +151,10 @@ objective_t between_goal_and_ball(bot_t goalkeeper, ball_t ball, bool is_yellow,
 
 objective_t goalkeeper_objective(field_t* field, int* wants_to_hit_ball)
 {
-    if(!field->fs.tra) // they are not attacking, no need to worry.
+    if(!field->fs.tra) {// they are not attacking, no need to worry.
         return goalkeeper_default_position(field->my_robots_are_yellow);       
 
-    else // WE'RE UNDER ATTACK!
-    {
+    } else { // WE'RE UNDER ATTACK!
         // we need to position the goalkeeper between the goal and the ball,
         // but it cannot go beyond the boundaries of the goal area.
         return between_goal_and_ball(/* INSIRA O ROBO AQUI */, field->ball,

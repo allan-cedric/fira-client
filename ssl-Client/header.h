@@ -29,7 +29,7 @@ typedef struct{
         is_halt, // Stop everything even processing !
         is_stop,
         is_game_on,
-        is_overtime,
+        is_overtime, // For group stage
         is_quadrant_1, // Top-right
         is_quadrant_2, // Top-left
         is_quadrant_3, // Bottom-left

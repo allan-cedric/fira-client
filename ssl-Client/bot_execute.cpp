@@ -78,10 +78,37 @@ void PID(bot_t robot,
     motorSpeed = motorSpeed > 30 ? 30 : motorSpeed;
     motorSpeed = motorSpeed < -30 ? -30 : motorSpeed;
 
-    if (reversed) baseSpeed = -baseSpeed;
+    // RESUMED PID THAT DOENST WORK
+    // if (reversed) baseSpeed = -baseSpeed;
 
-    leftMotorSpeed = baseSpeed + motorSpeed / 2;
-    rightMotorSpeed = baseSpeed - motorSpeed / 2;
+    // leftMotorSpeed = baseSpeed + motorSpeed / 2;
+    // rightMotorSpeed = baseSpeed - motorSpeed / 2;
+    // THIS SHIT CANT SPIN ON ITSELF
+
+    if (motorSpeed > 0)
+    {
+        leftMotorSpeed = baseSpeed;
+        rightMotorSpeed = baseSpeed - motorSpeed;
+    }
+    else
+    {
+        leftMotorSpeed = baseSpeed + motorSpeed;
+        rightMotorSpeed = baseSpeed;
+    }
+
+    if (reversed)
+    {
+        if (motorSpeed > 0)
+        {
+            leftMotorSpeed = -baseSpeed + motorSpeed;
+            rightMotorSpeed = -baseSpeed;
+        }
+        else
+        {
+            leftMotorSpeed = -baseSpeed;
+            rightMotorSpeed = -baseSpeed - motorSpeed;
+        }
+    }
 
     // send the command
     grSim_client->sendCommand(leftMotorSpeed, 
@@ -92,34 +119,34 @@ void PID(bot_t robot,
 
 void execute_bot_strats(field_t *f, GrSim_Client *commandClient)
 {
-    for (auto our_robot : f->our_bots)
-    {
-        vector<bot_t> other_robots;
+    // for (auto our_robot : f->our_bots)
+    // {
+    //     vector<bot_t> other_robots;
 
-        for (int i = 0; i < f->our_bots_n; i++)
-        {
-            if (i != our_robot.index)
-                other_robots.push_back(f->our_bots[i]);
-        }
-        for (int i = 0; i < f->their_bots_n; i++)
-            other_robots.push_back(f->their_bots[i]);
+    //     for (int i = 0; i < f->our_bots_n; i++)
+    //     {
+    //         if (i != our_robot.index)
+    //             other_robots.push_back(f->our_bots[i]);
+    //     }
+    //     for (int i = 0; i < f->their_bots_n; i++)
+    //         other_robots.push_back(f->their_bots[i]);
 
-        if(!our_robot.wants_to_hit_ball)
-        {
-            bot_t ball_translated;
-            ball_translated.x = f->ball.x;
-            ball_translated.y = f->ball.y;
-            ball_translated.radius = 5;
-            other_robots.push_back(ball_translated);
-        }
+    //     if(!our_robot.wants_to_hit_ball)
+    //     {
+    //         bot_t ball_translated;
+    //         ball_translated.x = f->ball.x;
+    //         ball_translated.y = f->ball.y;
+    //         ball_translated.radius = 5;
+    //         other_robots.push_back(ball_translated);
+    //     }
 
-        objective_t o = path(other_robots, our_robot, 
-                            our_robot.obj.x, our_robot.obj.y, our_robot.obj.angle);
-        PID(our_robot, o, our_robot.index, 
-            f->my_robots_are_yellow, commandClient);
-    }
+    //     objective_t o = path(other_robots, our_robot, 
+    //                         our_robot.obj.x, our_robot.obj.y, our_robot.obj.angle);
+    //     PID(our_robot, o, our_robot.index, 
+    //         f->my_robots_are_yellow, commandClient);
+    // }
 
-    // PID(f->our_bots[0], f->our_bots[0].obj, 0, 
-    //     f->my_robots_are_yellow, commandClient);
+    PID(f->our_bots[0], f->our_bots[0].obj, 0, 
+        f->my_robots_are_yellow, commandClient);
 
 }

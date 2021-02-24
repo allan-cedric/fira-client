@@ -11,11 +11,11 @@ objective_t  goalkeeper_default_position(bool is_yellow)
 
     if (is_yellow) // our field == right
     {
-        obj = {.x = 150 - GK_DEFAULT_X, .y = GK_DEFAULT_Y, .angle = 0};
+        obj = {.x = 150 - GK_DEFAULT_X, .y = GK_DEFAULT_Y, .angle = 2* M_PI};
     }
     else // our field == left
     {
-        obj = {.x = GK_DEFAULT_X, .y = GK_DEFAULT_Y, .angle = 2* M_PI};
+        obj = {.x = GK_DEFAULT_X, .y = GK_DEFAULT_Y, .angle = 0};
     }
     return obj;
 }
@@ -77,7 +77,6 @@ objective_t between_goal_and_ball(bot_t goalkeeper, ball_t ball, bool is_yellow,
         // ball is closer to the goal than it is
         *should_hit_ball = ball.x > goalkeeper.x;
 
-
     }
     else
     {
@@ -121,15 +120,19 @@ objective_t between_goal_and_ball(bot_t goalkeeper, ball_t ball, bool is_yellow,
 
 objective_t goalkeeper_objective(field_t* field)
 {
+    objective_t obj;
     if(!field->fs.tra) {// they are not attacking, no need to worry.
-        return goalkeeper_default_position(field->my_robots_are_yellow);       
 
+        obj =  goalkeeper_default_position(field->my_robots_are_yellow);       
     } else { // WE'RE UNDER ATTACK!
         // we need to position the goalkeeper between the goal and the ball,
         // but it cannot go beyond the boundaries of the goal area.
-        return between_goal_and_ball(field->our_bots[0], field->ball,
+        obj =  between_goal_and_ball(field->our_bots[0], field->ball,
                                     field->my_robots_are_yellow, &field->our_bots[0].wants_to_hit_ball);
 
     }
+    // printf("GK objective: %f,  %f\n", obj.x, obj.angle);
+
+    return obj;
 
 }

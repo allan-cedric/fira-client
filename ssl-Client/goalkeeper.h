@@ -5,7 +5,7 @@
 #include "bot_strategy.h"
 
 // field.height/2 == 65
-#define GK_DEFAULT_X 5.0
+#define GK_DEFAULT_X 10.0
 #define GK_DEFAULT_Y 65.0
 
 #define GOAL_MAX_Y 85 //65 + 20

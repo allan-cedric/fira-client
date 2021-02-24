@@ -1,8 +1,7 @@
-main
 test_path
 teste
 *.o
 .vscode/
 ../.vscode/
-bin/
-build/
+bin/*
+build/*

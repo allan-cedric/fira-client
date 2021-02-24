@@ -53,7 +53,7 @@ objective_t between_goal_and_ball(ball_t ball, bool is_yellow)
 {
     ball.vx
     ball.vy
-
+    return;
 }
 
 

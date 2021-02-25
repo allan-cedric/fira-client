@@ -11,14 +11,6 @@
 
 #define MID_FIELD 160/2
 
-enum {
-    GOALKEEPER = 0,
-    NONE, // 1
-    ATACKER, // 2
-    DEFENDER, // 3
-    CLOSER // 4
-};
-
 // Note that all players must stop at any FOUL, except at GAME_ON
 typedef struct{
     bool
@@ -52,7 +44,6 @@ typedef struct {
 typedef struct {
     double x, y, a, // positions
         vx, vy, va; // speeds
-    int fun; // what is th bot function now
     objective_t obj;
     int index;
     bool wants_to_hit_ball;

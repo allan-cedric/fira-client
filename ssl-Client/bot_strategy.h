@@ -4,6 +4,8 @@
 #include "header.h"
 #include "math_operations.h"
 
+#define AREA_ERROR 5.0
+
 #define YELLOW_GOAL_X 165.0
 #define BLUE_GOAL_X 5.0
 #define GOAL_Y 65.0

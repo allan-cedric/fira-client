@@ -110,41 +110,58 @@ double get_atack_diff(line_t ball_l, line_t bot_l)
 void set_bot_strategies(field_t *f)
 {
     bool mray = f->my_robots_are_yellow;
+    
+    // set each bot pointer
+    bot_t *goalkeeper, *dominant, *auxiliary, *aux2;
+    
+    goalkeeper = &f->our_bots[0]; // ALWAYS
+    dominant = f->closer_bot; // Defined on we_are_closer (analyzer.cpp)
 
-    // set both non goalkeeper bots that will do something
-    bot_t *dominant = f->closer_bot;
-    bot_t *auxiliary = f->closer_bot == &f->our_bots[1] 
-                        ? &f->our_bots[2] : &f->our_bots[1];
+    if (goalkeeper == dominant) {
+        auxiliary = &f->our_bots[1];
+        aux2 = &f->our_bots[2];
+    } else {
+        if (dominant == &f->our_bots[1]) {
+            auxiliary = &f->our_bots[2];
+        } else {
+            auxiliary = &f->our_bots[1];
+        }
+        aux2 = auxiliary;
+    }
 
-    // ball pair
+    // set pairs
     float_pair_t ball_p = {.x = f->ball.x, .y = f->ball.y};
-    float_pair_t bot_p = {.x = f->our_bots[0].x, .y = f->our_bots[0].y};
+    float_pair_t ball_vec = {.x = f->ball.vx, .y = f->ball.vy};
+    float_pair_t dom_bot_p = {.x = dominant->x, .y = dominant->y};
+    float_pair_t aux_bot_p = {.x = auxiliary->x, .y = auxiliary->y};
+    float_pair_t aux2_bot_p = {.x = aux2->x, .y = aux2->y};
 
     // line Y = aX + b 
     // pass through ball and goal
     line_t atk_line = get_line(ball_p, their_goal_pair_with_correction(mray, ball_p));
     line_t def_line = get_line(ball_p, our_goal_pair(mray));
-    line_t bot_to_ball_line = get_line(ball_p, bot_p);
-
-
-    // ========= TODO goalkeeper do his stuff ==========
-    // f->our_bots[0].obj = goalkeeper_objective(f);
-    // ========= TODO goalkeeper do his stuff ==========
-
+    line_t bot_to_ball_line = get_line(ball_p, dom_bot_p);
+    line_t ball_line = get_line_from_vec(ball_p, ball_vec);
 
     double atk_diff = get_atack_diff(atk_line, bot_to_ball_line);
     objective_t ball_atk_o = get_interception_point(
                             atk_line, ball_p, atk_diff, mray);
 
-    objective_t ball_def_p = get_interception_point(
+    // TODO
+    objective_t ball_def_o = get_interception_point(
                             def_line, ball_p, DEF_DISP_DIST, mray);
 
+    // ============= SEND BOT TO OBJ ================ //
 
-    if (vec_distance(ball_p, {.x = f->our_bots[0].x, .y = f->our_bots[0].y}) 
-                    > atk_diff * 1.5 || !is_aligned_to_goal(ball_p, bot_p)) {
-        send_bot_to(&f->our_bots[0], ball_atk_o);
+    // goalkeeper standart procedure
+    send_bot_to(goalkeeper, goalkeeper_objective(f));
+
+    // dominant and aux procedures
+    if (vec_distance(ball_p, {.x = dominant->x, .y = dominant->y}) 
+                    > atk_diff * 1.5 || !is_aligned_to_goal(ball_p, dom_bot_p)) {
+        send_bot_to(dominant, ball_atk_o);
     } else {
-        send_bot_to(&f->our_bots[0], {.x = ball_p.x, .y = ball_p.y, .angle = 0});
+        send_bot_to(dominant, {.x = ball_p.x, .y = ball_p.y, .angle = 0});
     }
 
 }

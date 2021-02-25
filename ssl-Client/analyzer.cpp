@@ -142,3 +142,21 @@ void field_analyzer(field_t *f)
 #endif
 
 }
+
+void referee_analyzer(RefereeClient *ref_client, referee_flags_t *ref_flags)
+{
+    auto get_last_foul = ref_client->getLastFoul();
+
+    if(get_last_foul == VSSRef::Foul::HALT){
+        ref_flags->is_game_on = false;
+        ref_flags->is_halt = true;
+    }else if(get_last_foul == VSSRef::Foul::GAME_ON){
+        ref_flags->is_game_on = true;
+        ref_flags->is_halt = false;
+    }
+    else
+    {
+        ref_flags->is_game_on = false;
+        ref_flags->is_halt = false;
+    }
+}

@@ -5,6 +5,7 @@
 
 #include "header.h"
 #include "path_planning.h"
+#include "bot_execute.h"
 
 double to180range(double angle)
 {
@@ -120,36 +121,31 @@ void PID(bot_t robot,
 void execute_bot_strats(field_t *f, GrSim_Client *commandClient)
 {
 
-    // for (int i = 0; i < NUM_BOTS; i++) {
-    //     bot_t our_robot = f->our_bots[i];
-    //
-    //     vector<bot_t> other_robots;
+    for (int i = 0; i < 1; i++) {
+        bot_t our_robot = f->our_bots[i];
+    
+        vector<bot_t> other_robots;
 
-    //     for (int i = 0; i < f->our_bots_n; i++)
-    //     {
-    //         if (i != our_robot.index)
-    //             other_robots.push_back(f->our_bots[i]);
-    //     }
-    //     for (int i = 0; i < f->their_bots_n; i++)
-    //         other_robots.push_back(f->their_bots[i]);
+        for (int i = 0; i < 1; i++)
+        {
+            if (i != our_robot.index)
+                other_robots.push_back(f->our_bots[i]);
+        }
+        for (int i = 0; i < f->their_bots_n; i++)
+            other_robots.push_back(f->their_bots[i]);
 
-    //     if(!our_robot.wants_to_hit_ball)
-    //     {
-    //         bot_t ball_translated;
-    //         ball_translated.x = f->ball.x;
-    //         ball_translated.y = f->ball.y;
-    //         ball_translated.radius = 5;
-    //         other_robots.push_back(ball_translated);
-    //     }
+        if(!our_robot.wants_to_hit_ball)
+        {
+            bot_t ball_translated;
+            ball_translated.x = f->ball.x;
+            ball_translated.y = f->ball.y;
+            ball_translated.radius = f->ball_radius;
+            other_robots.push_back(ball_translated);
+        }
 
-    //     objective_t o = path(other_robots, our_robot, 
-    //                         our_robot.obj.x, our_robot.obj.y, our_robot.obj.angle);
-    //     PID(our_robot, o, our_robot.index, 
-    //         f->my_robots_are_yellow, commandClient);
-    // }
-
-    for (int i = 0; i < NUM_BOTS; i++){
-        PID(f->our_bots[i], f->our_bots[i].obj, i, 
+        objective_t o = path(other_robots, our_robot, 
+                            our_robot.obj.x, our_robot.obj.y, our_robot.obj.angle);
+        PID(our_robot, o, our_robot.index, 
             f->my_robots_are_yellow, commandClient);
     }
 

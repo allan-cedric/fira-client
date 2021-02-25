@@ -9,11 +9,12 @@
 #define GOAL_Y 65.0
 
 #define ATK_DISP_DIST 6.0
-#define DEF_DISP_DIST 15.0
+#define DEF_DISP_DIST 25.0
 
 #define GOAL_DIFF_CORRECTION 0.225
 
-#define HEIGHT_ACEPTANCE 10
+#define HEIGHT_ACEPTANCE 10.0
+#define WIDTH_ACEPTANCE 5.0
 
 typedef struct {
     double a, b;

@@ -16,7 +16,7 @@
 #define GOAL_MIN_X -10.0
 
 // if the goalkeeper is closer than this, it should kick the ball away
-#define GK_BALL_DIST 4.0 
+#define GK_BALL_DIST 8.0 
 
 // if the goalkeeper is this far away from the goal, it should stop following the ball
 #define GK_GOAL_DIST 40.0

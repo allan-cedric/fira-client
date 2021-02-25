@@ -119,8 +119,10 @@ void PID(bot_t robot,
 
 void execute_bot_strats(field_t *f, GrSim_Client *commandClient)
 {
-    // for (auto our_robot : f->our_bots)
-    // {
+
+    // for (int i = 0; i < NUM_BOTS; i++) {
+    //     bot_t our_robot = f->our_bots[i];
+    //
     //     vector<bot_t> other_robots;
 
     //     for (int i = 0; i < f->our_bots_n; i++)
@@ -146,7 +148,9 @@ void execute_bot_strats(field_t *f, GrSim_Client *commandClient)
     //         f->my_robots_are_yellow, commandClient);
     // }
 
-    PID(f->our_bots[0], f->our_bots[0].obj, 0, 
-        f->my_robots_are_yellow, commandClient);
+    for (int i = 0; i < NUM_BOTS; i++){
+        PID(f->our_bots[i], f->our_bots[i].obj, i, 
+            f->my_robots_are_yellow, commandClient);
+    }
 
 }

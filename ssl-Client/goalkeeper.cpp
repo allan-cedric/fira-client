@@ -69,6 +69,7 @@ objective_t between_goal_and_ball(bot_t goalkeeper, ball_t ball, bool is_yellow,
         }
         else // ball not going to the goal
         {
+            ball_predicted_x = goalkeeper.x;
             ball_predicted_y = ball.y; // just kinda follow it
         }
 
@@ -110,6 +111,7 @@ objective_t between_goal_and_ball(bot_t goalkeeper, ball_t ball, bool is_yellow,
         }
         else // ball not going to the goal
         {
+            ball_predicted_x = goalkeeper.x;
             ball_predicted_y = ball.y; // just kinda follow it
         }
 
@@ -136,12 +138,12 @@ objective_t between_goal_and_ball(bot_t goalkeeper, ball_t ball, bool is_yellow,
     return obj;
 }
 
-bool gk_should_follow_ball(bool is_yellow, bot_t gk, ball_t ball)
+bool gk_should_follow_ball(bool is_yellow, bot_t* gk, ball_t ball)
 // return true if the ball is closer than GK_BALL_DIST
 // and the ball is in its front
 // and goalkeeper still in GK_GOAL_DIST range
 {
-    float_pair_t gk_coord = {.x = goalkeeper.x, .y = goalkeeper.y};
+    float_pair_t gk_coord = {.x = gk->x, .y = gk->y};
     float_pair_t ball_coord = {.x = ball.x, .y = ball.y};
 
     if(vec_distance(gk_coord, ball_coord) < GK_BALL_DIST)
@@ -149,12 +151,12 @@ bool gk_should_follow_ball(bool is_yellow, bot_t gk, ball_t ball)
     {
         if (is_yellow)
         {
-            if ( (ball.x < gk.x) && (150.0 - GK_GOAL_DIST) < gk.x) )
+            if ( (ball.x < gk->x) && (150.0 - GK_GOAL_DIST) < gk->x)
                 return true;
         }
         else
         {
-            if ( (gk.x < ball.x) && g.x < GK_GOAL_DIST )
+            if ( (gk->x < ball.x) && gk->x < GK_GOAL_DIST )
                 return true;
         }
     }
@@ -177,7 +179,7 @@ objective_t goalkeeper_objective(field_t* field)
         // we need to position the goalkeeper between the goal and the ball,
         // but it cannot go beyond the boundaries of the goal area.
 
-        if (gk_should_follow_ball(field->my_robots_are_yellow, goalkeeper, ball))
+        if (gk_should_follow_ball(field->my_robots_are_yellow, goalkeeper, field->ball))
         {
             // follow the ball (kick it)
             obj.x = field->ball.x;
@@ -186,7 +188,7 @@ objective_t goalkeeper_objective(field_t* field)
         }
         else
         {
-            obj =  between_goal_and_ball(goalkeeper, field->ball,
+            obj =  between_goal_and_ball(*goalkeeper, field->ball,
                                     field->my_robots_are_yellow, &(goalkeeper->wants_to_hit_ball));
         }
     }

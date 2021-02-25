@@ -306,10 +306,10 @@ void set_bot_strategies(field_t *f)
     // overwrites previous dominant behaviour
     send_bot_to(goalkeeper, goalkeeper_objective(f));
 
-    printf("d %d %f\n", dominant->index, dominant->x);
-    printf("g %d\n", goalkeeper->index);
-    printf("a %d\n", auxiliary->index);
-    printf("2 %d\n", aux2->index);
-    printf("\n");
+    // printf("d %d %f\n", dominant->index, dominant->x);
+    // printf("g %d\n", goalkeeper->index);
+    // printf("a %d\n", auxiliary->index);
+    // printf("2 %d\n", aux2->index);
+    // printf("\n");
 
 }

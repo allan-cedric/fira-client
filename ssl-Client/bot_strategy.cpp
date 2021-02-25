@@ -161,6 +161,19 @@ double get_atack_diff(line_t ball_l, line_t bot_l)
     return ATK_DISP_DIST * (1 + fabs(ball_incl) + fabs(bot_incl));
 }
 
+// ponto mais proximo do ponto na reta
+float_pair_t point_on_line(line_t line, float_pair_t point)
+{
+    // y = ax + b
+    // double dist = fabs(-line.a * point.x + point.y - line.b) 
+    //         / sqrt(line.a*line.a + line.b*line.b);
+
+    double target_x = (line.b - point.y + (-1 / line.a) * point.x)
+                        / ((-1 / line.a) - line.a);
+    double target_y = line.a * target_x + line.b;
+    return {.x = target_x, .y = target_y};
+}
+
 void set_bot_strategies(field_t *f)
 {
     bool mray = f->my_robots_are_yellow;
@@ -238,6 +251,15 @@ void set_bot_strategies(field_t *f)
             } else {
                 aux_obj = { .x = ATK_POS_X, .y = ATK_POS_Y };
             }
+        }
+
+        if (vec_distance(ball_p, their_goal_pair(mray)) < 20){
+            aux_obj = {ball_p.x, ball_p.y};
+        }
+
+        if (fabs(ball_line.a) > 3.0) {
+            float_pair_t p = point_on_line(ball_line, aux_bot_p);
+            aux_obj = {.x = p.x, .y = p.y};
         }
 
         send_bot_to(auxiliary, aux_obj);

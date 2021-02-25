@@ -8,3 +8,6 @@ all:
 
 clean: 
 	make -C ./build/ clean
+
+send: 
+	scp -P4257 ./bin/ssl-Client organizador@131.221.240.153:~/yapira

@@ -166,9 +166,6 @@ void set_bot_strategies(field_t *f)
 
     // ============= SEND BOT TO OBJ ================ //
 
-    // goalkeeper standart procedure
-    send_bot_to(goalkeeper, goalkeeper_objective(f));
-
     // atack procedures
     if (vec_distance(ball_p, dom_bot_p) 
                     > atk_diff * 1.5 || !is_aligned_to_goal(ball_p, dom_bot_p)) {
@@ -177,11 +174,15 @@ void set_bot_strategies(field_t *f)
         send_bot_to(dominant, ball_p);
     }
 
-    // defence procedures
-    if (vec_distance(ball_p, dom_bot_p) > DEF_DISP_DIST) {
-        send_bot_to(dominant, ball_def_o);
-    } else {
-        send_bot_to(dominant, ball_p);
-    }
+    // // defence procedures
+    // if (vec_distance(ball_p, dom_bot_p) > DEF_DISP_DIST) {
+    //     send_bot_to(dominant, ball_def_o);
+    // } else {
+    //     send_bot_to(dominant, ball_p);
+    // }
+    
+    // goalkeeper standart procedure 
+    // overwrites previous dominant behaviour
+    send_bot_to(goalkeeper, goalkeeper_objective(f));
 
 }

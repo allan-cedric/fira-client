@@ -99,7 +99,9 @@ int main(int argc, char *argv[])
         // Running referee client
         refereeClient->run();
 
-        referee_analyzer(refereeClient, &referee);
+        // referee_analyzer(refereeClient, &referee);
+        referee.is_halt = false;
+        referee.is_game_on = true;
 
         if (visionClient->receive(packet) && packet.has_frame() && !referee.is_halt){
             fira_message::sim_to_ref::Frame detection = packet.frame();
@@ -122,7 +124,9 @@ int main(int argc, char *argv[])
             
         } else {
             // pass and wait for window
-            stop_all(&field, commandClient);
+            if (referee.is_halt) {
+                stop_all(&field, commandClient);
+            }
         }
     }
 

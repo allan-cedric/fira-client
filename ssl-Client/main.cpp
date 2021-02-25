@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 
         // referee_analyzer(refereeClient, &referee);
 
-        if (visionClient->receive(packet) && packet.has_frame() && !halt){
+        if (visionClient->receive(packet) && packet.has_frame()){
             fira_message::sim_to_ref::Frame detection = packet.frame();
 
             // Fill field ball and bots detection data
@@ -107,14 +107,14 @@ int main(int argc, char *argv[])
             // Fill each bot objective data
             set_bot_strategies(&field); // TODO Coelho e Jimmy
 
-            if (game_on){
+            // if (game_on){
                 // Executes each bot objective
                 execute_bot_strats(&field, commandClient);
-            }
+            // }
 
         } else {
             // pass and wait for window
-            stop_all();
+            // stop_all();
         }
     }
 

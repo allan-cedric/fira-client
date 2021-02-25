@@ -46,6 +46,34 @@ float_pair_t their_goal_pair_with_correction(bool mray, float_pair_t ball_p)
     return {.x = x, .y = y};
 }
 
+double aux_atk_dist_x(bool mray)
+{
+    return mray
+            ? AUX_DIST_X 
+            : -AUX_DIST_X;
+}       
+
+double aux_atk_dist_y(float_pair_t p)
+{
+    return p.y > their_goal_y() 
+        ? -AUX_DIST_Y
+        : AUX_DIST_Y;
+}
+
+double aux_def_dist_x(bool mray)
+{
+    return mray
+            ? AUX_DIST_X 
+            : -AUX_DIST_X;
+}
+
+double aux_def_dist_y(float_pair_t p)
+{
+    return p.y > our_goal_y() 
+        ? -AUX_DIST_Y
+        : AUX_DIST_Y;
+}
+
 // check if bot is above or below the ball
 // checks accordinly to side and allows for error
 bool is_aligned_to_goal(float_pair_t ball_p, float_pair_t bot_p)
@@ -62,6 +90,15 @@ bool is_behind_ball(float_pair_t ball_p, float_pair_t bot_p, bool mray)
     return mray 
         ? ball_p.x + 1 < bot_p.x // yellow
         : ball_p.x - 1 > bot_p.x; // blue
+}
+
+bool is_in_goal_area(float_pair_t p, bool mray)
+{
+    if (mray) {
+        return p.x > 150 - GOAL_MAX_X * 1.1;
+    } else {
+        return p.x < GOAL_MAX_X * 1.1;
+    }
 }
 
 // set a bot objective
@@ -130,7 +167,6 @@ void set_bot_strategies(field_t *f)
     
     // set each bot pointer
     bot_t *goalkeeper, *dominant, *auxiliary, *aux2;
-    // dominant = &f->our_bots[0];
 
     goalkeeper = &f->our_bots[0]; // ALWAYS
     dominant = f->closer_bot; // Defined on we_are_closer (analyzer.cpp)
@@ -181,27 +217,77 @@ void set_bot_strategies(field_t *f)
 
     // ============= SEND BOT TO OBJ ================ //
 
-    // attack procedures
-    // if (vec_distance(ball_p, dom_bot_p) > atk_diff * 1.5 
-    //     || !is_aligned_to_goal(ball_p, dom_bot_p)) {
-    //     send_bot_to(dominant, ball_atk_o);
-    // } else {
-    //     send_bot_to(dominant, ball_p);
-    // }
+    if (!is_on_my_field(ball_p.x, mray)){
 
-    // defense procedures
-    if (vec_distance(ball_p, dom_bot_p) > DEF_DISP_DIST) {
-        send_bot_to(dominant, ball_def_o2);
-        dominant->wants_to_hit_ball = false;
-    } else {
-        send_bot_to(dominant, ball_p);
-        if (is_behind_ball(ball_p, dom_bot_p, mray)) {
-            dominant->wants_to_hit_ball = true;
+        // attack procedure
+
+        if (vec_distance(ball_p, dom_bot_p) > atk_diff * 1.5 
+            || !is_aligned_to_goal(ball_p, dom_bot_p)
+            /*|| vec_distance(ball_p, dom_bot_p) < atk_diff * 1.1*/) {
+            send_bot_to(dominant, ball_atk_o);
+        } else {
+            send_bot_to(dominant, ball_p);
         }
+
+        objective_t aux_obj = {.x = ball_p.x + aux_atk_dist_x(mray),
+                                .y = ball_p.y + aux_atk_dist_y(dom_bot_p)};
+
+        if (is_in_goal_area({aux_obj.x, aux_obj.y}, !mray)) {
+            if (mray) {
+                aux_obj = { .x = DEF_POS_X, .y = DEF_POS_Y };
+            } else {
+                aux_obj = { .x = ATK_POS_X, .y = ATK_POS_Y };
+            }
+        }
+
+        send_bot_to(auxiliary, aux_obj);
+
+    } else {
+
+        // defense procedures
+        if (vec_distance(ball_p, dom_bot_p) > DEF_DISP_DIST) {
+            send_bot_to(dominant, ball_def_o2);
+            dominant->wants_to_hit_ball = false;
+        } else {
+            send_bot_to(dominant, ball_p);
+            if (is_behind_ball(ball_p, dom_bot_p, mray)) {
+                dominant->wants_to_hit_ball = true;
+            }
+        }
+
+        objective_t aux_obj = {.x = ball_p.x + aux_def_dist_x(mray),
+                        .y = ball_p.y + aux_def_dist_y(dom_bot_p)};
+
+        if (is_in_goal_area({aux_obj.x, aux_obj.y}, mray)) {
+            if (mray) {
+                aux_obj = { .x = ATK_POS_X, .y = ATK_POS_Y };
+            } else {
+                aux_obj = { .x = DEF_POS_X, .y = DEF_POS_Y };
+            }
+        }
+
+        send_bot_to(auxiliary, aux_obj);
+
+    }
+
+    if (auxiliary != aux2) {
+        objective_t aux2_obj;
+        if (mray) {
+            aux2_obj = { .x = ATK_POS_X, .y = ATK_POS_ALT_Y };
+        } else {
+            aux2_obj = { .x = DEF_POS_X, .y = DEF_POS_ALT_Y };
+        }
+        send_bot_to(aux2, aux2_obj);
     }
     
-    // // goalkeeper standart procedure 
-    // // overwrites previous dominant behaviour
-    // send_bot_to(goalkeeper, goalkeeper_objective(f));
+    // goalkeeper standart procedure 
+    // overwrites previous dominant behaviour
+    send_bot_to(goalkeeper, goalkeeper_objective(f));
+
+    printf("d %d %f\n", dominant->index, dominant->x);
+    printf("g %d\n", goalkeeper->index);
+    printf("a %d\n", auxiliary->index);
+    printf("2 %d\n", aux2->index);
+    printf("\n");
 
 }

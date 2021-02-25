@@ -121,7 +121,7 @@ void PID(bot_t robot,
 void execute_bot_strats(field_t *f, GrSim_Client *commandClient)
 {
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 3; i++) {
         bot_t our_robot = f->our_bots[i];
     
         vector<bot_t> other_robots;
@@ -143,11 +143,11 @@ void execute_bot_strats(field_t *f, GrSim_Client *commandClient)
             other_robots.push_back(ball_translated);
         }
 
-        // objective_t o = path(other_robots, our_robot, 
-        //                     our_robot.obj.x, our_robot.obj.y, our_robot.obj.angle);
-        objective_t o = path(other_robots, our_robot, f->ball.x, f->ball.y, M_PI/4.);
-        // PID(our_robot, o, our_robot.index, 
-        //     f->my_robots_are_yellow, commandClient);
+        objective_t o = path(other_robots, our_robot, 
+                            our_robot.obj.x, our_robot.obj.y, our_robot.obj.angle);
+        // objective_t o = path(other_robots, our_robot, f->ball.x, f->ball.y, M_PI/4.);
+        PID(our_robot, o, our_robot.index, 
+            f->my_robots_are_yellow, commandClient);
     }
 
 }

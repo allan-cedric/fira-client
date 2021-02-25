@@ -3,6 +3,8 @@
 
 #include "header.h"
 
+#define BALL_RADIUS 22.5
+
 double to180range(double);
 void execute_bot_strats(field_t*, GrSim_Client*);
 void PID(bot_t robot, 

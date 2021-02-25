@@ -4,6 +4,7 @@
 #include "math_operations.h"
 #include "analyzer.h"
 #include "goalkeeper.h"
+#include "bot_execute.h"
 
 // set each goal mid positions based on side
 double our_goal_x(bool mray)
@@ -53,6 +54,14 @@ bool is_aligned_to_goal(float_pair_t ball_p, float_pair_t bot_p)
         return bot_p.y > ball_p.y - HEIGHT_ACEPTANCE;
     } 
     return bot_p.y < ball_p.y + HEIGHT_ACEPTANCE;
+}
+
+// check if bot is behind ball
+bool is_behind_ball(float_pair_t ball_p, float_pair_t bot_p, bool mray)
+{
+    return mray 
+        ? ball_p.x + 1 < bot_p.x // yellow
+        : ball_p.x - 1 > bot_p.x; // blue
 }
 
 // set a bot objective
@@ -121,6 +130,7 @@ void set_bot_strategies(field_t *f)
     
     // set each bot pointer
     bot_t *goalkeeper, *dominant, *auxiliary, *aux2;
+    // dominant = &f->our_bots[0];
 
     goalkeeper = &f->our_bots[0]; // ALWAYS
     dominant = f->closer_bot; // Defined on we_are_closer (analyzer.cpp)
@@ -164,25 +174,34 @@ void set_bot_strategies(field_t *f)
     objective_t ball_def_o = get_interception_point(
                             def_line, ball_p, DEF_DISP_DIST, mray);
 
+    objective_t ball_def_o2 = {.x = ball_def_o.x, 
+                                .y = ball_def_o.y 
+                                + (ball_def_o.y > our_goal_y() ? 10 : -10 )};
+                                // temp hack fix
+
     // ============= SEND BOT TO OBJ ================ //
 
-    // atack procedures
-    if (vec_distance(ball_p, dom_bot_p) 
-                    > atk_diff * 1.5 || !is_aligned_to_goal(ball_p, dom_bot_p)) {
-        send_bot_to(dominant, ball_atk_o);
-    } else {
-        send_bot_to(dominant, ball_p);
-    }
-
-    // // defence procedures
-    // if (vec_distance(ball_p, dom_bot_p) > DEF_DISP_DIST) {
-    //     send_bot_to(dominant, ball_def_o);
+    // attack procedures
+    // if (vec_distance(ball_p, dom_bot_p) > atk_diff * 1.5 
+    //     || !is_aligned_to_goal(ball_p, dom_bot_p)) {
+    //     send_bot_to(dominant, ball_atk_o);
     // } else {
     //     send_bot_to(dominant, ball_p);
     // }
+
+    // defense procedures
+    if (vec_distance(ball_p, dom_bot_p) > DEF_DISP_DIST) {
+        send_bot_to(dominant, ball_def_o2);
+        dominant->wants_to_hit_ball = false;
+    } else {
+        send_bot_to(dominant, ball_p);
+        if (is_behind_ball(ball_p, dom_bot_p, mray)) {
+            dominant->wants_to_hit_ball = true;
+        }
+    }
     
-    // goalkeeper standart procedure 
-    // overwrites previous dominant behaviour
-    send_bot_to(goalkeeper, goalkeeper_objective(f));
+    // // goalkeeper standart procedure 
+    // // overwrites previous dominant behaviour
+    // send_bot_to(goalkeeper, goalkeeper_objective(f));
 
 }

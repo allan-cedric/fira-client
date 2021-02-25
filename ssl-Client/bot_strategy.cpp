@@ -221,7 +221,7 @@ void set_bot_strategies(field_t *f)
 
     float_pair_t dom_bot_p = {.x = dominant->x, .y = dominant->y};
     float_pair_t aux_bot_p = {.x = auxiliary->x, .y = auxiliary->y};
-    float_pair_t aux2_bot_p = {.x = aux2->x, .y = aux2->y};
+    // float_pair_t aux2_bot_p = {.x = aux2->x, .y = aux2->y}; UNUSED
 
     // line Y = aX + b 
     // pass through ball and goal
@@ -243,10 +243,15 @@ void set_bot_strategies(field_t *f)
 
     objective_t ball_def_o2 = {.x = ball_def_o.x, 
                                 .y = ball_def_o.y 
-                                + (ball_def_o.y > our_goal_y() ? 10 : -10 )};
+                                + (ball_def_o.y > our_goal_y() ? 10 : -10 )
+                                , .angle = 0 };
                                 // temp hack fix
 
     // ============= SEND BOT TO OBJ ================ //
+    
+    objective_t dom_obj;
+    objective_t aux_obj;
+    objective_t aux2_obj;
 
     if (!is_on_my_field(ball_p.x, mray)){
 
@@ -262,24 +267,24 @@ void set_bot_strategies(field_t *f)
             send_bot_to(dominant, ball_obj);
         }
 
-        objective_t aux_obj = {.x = ball_p.x + aux_atk_dist_x(mray),
-                                .y = ball_p.y + aux_atk_dist_y(dom_bot_p)};
+        aux_obj = {.x = ball_p.x + aux_atk_dist_x(mray),
+                    .y = ball_p.y + aux_atk_dist_y(dom_bot_p), .angle = 0};
 
         if (is_in_goal_area({aux_obj.x, aux_obj.y}, !mray)) {
             if (mray) {
-                aux_obj = { .x = DEF_POS_X, .y = DEF_POS_Y };
+                aux_obj = { .x = DEF_POS_X, .y = DEF_POS_Y, .angle = 0};
             } else {
-                aux_obj = { .x = ATK_POS_X, .y = ATK_POS_Y };
+                aux_obj = { .x = ATK_POS_X, .y = ATK_POS_Y, .angle = 0};
             }
         }
 
         if (vec_distance(ball_p, their_goal_pair(mray)) < 20){
-            aux_obj = {ball_p.x, ball_p.y};
+            aux_obj = {ball_p.x, ball_p.y, .angle = 0 };
         }
 
         if (fabs(ball_line.a) > 3.0) {
             float_pair_t p = point_on_line(ball_line, aux_bot_p);
-            aux_obj = {.x = p.x, .y = p.y};
+            aux_obj = {.x = p.x, .y = p.y, .angle = 0 };
         }
         
         send_bot_to(auxiliary, aux_obj);
@@ -299,35 +304,39 @@ void set_bot_strategies(field_t *f)
             }
         }
 
-        objective_t aux_obj = {.x = ball_p.x + aux_def_dist_x(mray),
-                        .y = ball_p.y + aux_def_dist_y(dom_bot_p)};
+        aux_obj = {.x = ball_p.x + aux_def_dist_x(mray),
+                        .y = ball_p.y + aux_def_dist_y(dom_bot_p), .angle = 0 };
 
 
         if (is_in_goal_area({aux_obj.x, aux_obj.y}, mray)) {
             if (mray) {
-                aux_obj = { .x = ATK_POS_X, .y = ATK_POS_Y };
+                aux_obj = { .x = ATK_POS_X, .y = ATK_POS_Y, .angle = 0 };
             } else {
-                aux_obj = { .x = DEF_POS_X, .y = DEF_POS_Y };
+                aux_obj = { .x = DEF_POS_X, .y = DEF_POS_Y, .angle = 0 };
             }
         }
-
-        send_bot_to(auxiliary, aux_obj);
 
     }
 
     if (auxiliary != aux2) {
-        objective_t aux2_obj;
         if (mray) {
-            aux2_obj = { .x = ATK_POS_X, .y = ATK_POS_ALT_Y };
+            aux2_obj = { .x = ATK_POS_X, .y = ATK_POS_ALT_Y, .angle = 0 };
         } else {
-            aux2_obj = { .x = DEF_POS_X, .y = DEF_POS_ALT_Y };
+            aux2_obj = { .x = DEF_POS_X, .y = DEF_POS_ALT_Y, .angle = 0 };
         }
-        send_bot_to(aux2, aux2_obj);
     }
     
     // goalkeeper standart procedure 
     // overwrites previous dominant behaviour
+
+    fix_obj_to_keep_outside_goal_area(&aux_obj, mray);
+    fix_obj_to_keep_outside_goal_area(&aux2_obj, mray);
+    fix_obj_to_keep_outside_goal_area(&dom_obj, mray);
+
     send_bot_to(goalkeeper, goalkeeper_objective(f));
+    send_bot_to(auxiliary, aux_obj);
+    send_bot_to(aux2, aux2_obj);
+    send_bot_to(dominant, dom_obj);
 
     // printf("d %d %f\n", dominant->index, dominant->x);
     // printf("g %d\n", goalkeeper->index);

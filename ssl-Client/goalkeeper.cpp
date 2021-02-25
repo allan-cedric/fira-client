@@ -11,7 +11,7 @@ objective_t  goalkeeper_default_position(bool is_yellow)
 
     if (is_yellow) // our field == right
     {
-        obj = {.x = 150 - GK_DEFAULT_X, .y = GK_DEFAULT_Y, .angle = 2* M_PI};
+        obj = {.x = 150 - GK_DEFAULT_X + 15.0, .y = GK_DEFAULT_Y, .angle = 2* M_PI};
     }
     else // our field == left
     {

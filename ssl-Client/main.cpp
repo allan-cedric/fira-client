@@ -9,7 +9,6 @@
 // Feel free to use and please reference us
 
 //#include <QtNetwork>
-#include "../FIRAClient/clients/referee/refereeclient.h"
 #include <stdio.h>
 #include "net/robocup_ssl_client.h"
 #include "net/grSim_client.h"
@@ -64,6 +63,12 @@ void fill_field(fira_message::sim_to_ref::Frame detection, field_t *f)
     }
 }
 
+void stop_all(field_t *f, GrSim_Client *cmd)
+{
+    for(auto our_robot : f->our_bots)
+        cmd->sendCommand(0, 0, f->my_robots_are_yellow, our_robot.index);
+}
+
 int main(int argc, char *argv[])
 {
     (void)argc;
@@ -94,9 +99,9 @@ int main(int argc, char *argv[])
         // Running referee client
         refereeClient->run();
 
-        // referee_analyzer(refereeClient, &referee);
+        referee_analyzer(refereeClient, &referee);
 
-        if (visionClient->receive(packet) && packet.has_frame() && !halt){
+        if (visionClient->receive(packet) && packet.has_frame() && !referee.is_halt){
             fira_message::sim_to_ref::Frame detection = packet.frame();
 
             // Fill field ball and bots detection data
@@ -108,19 +113,21 @@ int main(int argc, char *argv[])
             // Fill each bot objective data
             set_bot_strategies(&field); // TODO Coelho e Jimmy
 
-            if (game_on){
+            if (referee.is_game_on){
                 // Executes each bot objective
                 execute_bot_strats(&field, commandClient);
+            }else{
+                stop_all(&field, commandClient);
             }
-
         } else {
             // pass and wait for window
-            stop_all();
+            stop_all(&field, commandClient);
         }
     }
 
-    // Closing client
-    // refereeClient->close();
+    // Closing clients
+    visionClient->close();
+    refereeClient->close();
 
     return 0;
 }

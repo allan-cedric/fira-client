@@ -1,6 +1,7 @@
 #ifndef HEADER
 #define HEADER
 
+#include "../FIRAClient/clients/referee/refereeclient.h"
 #include "net/robocup_ssl_client.h"
 #include "math.h"
 

@@ -21,5 +21,6 @@ bool we_are_closer(field_t *f);
 bool they_are_atacking(field_t *f);
 bool we_are_atacking(field_t *f);
 void field_analyzer(field_t*);
+void referee_analyzer(RefereeClient *, referee_flags_t *);
 
 #endif

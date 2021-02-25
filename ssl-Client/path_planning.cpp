@@ -360,8 +360,8 @@ objective_t path(vector<bot_t> &other_robots, bot_t my_robot,
     path.push_back(start_node); // optional
     std::reverse(path.begin(), path.end());
 #else
-    // for (auto edge : surfing_edges)
-    //     printf("e %f %f %f %f\n", edge.n1.coord.x, edge.n1.coord.y, edge.n2.coord.x, edge.n2.coord.y);
+    for (auto edge : surfing_edges)
+        printf("e %f %f %f %f\n", edge.n1.coord.x, edge.n1.coord.y, edge.n2.coord.x, edge.n2.coord.y);
 
     printf("Clear\n");
 

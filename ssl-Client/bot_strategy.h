@@ -10,7 +10,7 @@
 #define BLUE_GOAL_X 5.0
 #define GOAL_Y 65.0
 
-#define ATK_DISP_DIST 6.0
+#define ATK_DISP_DIST 10.0
 #define DEF_DISP_DIST 25.0
 
 #define GOAL_DIFF_CORRECTION 0.125

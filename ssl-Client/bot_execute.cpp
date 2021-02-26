@@ -73,11 +73,11 @@ void PID(bot_t robot,
     
     lastError = error;
 
-    double baseSpeed = 30;
+    double baseSpeed = 35;
 
     // Normalize
-    motorSpeed = motorSpeed > 30 ? 30 : motorSpeed;
-    motorSpeed = motorSpeed < -30 ? -30 : motorSpeed;
+      motorSpeed = motorSpeed > 35 ? 35 : motorSpeed;
+      motorSpeed = motorSpeed < -35 ? -35 : motorSpeed;
 
     // RESUMED PID THAT DOENST WORK
     // if (reversed) baseSpeed = -baseSpeed;

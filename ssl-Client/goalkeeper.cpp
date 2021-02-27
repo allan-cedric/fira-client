@@ -7,7 +7,7 @@
 
 objective_t  goalkeeper_default_position(bool is_yellow)
 {
-    objective_t obj;m algum campo e por favor sempre peçam para os juizes abrirem e conferirem com vocês pra evitar problemas.
+    objective_t obj; // m algum campo e por favor sempre peçam para os juizes abrirem e conferirem com vocês pra evitar problemas.
 
     if (is_yellow) // our field == right
     {

@@ -245,10 +245,6 @@ void set_bot_strategies(field_t *f)
 
     // ============= SEND BOT TO OBJ ================ //
     
-    objective_t dom_obj;
-    objective_t aux_obj;
-    objective_t aux2_obj;
-
     if (!is_on_my_field(ball_p.x, mray)){
 
         // attack procedure
@@ -262,7 +258,7 @@ void set_bot_strategies(field_t *f)
             send_bot_to(dominant, ball_obj);
         }
 
-        aux_obj = {.x = ball_p.x + aux_atk_dist_x(mray),
+        objective_t aux_obj = {.x = ball_p.x + aux_atk_dist_x(mray),
                     .y = ball_p.y + aux_atk_dist_y(dom_bot_p), .angle = 0};
 
         if (is_in_goal_area({aux_obj.x, aux_obj.y}, !mray)) {
@@ -300,7 +296,7 @@ void set_bot_strategies(field_t *f)
             }
         }
 
-        aux_obj = {.x = ball_p.x + aux_def_dist_x(mray),
+        objective_t aux_obj = {.x = ball_p.x + aux_def_dist_x(mray),
                         .y = ball_p.y + aux_def_dist_y(dom_bot_p), .angle = 0 };
 
 
@@ -311,28 +307,22 @@ void set_bot_strategies(field_t *f)
                 aux_obj = { .x = DEF_POS_X, .y = DEF_POS_Y, .angle = 0 };
             }
         }
-
+        send_bot_to(auxiliary, aux_obj);
     }
 
     if (auxiliary != aux2) {
+        objective_t aux2_obj;
         if (mray) {
             aux2_obj = { .x = ATK_POS_X, .y = ATK_POS_ALT_Y, .angle = 0 };
         } else {
             aux2_obj = { .x = DEF_POS_X, .y = DEF_POS_ALT_Y, .angle = 0 };
         }
+        send_bot_to(aux2, aux2_obj);
     }
     
     // goalkeeper standart procedure 
     // overwrites previous dominant behaviour
-
-    fix_obj_to_keep_outside_goal_area(&aux_obj, mray);
-    fix_obj_to_keep_outside_goal_area(&aux2_obj, mray);
-    fix_obj_to_keep_outside_goal_area(&dom_obj, mray);
-
     send_bot_to(goalkeeper, goalkeeper_objective(f));
-    send_bot_to(auxiliary, aux_obj);
-    send_bot_to(aux2, aux2_obj);
-    send_bot_to(dominant, dom_obj);
 
     // printf("d %d %f\n", dominant->index, dominant->x);
     // printf("g %d\n", goalkeeper->index);

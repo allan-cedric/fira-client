@@ -1,8 +1,13 @@
 #ifndef GOALKEEPER
 #define GOALKEEPER
 
+
+
+
 #include "header.h"
 #include "bot_strategy.h"
+
+#define FIELD_LENGTH 160.0
 
 // field.height/2 == 65
 // goalkeeper default position

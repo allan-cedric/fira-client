@@ -7,11 +7,11 @@
 
 objective_t  goalkeeper_default_position(bool is_yellow)
 {
-    objective_t obj;
+    objective_t obj;m algum campo e por favor sempre peçam para os juizes abrirem e conferirem com vocês pra evitar problemas.
 
     if (is_yellow) // our field == right
     {
-        obj = {.x = 150 - GK_DEFAULT_X + 15.0, .y = GK_DEFAULT_Y, .angle = 2* M_PI};
+        obj = {.x = 160 - GK_DEFAULT_X + 15.0, .y = GK_DEFAULT_Y, .angle = 2* M_PI};
     }
     else // our field == left
     {
@@ -44,8 +44,8 @@ objective_t between_goal_and_ball(bot_t goalkeeper, ball_t ball, bool is_yellow,
 
     if (is_yellow)
     {
-        goal_area_min_x = 150.0 - GOAL_MIN_X;
-        goal_area_max_x = 150.0 - GOAL_MAX_X;
+        goal_area_min_x = FIELD_LENGTH - GOAL_MIN_X;
+        goal_area_max_x = FIELD_LENGTH - GOAL_MAX_X;
 
 
         if (ball_vec.x > 0) // if the ball is going to the goal
@@ -55,8 +55,8 @@ objective_t between_goal_and_ball(bot_t goalkeeper, ball_t ball, bool is_yellow,
             if( inrange(goal_area_max_x, goal_area_min_x, ball.x) )
             {
                 // prediction to when it is going to hit the boundary
-                ball_predicted_x = 150; // lets predict its 'y' coordinate for the goal
-                ball_predicted_y = ball_path.a * 150 + ball_path.b;
+                ball_predicted_x = 160; // lets predict its 'y' coordinate for the goal
+                ball_predicted_y = ball_path.a * 160 + ball_path.b;
             }
             else // ball still outside goal area
             {
@@ -151,7 +151,7 @@ bool gk_should_follow_ball(bool is_yellow, bot_t* gk, ball_t ball)
     {
         if (is_yellow)
         {
-            if ( (ball.x < gk->x) && (150.0 - GK_GOAL_DIST) < gk->x)
+            if ( (ball.x < gk->x) && (FIELD_LENGTH - GK_GOAL_DIST) < gk->x)
                 return true;
         }
         else

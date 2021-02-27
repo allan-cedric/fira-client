@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
         // Running referee client
         refereeClient->run();
 
-        // comment here to test withut referee
+        // // comment here to test withut referee
         // referee_analyzer(refereeClient, &referee);
         referee.is_halt = false;
         referee.is_game_on = true;

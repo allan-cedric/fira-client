@@ -178,15 +178,11 @@ void fix_obj_to_keep_outside_goal_area(objective_t *obj, bool mray)
 {
     if (mray) {
         if (obj->x > (150 - GOAL_MAX_X ) - AREA_ERROR) {
-            obj->x = (150 - GOAL_MAX_X ) - AREA_ERROR;
-            // if (obj->y > GOAL_MAX_Y + AREA_ERROR) obj->y = GOAL_MAX_Y + AREA_ERROR;
-            // if (obj->y < GOAL_MIN_Y - AREA_ERROR) obj->y = GOAL_MIN_Y - AREA_ERROR;
+            obj->x = (150 - GOAL_MAX_X ) - AREA_ERROR *10;
         }
     } else {
         if (obj->x < GOAL_MAX_X + AREA_ERROR){
-            obj->x = GOAL_MAX_X + AREA_ERROR;
-            // if (obj->y > GOAL_MAX_Y + AREA_ERROR) obj->y = GOAL_MAX_Y + AREA_ERROR;
-            // if (obj->y < GOAL_MIN_Y - AREA_ERROR) obj->y = GOAL_MIN_Y - AREA_ERROR;
+            obj->x = GOAL_MAX_X + AREA_ERROR *10;
         }
     }
 
@@ -252,9 +248,8 @@ void set_bot_strategies(field_t *f)
 
         // attack procedure
 
-        if (vec_distance(ball_p, dom_bot_p) > atk_diff * 1.5 
-            || !is_aligned_to_goal(ball_p, dom_bot_p)
-            /*|| vec_distance(ball_p, dom_bot_p) < atk_diff * 1.1*/) {
+        if (vec_distance(ball_p, dom_bot_p) > atk_diff * 1.375 
+            || !is_aligned_to_goal(ball_p, dom_bot_p)) {
             fix_obj_to_keep_outside_goal_area(&ball_atk_o, mray);
             send_bot_to(dominant, ball_atk_o);
         } else {
@@ -287,7 +282,8 @@ void set_bot_strategies(field_t *f)
     } else {
 
         // defense procedures
-        if (vec_distance(ball_p, dom_bot_p) > DEF_DISP_DIST) {
+        if (vec_distance(ball_p, dom_bot_p) > DEF_DISP_DIST
+        || !is_behind_ball(ball_p, dom_bot_p, mray)) {
             fix_obj_to_keep_outside_goal_area(&ball_def_o2, mray);
             send_bot_to(dominant, ball_def_o2);
             dominant->wants_to_hit_ball = false;
